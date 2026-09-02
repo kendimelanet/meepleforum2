@@ -394,6 +394,17 @@
 
             font-size: 11px;
             font-weight: 600;
+
+            transition:
+                background .2s ease,
+                border-color .2s ease,
+                color .2s ease;
+        }
+
+        .user-chip:hover {
+            background: rgba(210,167,92,.08);
+            border-color: rgba(210,167,92,.28);
+            color: var(--gold-light);
         }
 
         .user-chip span {
@@ -1501,6 +1512,101 @@
                 0 0 0 3px rgba(210,167,92,.07);
         }
 
+        .form-input[readonly] {
+            cursor: not-allowed;
+            opacity: .68;
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 94px;
+
+            resize: vertical;
+
+            padding: 11px 12px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            outline: none;
+
+            background: rgba(255,255,255,0.045);
+            color: var(--text-main);
+
+            font-family: inherit;
+            font-size: 12px;
+            line-height: 1.55;
+
+            transition:
+                border .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .form-textarea:focus {
+            border-color: rgba(210,167,92,.5);
+            box-shadow: 0 0 0 3px rgba(210,167,92,.07);
+        }
+
+        .profile-summary {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            margin: -2px 0 22px;
+            padding: 14px;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            background: rgba(255,255,255,.035);
+        }
+
+        .profile-avatar {
+            width: 52px;
+            height: 52px;
+
+            flex: 0 0 52px;
+
+            display: grid;
+            place-items: center;
+
+            border: 1px solid rgba(210,167,92,.25);
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(200,137,89,.24),
+                    rgba(113,52,56,.3)
+                );
+
+            color: var(--gold-light);
+            font-family: "Playfair Display", serif;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .profile-summary-text {
+            min-width: 0;
+        }
+
+        .profile-summary-text strong,
+        .profile-summary-text span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .profile-summary-text strong {
+            margin-bottom: 3px;
+            font-size: 13px;
+        }
+
+        .profile-summary-text span {
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
         .form-options {
             display: flex;
             align-items: center;
@@ -2013,10 +2119,16 @@
 
                 <div class="user-area" id="userArea">
 
-                    <div class="user-chip" title="Giriş yapan kullanıcı">
+                    <button
+                        class="user-chip"
+                        type="button"
+                        id="profileBtn"
+                        title="Profilimi aç"
+                        aria-label="Profilimi aç"
+                    >
                         <i class="fa-regular fa-circle-user"></i>
                         <span id="userName">Kullanıcı</span>
-                    </div>
+                    </button>
 
                     <button
                         class="logout-btn"
@@ -3149,6 +3261,149 @@
 
 
     <!-- =========================================================
+         KULLANICI PROFİLİ MODALI
+    ========================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="profileModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="profileTitle"
+        >
+
+            <button
+                class="modal-close"
+                type="button"
+                data-close-modal
+                aria-label="Kapat"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+
+            <div class="modal-icon">
+                <i class="fa-regular fa-address-card"></i>
+            </div>
+
+            <h2 id="profileTitle">
+                Profilim
+            </h2>
+
+            <p class="modal-description">
+                Toplulukta nasıl görüneceğini düzenle.
+            </p>
+
+
+            <div class="profile-summary">
+
+                <div class="profile-avatar" id="profileAvatar">
+                    M
+                </div>
+
+                <div class="profile-summary-text">
+                    <strong id="profileSummaryName">Meeple Oyuncusu</strong>
+                    <span id="profileSummaryEmail">E-posta yükleniyor...</span>
+                </div>
+
+            </div>
+
+
+            <form id="profileForm">
+
+                <div class="form-group">
+
+                    <label for="profileUsername">
+                        Kullanıcı Adı
+                    </label>
+
+                    <input
+                        class="form-input"
+                        id="profileUsername"
+                        type="text"
+                        autocomplete="username"
+                        minlength="3"
+                        maxlength="30"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="profileEmail">
+                        E-posta
+                    </label>
+
+                    <input
+                        class="form-input"
+                        id="profileEmail"
+                        type="email"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="profileFavoriteGame">
+                        Favori Masaüstü Oyunu
+                    </label>
+
+                    <input
+                        class="form-input"
+                        id="profileFavoriteGame"
+                        type="text"
+                        placeholder="Örn: Dune: Imperium"
+                        maxlength="80"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="profileBio">
+                        Hakkımda
+                    </label>
+
+                    <textarea
+                        class="form-textarea"
+                        id="profileBio"
+                        placeholder="Oyun zevklerinden ve toplulukta neler aradığından kısaca bahset..."
+                        maxlength="240"
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    class="modal-submit"
+                    type="submit"
+                    id="profileSubmit"
+                >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Profili Kaydet
+                </button>
+
+            </form>
+
+            <p class="form-message" id="profileMessage" aria-live="polite"></p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
          TOAST
     ========================================================== -->
 
@@ -3769,6 +4024,14 @@
             updateProfile
         } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
+        import {
+            getFirestore,
+            doc,
+            getDoc,
+            setDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
 
         const firebaseConfig = {
             apiKey: "AIzaSyAvYVvoeG8Dw99DOJeVKgkcaRBxezCRVso",
@@ -3782,6 +4045,7 @@
 
 
         const {
+            openModal,
             closeModal,
             showToast
         } = window.meepleForumUI;
@@ -3805,7 +4069,25 @@
         const guestArea = document.getElementById("guestArea");
         const userArea = document.getElementById("userArea");
         const userName = document.getElementById("userName");
+        const profileBtn = document.getElementById("profileBtn");
         const logoutBtn = document.getElementById("logoutBtn");
+
+        const profileModal = document.getElementById("profileModal");
+        const profileForm = document.getElementById("profileForm");
+        const profileSubmit = document.getElementById("profileSubmit");
+        const profileMessage = document.getElementById("profileMessage");
+
+        const profileUsername = document.getElementById("profileUsername");
+        const profileEmail = document.getElementById("profileEmail");
+        const profileFavoriteGame =
+            document.getElementById("profileFavoriteGame");
+        const profileBio = document.getElementById("profileBio");
+
+        const profileAvatar = document.getElementById("profileAvatar");
+        const profileSummaryName =
+            document.getElementById("profileSummaryName");
+        const profileSummaryEmail =
+            document.getElementById("profileSummaryEmail");
 
 
         function setButtonBusy(button, isBusy, busyText, normalText) {
@@ -3875,6 +4157,11 @@
 
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            let cachedProfile = null;
+            let cachedProfileUid = null;
+            let isRegistering = false;
 
             auth.useDeviceLanguage();
 
@@ -3883,6 +4170,95 @@
             googleProvider.setCustomParameters({
                 prompt: "select_account"
             });
+
+
+            function getDefaultDisplayName(user) {
+
+                if (user.displayName) {
+                    return user.displayName;
+                }
+
+                if (user.email) {
+                    return user.email.split("@")[0];
+                }
+
+                return "Meeple Oyuncusu";
+            }
+
+
+            function renderProfile(user, profile = {}) {
+
+                const displayName =
+                    profile.displayName || getDefaultDisplayName(user);
+
+                const email = user.email || profile.email || "";
+
+                profileUsername.value = displayName;
+                profileEmail.value = email;
+                profileFavoriteGame.value = profile.favoriteGame || "";
+                profileBio.value = profile.bio || "";
+
+                profileSummaryName.textContent = displayName;
+                profileSummaryEmail.textContent = email || "E-posta bulunamadı";
+
+                profileAvatar.textContent =
+                    displayName.trim().charAt(0).toLocaleUpperCase("tr-TR") || "M";
+            }
+
+
+            async function getOrCreateUserProfile(user) {
+
+                const profileRef = doc(db, "users", user.uid);
+                const profileSnapshot = await getDoc(profileRef);
+
+                if (profileSnapshot.exists()) {
+
+                    const profile = profileSnapshot.data();
+                    cachedProfile = profile;
+                    cachedProfileUid = user.uid;
+                    return profile;
+                }
+
+                const profile = {
+                    uid: user.uid,
+                    email: user.email || "",
+                    displayName: getDefaultDisplayName(user),
+                    favoriteGame: "",
+                    bio: "",
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                };
+
+                await setDoc(profileRef, profile);
+
+                cachedProfile = profile;
+                cachedProfileUid = user.uid;
+
+                return profile;
+            }
+
+
+            async function saveInitialProfile(user, displayName) {
+
+                const profile = {
+                    uid: user.uid,
+                    email: user.email || "",
+                    displayName,
+                    favoriteGame: "",
+                    bio: "",
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                };
+
+                await setDoc(
+                    doc(db, "users", user.uid),
+                    profile,
+                    { merge: true }
+                );
+
+                cachedProfile = profile;
+                cachedProfileUid = user.uid;
+            }
 
 
             loginForm.addEventListener("submit", async event => {
@@ -3915,11 +4291,26 @@
                             : browserSessionPersistence
                     );
 
-                    await signInWithEmailAndPassword(
+                    const userCredential =
+                        await signInWithEmailAndPassword(
                         auth,
                         email,
                         password
                     );
+
+                    try {
+
+                        const profile =
+                            await getOrCreateUserProfile(userCredential.user);
+
+                        userName.textContent =
+                            profile.displayName ||
+                            getDefaultDisplayName(userCredential.user);
+
+                    } catch (profileError) {
+
+                        console.warn("Profil yüklenemedi:", profileError);
+                    }
 
                     closeModal(document.getElementById("loginModal"));
                     loginForm.reset();
@@ -3972,6 +4363,8 @@
                     "Hesap Oluştur"
                 );
 
+                isRegistering = true;
+
                 try {
 
                     await setPersistence(auth, browserLocalPersistence);
@@ -3987,10 +4380,33 @@
                         displayName: username
                     });
 
+                    let profileSaved = true;
+
+                    try {
+
+                        await saveInitialProfile(
+                            userCredential.user,
+                            username
+                        );
+
+                    } catch (profileError) {
+
+                        profileSaved = false;
+                        console.error("İlk profil kaydedilemedi:", profileError);
+                    }
+
+                    window.meepleForumAuthUser = userCredential.user;
+                    userName.textContent = username;
+
                     closeModal(document.getElementById("registerModal"));
                     registerForm.reset();
 
-                    showToast("Hesabın oluşturuldu. MeepleForum'a hoş geldin!");
+                    showToast(
+                        profileSaved
+                            ? "Hesabın ve profilin oluşturuldu. MeepleForum'a hoş geldin!"
+                            : "Hesabın oluşturuldu; profil kaydı için Firestore ayarlarını kontrol et.",
+                        profileSaved ? "success" : "error"
+                    );
 
                 } catch (error) {
 
@@ -3998,6 +4414,8 @@
                     setFormMessage(registerMessage, getAuthErrorMessage(error));
 
                 } finally {
+
+                    isRegistering = false;
 
                     setButtonBusy(
                         registerSubmit,
@@ -4046,7 +4464,22 @@
                             : browserLocalPersistence
                     );
 
-                    await signInWithPopup(auth, googleProvider);
+                    const userCredential =
+                        await signInWithPopup(auth, googleProvider);
+
+                    try {
+
+                        const profile =
+                            await getOrCreateUserProfile(userCredential.user);
+
+                        userName.textContent =
+                            profile.displayName ||
+                            getDefaultDisplayName(userCredential.user);
+
+                    } catch (profileError) {
+
+                        console.warn("Google profili yüklenemedi:", profileError);
+                    }
 
                     closeModal(
                         document.getElementById(
@@ -4079,6 +4512,126 @@
 
             googleRegisterBtn.addEventListener("click", () => {
                 signInWithGoogle("register");
+            });
+
+
+            profileBtn.addEventListener("click", async () => {
+
+                const user = auth.currentUser;
+
+                if (!user) {
+                    showToast("Profilini görmek için önce giriş yapmalısın.", "error");
+                    openModal("loginModal");
+                    return;
+                }
+
+                setFormMessage(profileMessage);
+                renderProfile(user);
+                openModal("profileModal");
+
+                try {
+
+                    const profile =
+                        cachedProfileUid === user.uid && cachedProfile
+                            ? cachedProfile
+                            : await getOrCreateUserProfile(user);
+
+                    renderProfile(user, profile);
+
+                } catch (error) {
+
+                    console.error("Profil açma hatası:", error);
+
+                    setFormMessage(
+                        profileMessage,
+                        "Profil bilgileri yüklenemedi. Firestore ayarlarını kontrol et."
+                    );
+                }
+            });
+
+
+            profileForm.addEventListener("submit", async event => {
+
+                event.preventDefault();
+
+                const user = auth.currentUser;
+
+                if (!user) {
+                    closeModal(profileModal);
+                    openModal("loginModal");
+                    return;
+                }
+
+                const displayName = profileUsername.value.trim();
+                const favoriteGame = profileFavoriteGame.value.trim();
+                const bio = profileBio.value.trim();
+
+                setFormMessage(profileMessage);
+
+                if (displayName.length < 3) {
+                    setFormMessage(
+                        profileMessage,
+                        "Kullanıcı adı en az 3 karakter olmalı."
+                    );
+                    return;
+                }
+
+                setButtonBusy(
+                    profileSubmit,
+                    true,
+                    "Kaydediliyor...",
+                    '<i class="fa-solid fa-floppy-disk"></i> Profili Kaydet'
+                );
+
+                try {
+
+                    await updateProfile(user, { displayName });
+
+                    const profileData = {
+                        uid: user.uid,
+                        email: user.email || "",
+                        displayName,
+                        favoriteGame,
+                        bio,
+                        updatedAt: serverTimestamp()
+                    };
+
+                    await setDoc(
+                        doc(db, "users", user.uid),
+                        profileData,
+                        { merge: true }
+                    );
+
+                    cachedProfile = {
+                        ...(cachedProfile || {}),
+                        ...profileData
+                    };
+                    cachedProfileUid = user.uid;
+
+                    userName.textContent = displayName;
+                    renderProfile(user, cachedProfile);
+
+                    closeModal(profileModal);
+                    showToast("Profilin başarıyla güncellendi.");
+
+                } catch (error) {
+
+                    console.error("Profil kaydetme hatası:", error);
+
+                    setFormMessage(
+                        profileMessage,
+                        "Profil kaydedilemedi. Firestore bağlantısını ve güvenlik kurallarını kontrol et."
+                    );
+
+                } finally {
+
+                    setButtonBusy(
+                        profileSubmit,
+                        false,
+                        "",
+                        '<i class="fa-solid fa-floppy-disk"></i> Profili Kaydet'
+                    );
+                }
             });
 
 
@@ -4119,6 +4672,7 @@
                 try {
 
                     await signOut(auth);
+                    closeModal(profileModal);
                     showToast("Başarıyla çıkış yaptın.");
 
                 } catch (error) {
@@ -4129,7 +4683,7 @@
             });
 
 
-            onAuthStateChanged(auth, user => {
+            onAuthStateChanged(auth, async user => {
 
                 window.meepleForumAuthUser = user || null;
 
@@ -4141,11 +4695,31 @@
                     userName.textContent =
                         user.displayName || user.email || "Kullanıcı";
 
+                    if (!isRegistering) {
+
+                        try {
+
+                            const profile = await getOrCreateUserProfile(user);
+
+                            userName.textContent =
+                                profile.displayName || getDefaultDisplayName(user);
+
+                        } catch (profileError) {
+
+                            console.warn("Profil hazırlanamadı:", profileError);
+                        }
+                    }
+
                 } else {
+
+                    cachedProfile = null;
+                    cachedProfileUid = null;
 
                     guestArea.style.display = "flex";
                     userArea.style.display = "none";
                     userName.textContent = "Kullanıcı";
+
+                    closeModal(profileModal);
                 }
             });
 
