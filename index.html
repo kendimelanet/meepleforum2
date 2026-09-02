@@ -4814,6 +4814,68 @@
 
     </script>
 
+<!-- Mevcut sayfa içeriğin burada -->
+
+
+<!-- FIREBASE -->
+<script type="module">
+
+    // Firebase
+    import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
+    import {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged
+    } from
+    "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+    import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+        query,
+        orderBy,
+        serverTimestamp
+    } from
+    "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+
+    // Firebase Console'daki bilgiler
+    const firebaseConfig = {
+        apiKey: "SENIN_API_KEY",
+        authDomain: "meepleforum.firebaseapp.com",
+        projectId: "meepleforum",
+        storageBucket: "meepleforum.firebasestorage.app",
+        messagingSenderId: "398143304572",
+        appId: "SENIN_APP_ID"
+    };
+
+
+    // Firebase'i başlat
+    const app = initializeApp(firebaseConfig);
+
+    // Authentication
+    const auth = getAuth(app);
+
+    // Firestore
+    const db = getFirestore(app);
+
+
+    // Google giriş sağlayıcısı
+    const googleProvider = new GoogleAuthProvider();
+
+</script>
+
+</body>
+</html>
+
 </body>
 </html>
 ```
