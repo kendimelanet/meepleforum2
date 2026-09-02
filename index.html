@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -114,9 +113,7 @@
         }
 
         button,
-        input,
-        textarea,
-        select {
+        input {
             font-family: inherit;
         }
 
@@ -369,9 +366,44 @@
             gap: 8px;
         }
 
+        .guest-area,
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-area {
+            display: none;
+        }
+
+        .user-chip {
+            max-width: 180px;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 8px 11px;
+
+            border: 1px solid var(--border);
+            border-radius: 8px;
+
+            background: rgba(255,255,255,0.04);
+            color: var(--text-secondary);
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .user-chip span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .login-btn,
-        .register-btn,
-        .logout-btn {
+        .register-btn {
             border-radius: 8px;
 
             padding: 9px 13px;
@@ -419,46 +451,26 @@
                 0 8px 25px rgba(210,167,92,0.18);
         }
 
-        .user-area {
-            display: none;
-            align-items: center;
-            gap: 9px;
-        }
-
-        .user-email {
-            max-width: 170px;
-
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-
-            color: var(--text-secondary);
-
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .user-email i {
-            margin-right: 5px;
-            color: var(--gold);
-        }
-
         .logout-btn {
+            min-width: 38px;
+            height: 38px;
+
+            display: inline-grid;
+            place-items: center;
+
+            padding: 0 11px;
+
+            border: 1px solid var(--border-strong);
+            border-radius: 8px;
+
             background: transparent;
-
-            border: 1px solid rgba(185,106,106,0.35);
-
-            color: #c98787;
+            color: var(--text-secondary);
         }
 
         .logout-btn:hover {
-            background: rgba(185,106,106,0.10);
-
-            border-color: rgba(185,106,106,0.55);
-
-            color: #dfa0a0;
-
-            transform: translateY(-1px);
+            background: rgba(185,106,106,.1);
+            border-color: rgba(185,106,106,.35);
+            color: #e6a0a0;
         }
 
 
@@ -799,7 +811,7 @@
 
 
         /* =========================================================
-           8. DİNAMİK KONU KARTLARI
+           8. BOŞ KONU ŞABLONLARI
         ========================================================== */
 
         .topics {
@@ -840,6 +852,8 @@
             transform: translateY(-1px);
         }
 
+        /* Avatar placeholder */
+
         .topic-avatar {
             width: 42px;
             height: 42px;
@@ -856,9 +870,9 @@
                     #272320
                 );
 
-            border: 1px solid rgba(210,167,92,0.18);
+            border: 1px dashed rgba(255,255,255,0.12);
 
-            color: var(--gold);
+            color: #625c56;
 
             font-size: 14px;
         }
@@ -867,52 +881,41 @@
             min-width: 0;
         }
 
-        .topic-title {
-            display: block;
+        /* Placeholder başlık */
 
-            margin-bottom: 7px;
-
-            color: var(--text-main);
-
-            font-size: 13px;
-            font-weight: 700;
-
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .topic-title:hover {
-            color: var(--gold-light);
-        }
-
-        .topic-meta {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 7px;
-
-            color: var(--text-muted);
-
-            font-size: 10px;
-        }
-
-        .topic-category {
-            display: inline-flex;
-            align-items: center;
-
-            padding: 3px 7px;
-
-            background: rgba(62,101,79,0.16);
-
-            border: 1px solid rgba(95,146,116,0.14);
+        .placeholder-line {
+            height: 10px;
 
             border-radius: 5px;
 
-            color: var(--green-light);
+            background: rgba(255,255,255,0.07);
 
-            font-size: 9px;
-            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .placeholder-line.title {
+            width: 70%;
+            height: 11px;
+        }
+
+        .placeholder-line.short {
+            width: 32%;
+            margin-bottom: 0;
+        }
+
+        .topic-meta-placeholder {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .placeholder-tag {
+            width: 62px;
+            height: 18px;
+
+            border-radius: 5px;
+
+            background: rgba(62,101,79,0.16);
         }
 
         .topic-stats {
@@ -921,48 +924,27 @@
             text-align: right;
         }
 
-        .topic-replies {
-            display: block;
+        .placeholder-number {
+            width: 25px;
+            height: 12px;
 
-            margin-bottom: 4px;
+            margin-left: auto;
+            margin-bottom: 6px;
 
-            color: var(--text-main);
+            border-radius: 5px;
 
-            font-size: 12px;
-            font-weight: 800;
+            background: rgba(255,255,255,0.07);
         }
 
-        .topic-replies-label {
-            color: var(--text-muted);
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: .4px;
-        }
+        .placeholder-label {
+            width: 42px;
+            height: 7px;
 
-        .topics-loading,
-        .topics-empty,
-        .topics-error {
-            padding: 35px 20px;
+            margin-left: auto;
 
-            text-align: center;
+            border-radius: 4px;
 
-            background: var(--bg-card);
-
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-
-            color: var(--text-muted);
-
-            font-size: 12px;
-        }
-
-        .topics-loading i {
-            margin-right: 7px;
-            color: var(--gold);
-        }
-
-        .topics-error {
-            color: #c98787;
+            background: rgba(255,255,255,0.04);
         }
 
 
@@ -1490,10 +1472,9 @@
             font-weight: 600;
         }
 
-        .form-input,
-        .form-textarea,
-        .form-select {
+        .form-input {
             width: 100%;
+            height: 43px;
 
             padding: 0 12px;
 
@@ -1513,35 +1494,7 @@
                 box-shadow .2s ease;
         }
 
-        .form-input,
-        .form-select {
-            height: 43px;
-        }
-
-        .form-textarea {
-            min-height: 130px;
-
-            padding-top: 12px;
-            padding-bottom: 12px;
-
-            resize: vertical;
-
-            line-height: 1.6;
-        }
-
-        .form-input::placeholder,
-        .form-textarea::placeholder {
-            color: #67615c;
-        }
-
-        .form-select option {
-            background: #211e1b;
-            color: var(--text-main);
-        }
-
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
+        .form-input:focus {
             border-color: rgba(210,167,92,.5);
 
             box-shadow:
@@ -1577,7 +1530,7 @@
         .modal-submit {
             width: 100%;
 
-            min-height: 44px;
+            height: 44px;
 
             border: none;
             border-radius: 9px;
@@ -1600,11 +1553,70 @@
                 0 8px 25px rgba(210,167,92,.16);
         }
 
-        .modal-submit:disabled {
-            opacity: .55;
-            cursor: not-allowed;
+        .modal-submit:disabled,
+        .google-auth-btn:disabled {
+            cursor: wait;
+            opacity: .65;
             transform: none;
-            box-shadow: none;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            margin: 17px 0;
+
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .google-auth-btn {
+            width: 100%;
+            height: 44px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            border: 1px solid var(--border-strong);
+            border-radius: 9px;
+
+            background: rgba(255,255,255,.055);
+            color: var(--text-main);
+
+            font-size: 12px;
+            font-weight: 700;
+
+            transition: .2s ease;
+        }
+
+        .google-auth-btn:hover {
+            background: rgba(255,255,255,.09);
+            border-color: rgba(255,255,255,.22);
+            transform: translateY(-1px);
+        }
+
+        .google-auth-btn .fa-google {
+            color: #f1c75b;
+        }
+
+        .form-message {
+            min-height: 18px;
+            margin-top: 11px;
+
+            color: var(--danger);
+            font-size: 10px;
+            text-align: center;
         }
 
         .modal-footer {
@@ -1769,22 +1781,16 @@
                 margin-left: auto;
             }
 
-            .user-email {
-                display: none;
-            }
-
-            .login-btn {
-                display: none;
-            }
-
+            .login-btn,
             .register-btn {
-                padding: 8px 10px;
+                display: inline-flex;
+                align-items: center;
+                padding: 8px 9px;
                 font-size: 11px;
             }
 
-            .logout-btn {
-                padding: 8px 10px;
-                font-size: 11px;
+            .user-chip {
+                max-width: 120px;
             }
 
             .hero {
@@ -1874,7 +1880,28 @@
 
         @media (max-width: 420px) {
 
-            .auth .register-btn {
+            .logo-text {
+                display: none;
+            }
+
+            .auth,
+            .guest-area,
+            .user-area {
+                gap: 5px;
+            }
+
+            .login-btn,
+            .register-btn {
+                padding: 7px 8px;
+                font-size: 10px;
+            }
+
+            .user-chip {
+                width: 36px;
+                padding: 8px;
+            }
+
+            .user-chip span {
                 display: none;
             }
 
@@ -1964,8 +1991,7 @@
             <!-- GİRİŞ / KAYIT -->
             <div class="auth">
 
-                <!-- Giriş yapmamış kullanıcı -->
-                <div id="guestArea" class="auth">
+                <div class="guest-area" id="guestArea">
 
                     <button
                         class="login-btn"
@@ -1985,25 +2011,21 @@
 
                 </div>
 
+                <div class="user-area" id="userArea">
 
-                <!-- Giriş yapmış kullanıcı -->
-                <div id="userArea" class="user-area">
-
-                    <span
-                        class="user-email"
-                        id="userEmail"
-                    >
-                        <i class="fa-regular fa-user"></i>
-                        Kullanıcı
-                    </span>
+                    <div class="user-chip" title="Giriş yapan kullanıcı">
+                        <i class="fa-regular fa-circle-user"></i>
+                        <span id="userName">Kullanıcı</span>
+                    </div>
 
                     <button
                         class="logout-btn"
                         type="button"
                         id="logoutBtn"
+                        aria-label="Çıkış yap"
+                        title="Çıkış yap"
                     >
                         <i class="fa-solid fa-right-from-bracket"></i>
-                        Çıkış
                     </button>
 
                 </div>
@@ -2119,99 +2141,190 @@
 
                     <div class="category-grid">
 
-                        <a href="#" class="category-card" data-category="Strateji Oyunları">
+
+                        <!-- 1 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Strateji Oyunları"
+                        >
+
                             <div class="category-icon">
                                 <i class="fa-solid fa-chess"></i>
                             </div>
 
                             <div class="category-info">
-                                <h3>Strateji Oyunları</h3>
-                                <p>Forum kategorisini keşfet</p>
+
+                                <h3>
+                                    Strateji Oyunları
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
                             </div>
 
                             <div class="category-arrow">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </div>
+
                         </a>
 
 
-                        <a href="#" class="category-card" data-category="Tematik / Ameritrash">
+                        <!-- 2 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Tematik / Ameritrash"
+                        >
+
                             <div class="category-icon">
                                 <i class="fa-solid fa-dragon"></i>
                             </div>
 
                             <div class="category-info">
-                                <h3>Tematik / Ameritrash</h3>
-                                <p>Forum kategorisini keşfet</p>
+
+                                <h3>
+                                    Tematik / Ameritrash
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
                             </div>
 
                             <div class="category-arrow">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </div>
+
                         </a>
 
 
-                        <a href="#" class="category-card" data-category="Eurogame">
+                        <!-- 3 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Eurogame"
+                        >
+
                             <div class="category-icon">
                                 <i class="fa-solid fa-landmark"></i>
                             </div>
 
                             <div class="category-info">
-                                <h3>Eurogame</h3>
-                                <p>Forum kategorisini keşfet</p>
+
+                                <h3>
+                                    Eurogame
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
                             </div>
 
                             <div class="category-arrow">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </div>
+
                         </a>
 
 
-                        <a href="#" class="category-card" data-category="Kart Oyunları">
+                        <!-- 4 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Kart Oyunları"
+                        >
+
                             <div class="category-icon">
                                 <i class="fa-solid fa-clone"></i>
                             </div>
 
                             <div class="category-info">
-                                <h3>Kart Oyunları</h3>
-                                <p>Forum kategorisini keşfet</p>
+
+                                <h3>
+                                    Kart Oyunları
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
                             </div>
 
                             <div class="category-arrow">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </div>
+
                         </a>
 
 
-                        <a href="#" class="category-card" data-category="Miniatür & Boyama">
+                        <!-- 5 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Miniatür & Boyama"
+                        >
+
                             <div class="category-icon">
                                 <i class="fa-solid fa-paintbrush"></i>
                             </div>
 
                             <div class="category-info">
-                                <h3>Miniatür & Boyama</h3>
-                                <p>Forum kategorisini keşfet</p>
+
+                                <h3>
+                                    Miniatür & Boyama
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
                             </div>
 
                             <div class="category-arrow">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </div>
+
                         </a>
 
 
-                        <a href="#" class="category-card" data-category="İkinci El / Takas">
+                        <!-- 6 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="İkinci El / Takas"
+                        >
+
                             <div class="category-icon">
                                 <i class="fa-solid fa-arrow-right-arrow-left"></i>
                             </div>
 
                             <div class="category-info">
-                                <h3>İkinci El / Takas</h3>
-                                <p>Forum kategorisini keşfet</p>
+
+                                <h3>
+                                    İkinci El / Takas
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
                             </div>
 
                             <div class="category-arrow">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </div>
+
                         </a>
 
                     </div>
@@ -2236,21 +2349,149 @@
                     </div>
 
 
-                    <!-- =================================================
-                         FIRESTORE'DAN DOLDURULACAK ALAN
+                    <!--
+                        =================================================
+                        DİNAMİK İÇERİK ALANI
 
-                         Eski placeholder kartları kaldırıldı.
-                    ================================================== -->
+                        Bu kartlar özellikle BOŞ ŞABLON olarak bırakılmıştır.
+                        Gerçek kullanıcı verileri JavaScript/backend
+                        üzerinden buraya aktarılabilir.
+                        =================================================
+                    -->
 
-                    <div
-                        class="topics"
-                        id="topicsContainer"
-                    >
+                    <div class="topics">
 
-                        <div class="topics-loading">
-                            <i class="fa-solid fa-spinner fa-spin"></i>
-                            Konular yükleniyor...
-                        </div>
+
+                        <!-- BOŞ KONU 1 -->
+
+                        <article class="topic-card">
+
+                            <div class="topic-avatar">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+
+                            <div class="topic-main">
+
+                                <div class="placeholder-line title"></div>
+
+                                <div class="topic-meta-placeholder">
+
+                                    <div class="placeholder-line short"></div>
+
+                                    <div class="placeholder-tag"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="topic-stats">
+
+                                <div class="placeholder-number"></div>
+
+                                <div class="placeholder-label"></div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- BOŞ KONU 2 -->
+
+                        <article class="topic-card">
+
+                            <div class="topic-avatar">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+
+                            <div class="topic-main">
+
+                                <div class="placeholder-line title"></div>
+
+                                <div class="topic-meta-placeholder">
+
+                                    <div class="placeholder-line short"></div>
+
+                                    <div class="placeholder-tag"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="topic-stats">
+
+                                <div class="placeholder-number"></div>
+
+                                <div class="placeholder-label"></div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- BOŞ KONU 3 -->
+
+                        <article class="topic-card">
+
+                            <div class="topic-avatar">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+
+                            <div class="topic-main">
+
+                                <div class="placeholder-line title"></div>
+
+                                <div class="topic-meta-placeholder">
+
+                                    <div class="placeholder-line short"></div>
+
+                                    <div class="placeholder-tag"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="topic-stats">
+
+                                <div class="placeholder-number"></div>
+
+                                <div class="placeholder-label"></div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- BOŞ KONU 4 -->
+
+                        <article class="topic-card">
+
+                            <div class="topic-avatar">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+
+                            <div class="topic-main">
+
+                                <div class="placeholder-line title"></div>
+
+                                <div class="topic-meta-placeholder">
+
+                                    <div class="placeholder-line short"></div>
+
+                                    <div class="placeholder-tag"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="topic-stats">
+
+                                <div class="placeholder-number"></div>
+
+                                <div class="placeholder-label"></div>
+
+                            </div>
+
+                        </article>
 
                     </div>
 
@@ -2471,6 +2712,8 @@
             <div class="footer-inner">
 
 
+                <!-- MARKA -->
+
                 <div class="footer-brand">
 
                     <a href="#" class="logo">
@@ -2491,6 +2734,8 @@
                         buluşma noktası.
                     </p>
 
+
+                    <!-- SOSYAL MEDYA -->
 
                     <div class="socials">
 
@@ -2515,9 +2760,13 @@
                 </div>
 
 
+                <!-- KEŞFET -->
+
                 <div class="footer-column">
 
-                    <h4>Keşfet</h4>
+                    <h4>
+                        Keşfet
+                    </h4>
 
                     <a href="#" data-action="popular">
                         Popüler Başlıklar
@@ -2538,9 +2787,13 @@
                 </div>
 
 
+                <!-- TOPLULUK -->
+
                 <div class="footer-column">
 
-                    <h4>Topluluk</h4>
+                    <h4>
+                        Topluluk
+                    </h4>
 
                     <a href="#" data-action="members">
                         Üyeler
@@ -2561,9 +2814,13 @@
                 </div>
 
 
+                <!-- BİLGİ -->
+
                 <div class="footer-column">
 
-                    <h4>Bilgi</h4>
+                    <h4>
+                        Bilgi
+                    </h4>
 
                     <a href="#" data-action="about">
                         Hakkımızda
@@ -2716,6 +2973,19 @@
 
             </form>
 
+            <div class="auth-divider">veya</div>
+
+            <button
+                class="google-auth-btn"
+                type="button"
+                id="googleLoginBtn"
+            >
+                <i class="fa-brands fa-google"></i>
+                Google ile Giriş Yap
+            </button>
+
+            <p class="form-message" id="loginMessage" aria-live="polite"></p>
+
 
             <div class="modal-footer">
 
@@ -2790,6 +3060,7 @@
                         type="text"
                         placeholder="MeepleKralı"
                         autocomplete="username"
+                        minlength="3"
                         maxlength="30"
                         required
                     >
@@ -2844,6 +3115,19 @@
 
             </form>
 
+            <div class="auth-divider">veya</div>
+
+            <button
+                class="google-auth-btn"
+                type="button"
+                id="googleRegisterBtn"
+            >
+                <i class="fa-brands fa-google"></i>
+                Google ile Kayıt Ol
+            </button>
+
+            <p class="form-message" id="registerMessage" aria-live="polite"></p>
+
 
             <div class="modal-footer">
 
@@ -2857,154 +3141,6 @@
                 </button>
 
             </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- =========================================================
-         YENİ KONU MODALI
-    ========================================================== -->
-
-    <div
-        class="modal-overlay"
-        id="newTopicModal"
-        aria-hidden="true"
-    >
-
-        <div
-            class="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="newTopicTitle"
-        >
-
-            <button
-                class="modal-close"
-                type="button"
-                data-close-modal
-                aria-label="Kapat"
-            >
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-
-            <div class="modal-icon">
-                <i class="fa-solid fa-pen-to-square"></i>
-            </div>
-
-
-            <h2 id="newTopicTitle">
-                Yeni Konu Aç
-            </h2>
-
-
-            <p class="modal-description">
-                Toplulukla paylaşmak istediğin yeni konuyu oluştur.
-            </p>
-
-
-            <form id="newTopicForm">
-
-
-                <!-- KONU BAŞLIĞI -->
-
-                <div class="form-group">
-
-                    <label for="topicTitle">
-                        Konu Başlığı
-                    </label>
-
-                    <input
-                        class="form-input"
-                        id="topicTitle"
-                        type="text"
-                        placeholder="Örn: Yeni başlayanlara hangi oyunu önerirsiniz?"
-                        maxlength="120"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- KATEGORİ -->
-
-                <div class="form-group">
-
-                    <label for="topicCategory">
-                        Kategori
-                    </label>
-
-                    <select
-                        class="form-select"
-                        id="topicCategory"
-                        required
-                    >
-
-                        <option value="">
-                            Kategori seçin...
-                        </option>
-
-                        <option value="Strateji Oyunları">
-                            Strateji Oyunları
-                        </option>
-
-                        <option value="Tematik / Ameritrash">
-                            Tematik / Ameritrash
-                        </option>
-
-                        <option value="Eurogame">
-                            Eurogame
-                        </option>
-
-                        <option value="Kart Oyunları">
-                            Kart Oyunları
-                        </option>
-
-                        <option value="Miniatür & Boyama">
-                            Miniatür & Boyama
-                        </option>
-
-                        <option value="İkinci El / Takas">
-                            İkinci El / Takas
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- İÇERİK -->
-
-                <div class="form-group">
-
-                    <label for="topicContent">
-                        İçerik
-                    </label>
-
-                    <textarea
-                        class="form-textarea"
-                        id="topicContent"
-                        placeholder="Konunu detaylı şekilde anlat..."
-                        maxlength="5000"
-                        required
-                    ></textarea>
-
-                </div>
-
-
-                <button
-                    class="modal-submit"
-                    type="submit"
-                    id="topicSubmit"
-                >
-                    <i class="fa-solid fa-paper-plane"></i>
-                    Konuyu Yayınla
-                </button>
-
-            </form>
 
         </div>
 
@@ -3033,177 +3169,59 @@
 
 
     <!-- =========================================================
-         FIREBASE + JAVASCRIPT
-         
-         Firebase'in güncel MODULAR CDN yapısı kullanılıyor.
-         
-         Firebase Console'dan aldığın config bilgilerini
-         aşağıdaki firebaseConfig alanına yapıştır.
+         JAVASCRIPT
+         Modal, navigasyon, arama, kartlar ve etkileşimler
     ========================================================== -->
 
-    <script type="module">
+    <script>
 
         /* =========================================================
-           FIREBASE IMPORTLARI
+           ELEMENTLER
         ========================================================== */
 
-        import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+        const body = document.body;
 
-        import {
-            getAuth,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signOut,
-            onAuthStateChanged,
-            setPersistence,
-            browserLocalPersistence,
-            browserSessionPersistence,
-            sendPasswordResetEmail
-        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-
-        import {
-            getFirestore,
-            collection,
-            addDoc,
-            doc,
-            setDoc,
-            getDoc,
-            query,
-            orderBy,
-            limit,
-            onSnapshot,
-            serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
-
-
-        /* =========================================================
-           1. FIREBASE CONFIG
-
-           BURAYA KENDİ FIREBASE CONFIG BİLGİLERİNİ YAPIŞTIR.
-
-           Örnek:
-
-           const firebaseConfig = {
-               apiKey: "...",
-               authDomain: "...",
-               projectId: "...",
-               storageBucket: "...",
-               messagingSenderId: "...",
-               appId: "..."
-           };
-        ========================================================== */
-
-        const firebaseConfig = {
-
-            apiKey: "",
-            authDomain: "",
-            projectId: "",
-            storageBucket: "",
-            messagingSenderId: "",
-            appId: ""
-
-        };
-
-
-        /* =========================================================
-           2. FIREBASE BAŞLAT
-        ========================================================== */
-
-        const app = initializeApp(firebaseConfig);
-
-        const auth = getAuth(app);
-
-        const db = getFirestore(app);
-
-
-        /* =========================================================
-           3. ELEMENTLER
-        ========================================================== */
-
-        const body =
-            document.body;
-
-        const toast =
-            document.getElementById("toast");
-
-        const toastMessage =
-            document.getElementById("toastMessage");
-
-        const guestArea =
-            document.getElementById("guestArea");
-
-        const userArea =
-            document.getElementById("userArea");
-
-        const userEmail =
-            document.getElementById("userEmail");
-
-        const logoutBtn =
-            document.getElementById("logoutBtn");
-
-        const topicsContainer =
-            document.getElementById("topicsContainer");
-
-        const newTopicBtn =
-            document.getElementById("newTopicBtn");
-
-        const newTopicForm =
-            document.getElementById("newTopicForm");
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
 
         let toastTimer;
 
 
         /* =========================================================
-           4. TOAST
+           TOAST BİLDİRİMİ
         ========================================================== */
 
         function showToast(message, type = "success") {
 
             toastMessage.textContent = message;
 
-            const icon =
-                toast.querySelector("i");
+            const icon = toast.querySelector("i");
 
             if (type === "error") {
-
-                icon.className =
-                    "fa-solid fa-circle-exclamation";
-
-                icon.style.color =
-                    "var(--danger)";
-
+                icon.className = "fa-solid fa-circle-exclamation";
+                icon.style.color = "var(--danger)";
             } else {
-
-                icon.className =
-                    "fa-solid fa-circle-check";
-
-                icon.style.color =
-                    "var(--success)";
+                icon.className = "fa-solid fa-circle-check";
+                icon.style.color = "var(--success)";
             }
 
             toast.classList.add("show");
 
             clearTimeout(toastTimer);
 
-            toastTimer =
-                setTimeout(() => {
-
-                    toast.classList.remove("show");
-
-                }, 3000);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2800);
         }
 
 
         /* =========================================================
-           5. MODAL AÇ
+           MODAL AÇ
         ========================================================== */
 
         function openModal(modalId) {
 
-            const modal =
-                document.getElementById(modalId);
+            const modal = document.getElementById(modalId);
 
             if (!modal) return;
 
@@ -3217,23 +3235,20 @@
             body.classList.add("modal-open");
 
             const firstInput =
-                modal.querySelector(
-                    "input, textarea, select"
-                );
+                modal.querySelector("input");
 
             if (firstInput) {
 
                 setTimeout(() => {
-
                     firstInput.focus();
-
                 }, 200);
+
             }
         }
 
 
         /* =========================================================
-           6. MODAL KAPAT
+           MODAL KAPAT
         ========================================================== */
 
         function closeModal(modal) {
@@ -3252,23 +3267,20 @@
 
 
         /* =========================================================
-           7. MODAL BUTONLARI
+           MODAL BUTONLARI
         ========================================================== */
 
         document
             .querySelectorAll("[data-modal]")
             .forEach(button => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                button.addEventListener("click", () => {
 
-                        openModal(
-                            button.dataset.modal
-                        );
+                    openModal(
+                        button.dataset.modal
+                    );
 
-                    }
-                );
+                });
 
             });
 
@@ -3277,1215 +3289,151 @@
             .querySelectorAll("[data-close-modal]")
             .forEach(button => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                button.addEventListener("click", () => {
 
-                        closeModal(
-                            button.closest(
-                                ".modal-overlay"
-                            )
-                        );
+                    closeModal(
+                        button.closest(".modal-overlay")
+                    );
 
-                    }
-                );
+                });
 
             });
 
 
         /* =========================================================
-           8. MODAL DEĞİŞTİR
+           MODAL DEĞİŞTİR
         ========================================================== */
 
         document
             .querySelectorAll("[data-switch-modal]")
             .forEach(button => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                button.addEventListener("click", () => {
 
-                        const currentModal =
-                            button.closest(
-                                ".modal-overlay"
-                            );
+                    const currentModal =
+                        button.closest(".modal-overlay");
 
-                        closeModal(currentModal);
+                    closeModal(currentModal);
 
-                        setTimeout(() => {
+                    setTimeout(() => {
 
-                            openModal(
-                                button.dataset.switchModal
-                            );
+                        openModal(
+                            button.dataset.switchModal
+                        );
 
-                        }, 180);
+                    }, 180);
 
-                    }
-                );
+                });
 
             });
 
 
         /* =========================================================
-           9. MODAL DIŞINA TIKLAMA
+           MODAL DIŞINA TIKLAYARAK KAPAT
         ========================================================== */
 
         document
             .querySelectorAll(".modal-overlay")
             .forEach(overlay => {
 
-                overlay.addEventListener(
-                    "click",
-                    event => {
+                overlay.addEventListener("click", event => {
 
-                        if (
-                            event.target === overlay
-                        ) {
-
-                            closeModal(overlay);
-
-                        }
-
+                    if (event.target === overlay) {
+                        closeModal(overlay);
                     }
+
+                });
+
+            });
+
+
+        /* =========================================================
+           ESC TUŞU İLE MODAL KAPAT
+        ========================================================== */
+
+        document.addEventListener("keydown", event => {
+
+            if (event.key !== "Escape") return;
+
+            const activeModal =
+                document.querySelector(
+                    ".modal-overlay.active"
+                );
+
+            if (activeModal) {
+                closeModal(activeModal);
+            }
+
+        });
+
+
+        /* =========================================================
+           AUTH FORMLARI
+
+           Formların gerçek işlemleri aşağıdaki Firebase modülünde.
+           Firebase yüklenemese bile sayfanın yenilenmesini önler.
+        ========================================================== */
+
+        document
+            .querySelectorAll("#loginForm, #registerForm")
+            .forEach(form => {
+                form.addEventListener("submit", event => {
+                    event.preventDefault();
+                });
+            });
+
+
+        /* =========================================================
+           YENİ KONU
+        ========================================================== */
+
+        document
+            .getElementById("newTopicBtn")
+            .addEventListener("click", () => {
+
+                if (!window.meepleForumAuthUser) {
+                    showToast(
+                        "Yeni konu açmak için önce giriş yapmalısın.",
+                        "error"
+                    );
+                    openModal("loginModal");
+                    return;
+                }
+
+                showToast(
+                    "Yeni konu oluşturma ekranı burada açılacak."
                 );
 
             });
 
 
         /* =========================================================
-           10. ESC
-        ========================================================== */
-
-        document.addEventListener(
-            "keydown",
-            event => {
-
-                if (event.key !== "Escape")
-                    return;
-
-                const activeModal =
-                    document.querySelector(
-                        ".modal-overlay.active"
-                    );
-
-                if (activeModal) {
-
-                    closeModal(activeModal);
-
-                }
-
-            }
-        );
-
-
-        /* =========================================================
-           11. FIREBASE AUTH PERSISTENCE
-
-           "Beni hatırla" seçiliyse:
-           browserLocalPersistence
-
-           Seçili değilse:
-           browserSessionPersistence
-        ========================================================== */
-
-        async function setLoginPersistence() {
-
-            const remember =
-                document.getElementById(
-                    "rememberMe"
-                );
-
-            if (remember && remember.checked) {
-
-                await setPersistence(
-                    auth,
-                    browserLocalPersistence
-                );
-
-            } else {
-
-                await setPersistence(
-                    auth,
-                    browserSessionPersistence
-                );
-            }
-        }
-
-
-        /* =========================================================
-           12. KAYIT OL
-        ========================================================== */
-
-        document
-            .getElementById("registerForm")
-            .addEventListener(
-                "submit",
-                async event => {
-
-                    event.preventDefault();
-
-                    const username =
-                        document
-                            .getElementById(
-                                "registerUsername"
-                            )
-                            .value
-                            .trim();
-
-                    const email =
-                        document
-                            .getElementById(
-                                "registerEmail"
-                            )
-                            .value
-                            .trim();
-
-                    const password =
-                        document
-                            .getElementById(
-                                "registerPassword"
-                            )
-                            .value;
-
-                    const submitButton =
-                        document
-                            .getElementById(
-                                "registerSubmit"
-                            );
-
-                    if (
-                        username.length < 3
-                    ) {
-
-                        showToast(
-                            "Kullanıcı adı en az 3 karakter olmalı.",
-                            "error"
-                        );
-
-                        return;
-                    }
-
-                    submitButton.disabled =
-                        true;
-
-                    submitButton.innerHTML =
-                        '<i class="fa-solid fa-spinner fa-spin"></i> Hesap oluşturuluyor...';
-
-
-                    try {
-
-                        /*
-                         * Firebase Authentication'da
-                         * yeni kullanıcı oluştur.
-                         */
-
-                        const userCredential =
-                            await createUserWithEmailAndPassword(
-                                auth,
-                                email,
-                                password
-                            );
-
-                        const user =
-                            userCredential.user;
-
-
-                        /*
-                         * Kullanıcı bilgilerini Firestore'daki
-                         * users koleksiyonuna kaydet.
-                         */
-
-                        await setDoc(
-                            doc(
-                                db,
-                                "users",
-                                user.uid
-                            ),
-                            {
-                                username: username,
-                                email: user.email,
-                                uid: user.uid,
-                                createdAt:
-                                    serverTimestamp()
-                            }
-                        );
-
-
-                        closeModal(
-                            document.getElementById(
-                                "registerModal"
-                            )
-                        );
-
-                        event.target.reset();
-
-                        showToast(
-                            "Hesabın başarıyla oluşturuldu. Hoş geldin!"
-                        );
-
-                    } catch (error) {
-
-                        console.error(
-                            "Kayıt hatası:",
-                            error
-                        );
-
-                        let message =
-                            "Kayıt sırasında bir hata oluştu.";
-
-                        if (
-                            error.code ===
-                            "auth/email-already-in-use"
-                        ) {
-
-                            message =
-                                "Bu e-posta adresi zaten kayıtlı.";
-
-                        } else if (
-                            error.code ===
-                            "auth/invalid-email"
-                        ) {
-
-                            message =
-                                "Geçerli bir e-posta adresi girin.";
-
-                        } else if (
-                            error.code ===
-                            "auth/weak-password"
-                        ) {
-
-                            message =
-                                "Şifre yeterince güçlü değil.";
-
-                        }
-
-                        showToast(
-                            message,
-                            "error"
-                        );
-
-                    } finally {
-
-                        submitButton.disabled =
-                            false;
-
-                        submitButton.innerHTML =
-                            "Hesap Oluştur";
-                    }
-
-                }
-            );
-
-
-        /* =========================================================
-           13. GİRİŞ YAP
-        ========================================================== */
-
-        document
-            .getElementById("loginForm")
-            .addEventListener(
-                "submit",
-                async event => {
-
-                    event.preventDefault();
-
-                    const email =
-                        document
-                            .getElementById(
-                                "loginEmail"
-                            )
-                            .value
-                            .trim();
-
-                    const password =
-                        document
-                            .getElementById(
-                                "loginPassword"
-                            )
-                            .value;
-
-                    const submitButton =
-                        document
-                            .getElementById(
-                                "loginSubmit"
-                            );
-
-
-                    submitButton.disabled =
-                        true;
-
-                    submitButton.innerHTML =
-                        '<i class="fa-solid fa-spinner fa-spin"></i> Giriş yapılıyor...';
-
-
-                    try {
-
-                        await setLoginPersistence();
-
-
-                        await signInWithEmailAndPassword(
-                            auth,
-                            email,
-                            password
-                        );
-
-
-                        closeModal(
-                            document.getElementById(
-                                "loginModal"
-                            )
-                        );
-
-                        event.target.reset();
-
-                        showToast(
-                            "Başarıyla giriş yaptın. Hoş geldin!"
-                        );
-
-                    } catch (error) {
-
-                        console.error(
-                            "Giriş hatası:",
-                            error
-                        );
-
-                        let message =
-                            "E-posta veya şifre hatalı.";
-
-                        if (
-                            error.code ===
-                            "auth/user-not-found"
-                        ) {
-
-                            message =
-                                "Bu e-posta ile kayıtlı kullanıcı bulunamadı.";
-
-                        } else if (
-                            error.code ===
-                            "auth/invalid-credential"
-                        ) {
-
-                            message =
-                                "E-posta veya şifre hatalı.";
-
-                        } else if (
-                            error.code ===
-                            "auth/wrong-password"
-                        ) {
-
-                            message =
-                                "Şifre hatalı.";
-
-                        }
-
-                        showToast(
-                            message,
-                            "error"
-                        );
-
-                    } finally {
-
-                        submitButton.disabled =
-                            false;
-
-                        submitButton.innerHTML =
-                            "Giriş Yap";
-                    }
-
-                }
-            );
-
-
-        /* =========================================================
-           14. ŞİFREMİ UNUTTUM
-        ========================================================== */
-
-        document
-            .getElementById("forgotPasswordBtn")
-            .addEventListener(
-                "click",
-                async event => {
-
-                    event.preventDefault();
-
-                    const email =
-                        document
-                            .getElementById(
-                                "loginEmail"
-                            )
-                            .value
-                            .trim();
-
-                    if (!email) {
-
-                        showToast(
-                            "Önce e-posta adresini yaz.",
-                            "error"
-                        );
-
-                        return;
-                    }
-
-
-                    try {
-
-                        await sendPasswordResetEmail(
-                            auth,
-                            email
-                        );
-
-                        showToast(
-                            "Şifre sıfırlama bağlantısı e-posta adresine gönderildi."
-                        );
-
-                    } catch (error) {
-
-                        console.error(
-                            "Şifre sıfırlama hatası:",
-                            error
-                        );
-
-                        showToast(
-                            "Şifre sıfırlama e-postası gönderilemedi.",
-                            "error"
-                        );
-                    }
-
-                }
-            );
-
-
-        /* =========================================================
-           15. ÇIKIŞ YAP
-        ========================================================== */
-
-        logoutBtn.addEventListener(
-            "click",
-            async () => {
-
-                try {
-
-                    await signOut(auth);
-
-                    showToast(
-                        "Başarıyla çıkış yaptın."
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "Çıkış hatası:",
-                        error
-                    );
-
-                    showToast(
-                        "Çıkış yapılırken hata oluştu.",
-                        "error"
-                    );
-                }
-
-            }
-        );
-
-
-        /* =========================================================
-           16. AUTH DURUMUNU TAKİP ET
-
-           Kullanıcı giriş yapınca:
-           - Giriş/Kayıt gizlenir
-           - Kullanıcı e-postası gösterilir
-           - Çıkış butonu gösterilir
-
-           Kullanıcı çıkış yapınca:
-           - Eski durum geri gelir.
-        ========================================================== */
-
-        onAuthStateChanged(
-            auth,
-            async user => {
-
-                if (user) {
-
-                    guestArea.style.display =
-                        "none";
-
-                    userArea.style.display =
-                        "flex";
-
-                    userEmail.innerHTML =
-                        `
-                        <i class="fa-regular fa-user"></i>
-                        ${escapeHTML(user.email || "Kullanıcı")}
-                        `;
-
-                } else {
-
-                    guestArea.style.display =
-                        "flex";
-
-                    userArea.style.display =
-                        "none";
-                }
-
-            }
-        );
-
-
-        /* =========================================================
-           17. YENİ KONU BUTONU
-        ========================================================== */
-
-        newTopicBtn.addEventListener(
-            "click",
-            () => {
-
-                const user =
-                    auth.currentUser;
-
-                /*
-                 * Giriş yapılmamışsa
-                 * yeni konu modalı yerine
-                 * giriş modalını aç.
-                 */
-
-                if (!user) {
-
-                    showToast(
-                        "Yeni konu açmak için önce giriş yapmalısın.",
-                        "error"
-                    );
-
-                    openModal(
-                        "loginModal"
-                    );
-
-                    return;
-                }
-
-
-                /*
-                 * Kullanıcı giriş yaptıysa
-                 * yeni konu modalını aç.
-                 */
-
-                openModal(
-                    "newTopicModal"
-                );
-
-            }
-        );
-
-
-        /* =========================================================
-           18. YENİ KONU OLUŞTUR
-        ========================================================== */
-
-        newTopicForm.addEventListener(
-            "submit",
-            async event => {
-
-                event.preventDefault();
-
-
-                const user =
-                    auth.currentUser;
-
-
-                /*
-                 * Güvenlik açısından frontend kontrolü.
-                 * Asıl güvenlik Firestore Security Rules
-                 * üzerinden de yapılmalıdır.
-                 */
-
-                if (!user) {
-
-                    showToast(
-                        "Konu açmak için giriş yapmalısın.",
-                        "error"
-                    );
-
-                    closeModal(
-                        document.getElementById(
-                            "newTopicModal"
-                        )
-                    );
-
-                    openModal(
-                        "loginModal"
-                    );
-
-                    return;
-                }
-
-
-                const title =
-                    document
-                        .getElementById(
-                            "topicTitle"
-                        )
-                        .value
-                        .trim();
-
-                const category =
-                    document
-                        .getElementById(
-                            "topicCategory"
-                        )
-                        .value;
-
-                const content =
-                    document
-                        .getElementById(
-                            "topicContent"
-                        )
-                        .value
-                        .trim();
-
-                const submitButton =
-                    document
-                        .getElementById(
-                            "topicSubmit"
-                        );
-
-
-                if (
-                    !title ||
-                    !category ||
-                    !content
-                ) {
-
-                    showToast(
-                        "Lütfen tüm alanları doldur.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                submitButton.disabled =
-                    true;
-
-                submitButton.innerHTML =
-                    '<i class="fa-solid fa-spinner fa-spin"></i> Yayınlanıyor...';
-
-
-                try {
-
-                    /*
-                     * Önce kullanıcının users dokümanından
-                     * kullanıcı adını almaya çalışıyoruz.
-                     */
-
-                    let username =
-                        user.email ||
-                        "Anonim";
-
-
-                    try {
-
-                        const userDoc =
-                            await getDoc(
-                                doc(
-                                    db,
-                                    "users",
-                                    user.uid
-                                )
-                            );
-
-                        if (
-                            userDoc.exists()
-                        ) {
-
-                            username =
-                                userDoc.data().username ||
-                                username;
-                        }
-
-                    } catch (userError) {
-
-                        console.warn(
-                            "Kullanıcı profili okunamadı:",
-                            userError
-                        );
-
-                    }
-
-
-                    /*
-                     * Firestore topics koleksiyonuna
-                     * yeni konu ekle.
-                     */
-
-                    await addDoc(
-                        collection(
-                            db,
-                            "topics"
-                        ),
-                        {
-
-                            title: title,
-
-                            category: category,
-
-                            content: content,
-
-                            userId: user.uid,
-
-                            username: username,
-
-                            userEmail: user.email,
-
-                            replies: 0,
-
-                            createdAt:
-                                serverTimestamp(),
-
-                            lastActivity:
-                                serverTimestamp()
-
-                        }
-                    );
-
-
-                    closeModal(
-                        document.getElementById(
-                            "newTopicModal"
-                        )
-                    );
-
-                    event.target.reset();
-
-                    showToast(
-                        "Konun başarıyla yayınlandı! 🎲"
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "Konu oluşturma hatası:",
-                        error
-                    );
-
-                    showToast(
-                        "Konu oluşturulurken bir hata oluştu.",
-                        "error"
-                    );
-
-                } finally {
-
-                    submitButton.disabled =
-                        false;
-
-                    submitButton.innerHTML =
-                        `
-                        <i class="fa-solid fa-paper-plane"></i>
-                        Konuyu Yayınla
-                        `;
-
-                }
-
-            }
-        );
-
-
-        /* =========================================================
-           19. FIRESTORE'DAN KONULARI OKU
-
-           topics koleksiyonundaki son 20 konu alınır.
-
-           onSnapshot kullanıldığı için:
-           - Sayfa açıldığında veriler gelir.
-           - Yeni konu eklendiğinde liste otomatik güncellenir.
-           - Firestore değişiklikleri gerçek zamanlı yansır.
-        ========================================================== */
-
-        const topicsQuery =
-            query(
-                collection(
-                    db,
-                    "topics"
-                ),
-                orderBy(
-                    "createdAt",
-                    "desc"
-                ),
-                limit(20)
-            );
-
-
-        onSnapshot(
-            topicsQuery,
-            snapshot => {
-
-                topicsContainer.innerHTML =
-                    "";
-
-
-                /*
-                 * Hiç konu yoksa.
-                 */
-
-                if (snapshot.empty) {
-
-                    topicsContainer.innerHTML =
-                        `
-                        <div class="topics-empty">
-                            <i class="fa-regular fa-comments"></i>
-                            <br><br>
-                            Henüz hiç konu açılmamış.
-                            <br>
-                            İlk konuyu sen açabilirsin!
-                        </div>
-                        `;
-
-                    return;
-                }
-
-
-                /*
-                 * Firestore dokümanlarını HTML'e çevir.
-                 */
-
-                snapshot.forEach(
-                    docSnapshot => {
-
-                        const topic =
-                            docSnapshot.data();
-
-                        const card =
-                            createTopicCard(
-                                topic,
-                                docSnapshot.id
-                            );
-
-                        topicsContainer.appendChild(
-                            card
-                        );
-
-                    }
-                );
-
-            },
-            error => {
-
-                console.error(
-                    "Konular okunamadı:",
-                    error
-                );
-
-                topicsContainer.innerHTML =
-                    `
-                    <div class="topics-error">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <br><br>
-                        Konular yüklenirken bir hata oluştu.
-                        <br>
-                        <small>
-                            Firestore Security Rules veya bağlantı ayarlarını kontrol edin.
-                        </small>
-                    </div>
-                    `;
-
-            }
-        );
-
-
-        /* =========================================================
-           20. KONU KARTI OLUŞTUR
-        ========================================================== */
-
-        function createTopicCard(
-            topic,
-            topicId
-        ) {
-
-            const article =
-                document.createElement(
-                    "article"
-                );
-
-            article.className =
-                "topic-card";
-
-
-            const username =
-                topic.username ||
-                topic.userEmail ||
-                "Anonim";
-
-
-            const title =
-                topic.title ||
-                "Başlıksız konu";
-
-
-            const category =
-                topic.category ||
-                "Genel";
-
-
-            const replies =
-                Number(
-                    topic.replies || 0
-                );
-
-
-            const timeText =
-                formatFirestoreDate(
-                    topic.createdAt
-                );
-
-
-            article.innerHTML =
-                `
-                <div class="topic-avatar">
-                    <i class="fa-regular fa-user"></i>
-                </div>
-
-                <div class="topic-main">
-
-                    <a
-                        href="#"
-                        class="topic-title"
-                        data-topic-id="${escapeHTML(topicId)}"
-                    >
-                        ${escapeHTML(title)}
-                    </a>
-
-                    <div class="topic-meta">
-
-                        <span>
-                            ${escapeHTML(username)}
-                        </span>
-
-                        <span>•</span>
-
-                        <span>
-                            ${escapeHTML(timeText)}
-                        </span>
-
-                        <span class="topic-category">
-                            ${escapeHTML(category)}
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="topic-stats">
-
-                    <span class="topic-replies">
-                        ${replies}
-                    </span>
-
-                    <span class="topic-replies-label">
-                        cevap
-                    </span>
-
-                </div>
-                `;
-
-
-            /*
-             * Şimdilik konu detay sayfası olmadığı için
-             * başlığa tıklayınca bilgi veriyoruz.
-             *
-             * İleride topic.html?id=... yapabiliriz.
-             */
-
-            const titleLink =
-                article.querySelector(
-                    ".topic-title"
-                );
-
-            titleLink.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    showToast(
-                        "Konu detay sayfasını bir sonraki aşamada ekleyebiliriz."
-                    );
-
-                }
-            );
-
-
-            return article;
-        }
-
-
-        /* =========================================================
-           21. FIRESTORE TIMESTAMP → OKUNABİLİR TARİH
-        ========================================================== */
-
-        function formatFirestoreDate(
-            timestamp
-        ) {
-
-            if (!timestamp) {
-
-                return "Az önce";
-            }
-
-
-            try {
-
-                const date =
-                    timestamp.toDate();
-
-                const now =
-                    new Date();
-
-                const diff =
-                    now.getTime() -
-                    date.getTime();
-
-                const seconds =
-                    Math.floor(
-                        diff / 1000
-                    );
-
-                if (
-                    seconds < 60
-                ) {
-
-                    return "Az önce";
-                }
-
-
-                const minutes =
-                    Math.floor(
-                        seconds / 60
-                    );
-
-                if (
-                    minutes < 60
-                ) {
-
-                    return (
-                        minutes +
-                        " dk önce"
-                    );
-                }
-
-
-                const hours =
-                    Math.floor(
-                        minutes / 60
-                    );
-
-                if (
-                    hours < 24
-                ) {
-
-                    return (
-                        hours +
-                        " saat önce"
-                    );
-                }
-
-
-                const days =
-                    Math.floor(
-                        hours / 24
-                    );
-
-                if (
-                    days < 7
-                ) {
-
-                    return (
-                        days +
-                        " gün önce"
-                    );
-                }
-
-
-                return date.toLocaleDateString(
-                    "tr-TR",
-                    {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric"
-                    }
-                );
-
-            } catch (error) {
-
-                return "Yeni";
-            }
-        }
-
-
-        /* =========================================================
-           22. HTML GÜVENLİĞİ
-
-           Firestore'dan gelen kullanıcı verilerini
-           innerHTML'e koymadan önce escape ediyoruz.
-
-           Böylece kullanıcı başlığına HTML/JS kodu
-           yazsa bile doğrudan çalıştırılmaz.
-        ========================================================== */
-
-        function escapeHTML(value) {
-
-            return String(value)
-                .replace(
-                    /&/g,
-                    "&amp;"
-                )
-                .replace(
-                    /</g,
-                    "&lt;"
-                )
-                .replace(
-                    />/g,
-                    "&gt;"
-                )
-                .replace(
-                    /"/g,
-                    "&quot;"
-                )
-                .replace(
-                    /'/g,
-                    "&#039;"
-                );
-        }
-
-
-        /* =========================================================
-           23. KATEGORİ KARTLARI
+           KATEGORİ KARTLARI
         ========================================================== */
 
         document
             .querySelectorAll("[data-category]")
             .forEach(card => {
 
-                card.addEventListener(
-                    "click",
-                    event => {
+                card.addEventListener("click", event => {
 
-                        event.preventDefault();
+                    event.preventDefault();
 
-                        const category =
-                            card.dataset.category;
+                    const category =
+                        card.dataset.category;
 
-                        showToast(
-                            category +
-                            " kategorisine yönlendiriliyorsunuz."
-                        );
+                    showToast(
+                        category +
+                        " kategorisine yönlendiriliyorsunuz."
+                    );
 
-                    }
-                );
+                });
 
             });
 
 
         /* =========================================================
-           24. DUNE: IMPERIUM
+           DUNE: IMPERIUM
         ========================================================== */
 
         const weeklyGame =
@@ -4493,155 +3441,136 @@
                 "weeklyGameCard"
             );
 
-        weeklyGame.addEventListener(
-            "click",
-            event => {
+        weeklyGame.addEventListener("click", event => {
 
-                if (
-                    event.target.closest(
-                        "#reviewLink"
-                    )
-                ) {
+            if (
+                event.target.closest("#reviewLink")
+            ) {
+                event.preventDefault();
+            }
 
-                    event.preventDefault();
-                }
+            showToast(
+                "Dune: Imperium inceleme sayfası açılacak."
+            );
+
+        });
+
+        weeklyGame.addEventListener("keydown", event => {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
 
                 showToast(
                     "Dune: Imperium inceleme sayfası açılacak."
                 );
 
             }
-        );
 
-        weeklyGame.addEventListener(
-            "keydown",
-            event => {
-
-                if (
-                    event.key === "Enter" ||
-                    event.key === " "
-                ) {
-
-                    event.preventDefault();
-
-                    showToast(
-                        "Dune: Imperium inceleme sayfası açılacak."
-                    );
-
-                }
-
-            }
-        );
+        });
 
 
         /* =========================================================
-           25. POPÜLER ETİKETLER
+           POPÜLER ETİKETLER
         ========================================================== */
 
         document
             .querySelectorAll("[data-tag]")
             .forEach(tag => {
 
-                tag.addEventListener(
-                    "click",
-                    event => {
+                tag.addEventListener("click", event => {
 
-                        event.preventDefault();
+                    event.preventDefault();
 
-                        showToast(
-                            tag.dataset.tag +
-                            " etiketi filtreleniyor."
-                        );
+                    showToast(
+                        tag.dataset.tag +
+                        " etiketi filtreleniyor."
+                    );
 
-                    }
-                );
+                });
 
             });
 
 
         /* =========================================================
-           26. GENEL DATA-ACTION LINKLERİ
+           GENEL DATA-ACTION LINKLERİ
         ========================================================== */
 
         document
             .querySelectorAll("[data-action]")
             .forEach(link => {
 
-                link.addEventListener(
-                    "click",
-                    event => {
+                link.addEventListener("click", event => {
 
-                        event.preventDefault();
+                    event.preventDefault();
 
-                        const action =
-                            link.dataset.action;
+                    const action =
+                        link.dataset.action;
 
-                        const messages = {
+                    const messages = {
 
-                            home:
-                                "Ana sayfaya dönüyorsunuz.",
+                        home:
+                            "Ana sayfaya dönüyorsunuz.",
 
-                            categories:
-                                "Kategoriler açılacak.",
+                        categories:
+                            "Kategoriler açılacak.",
 
-                            "all-categories":
-                                "Tüm kategoriler açılacak.",
+                        "all-categories":
+                            "Tüm kategoriler açılacak.",
 
-                            popular:
-                                "Popüler başlıklar açılacak.",
+                        popular:
+                            "Popüler başlıklar açılacak.",
 
-                            reviews:
-                                "İncelemeler açılacak.",
+                        reviews:
+                            "İncelemeler açılacak.",
 
-                            events:
-                                "Etkinlikler açılacak.",
+                        events:
+                            "Etkinlikler açılacak.",
 
-                            "all-topics":
-                                "Tüm başlıklar açılacak.",
+                        "all-topics":
+                            "Tüm başlıklar açılacak.",
 
-                            members:
-                                "Topluluk üyeleri açılacak.",
+                        members:
+                            "Topluluk üyeleri açılacak.",
 
-                            rules:
-                                "Topluluk kuralları açılacak.",
+                        rules:
+                            "Topluluk kuralları açılacak.",
 
-                            moderators:
-                                "Moderatörler açılacak.",
+                        moderators:
+                            "Moderatörler açılacak.",
 
-                            help:
-                                "Yardım merkezi açılacak.",
+                        help:
+                            "Yardım merkezi açılacak.",
 
-                            about:
-                                "Hakkımızda sayfası açılacak.",
+                        about:
+                            "Hakkımızda sayfası açılacak.",
 
-                            contact:
-                                "İletişim sayfası açılacak.",
+                        contact:
+                            "İletişim sayfası açılacak.",
 
-                            privacy:
-                                "Gizlilik sayfası açılacak.",
+                        privacy:
+                            "Gizlilik sayfası açılacak.",
 
-                            terms:
-                                "Kullanım koşulları açılacak."
+                        terms:
+                            "Kullanım koşulları açılacak."
 
-                        };
+                    };
 
-                        showToast(
-                            messages[action] ||
-                            "Sayfa açılacak."
-                        );
+                    showToast(
+                        messages[action] ||
+                        "Sayfa açılacak."
+                    );
 
-                    }
-                );
+                });
 
             });
 
 
         /* =========================================================
-           27. ARAMA
-
-           Şimdilik mevcut davranışı korunuyor.
-           İleride Firestore üzerinde gerçek arama
-           sistemi ekleyebiliriz.
+           ARAMA
         ========================================================== */
 
         const searchInput =
@@ -4653,15 +3582,12 @@
             "keydown",
             event => {
 
-                if (
-                    event.key !== "Enter"
-                )
-                    return;
+                if (event.key !== "Enter") return;
 
-                const queryText =
+                const query =
                     searchInput.value.trim();
 
-                if (!queryText) {
+                if (!query) {
 
                     showToast(
                         "Aramak için bir kelime yazın."
@@ -4672,8 +3598,8 @@
 
                 showToast(
                     '"' +
-                    queryText +
-                    '" için arama özelliğini bir sonraki aşamada bağlayabiliriz.'
+                    query +
+                    '" için arama yapılıyor.'
                 );
 
             }
@@ -4681,7 +3607,7 @@
 
 
         /* =========================================================
-           28. MOBİL MENÜ
+           MOBİL MENÜ
         ========================================================== */
 
         const mobileMenuBtn =
@@ -4694,52 +3620,32 @@
             () => {
 
                 const nav =
-                    document.querySelector(
-                        "nav"
-                    );
+                    document.querySelector("nav");
 
                 const isVisible =
-                    nav.style.display ===
-                    "flex";
-
+                    nav.style.display === "flex";
 
                 nav.style.display =
-                    isVisible
-                        ? "none"
-                        : "flex";
-
+                    isVisible ? "none" : "flex";
 
                 if (!isVisible) {
 
-                    nav.style.position =
-                        "absolute";
+                    nav.style.position = "absolute";
+                    nav.style.top = "65px";
+                    nav.style.left = "12px";
+                    nav.style.right = "12px";
 
-                    nav.style.top =
-                        "65px";
+                    nav.style.padding = "10px";
 
-                    nav.style.left =
-                        "12px";
+                    nav.style.flexDirection = "column";
+                    nav.style.alignItems = "stretch";
 
-                    nav.style.right =
-                        "12px";
-
-                    nav.style.padding =
-                        "10px";
-
-                    nav.style.flexDirection =
-                        "column";
-
-                    nav.style.alignItems =
-                        "stretch";
-
-                    nav.style.background =
-                        "#1d1a18";
+                    nav.style.background = "#1d1a18";
 
                     nav.style.border =
                         "1px solid rgba(255,255,255,0.08)";
 
-                    nav.style.borderRadius =
-                        "12px";
+                    nav.style.borderRadius = "12px";
 
                     nav.style.boxShadow =
                         "0 20px 50px rgba(0,0,0,.4)";
@@ -4750,132 +3656,511 @@
 
 
         /* =========================================================
-           29. MOBİL NAV LINKİNE TIKLANINCA MENÜ KAPAT
+           MOBİLDE NAV LINKİNE TIKLANINCA MENÜYÜ KAPAT
         ========================================================== */
 
         document
             .querySelectorAll("nav a")
             .forEach(link => {
 
-                link.addEventListener(
-                    "click",
-                    () => {
+                link.addEventListener("click", () => {
 
-                        if (
-                            window.innerWidth <=
-                            1100
-                        ) {
+                    if (window.innerWidth <= 1100) {
 
-                            document.querySelector(
-                                "nav"
-                            ).style.display =
-                                "none";
-
-                        }
+                        document.querySelector(
+                            "nav"
+                        ).style.display = "none";
 
                     }
-                );
+
+                });
 
             });
 
 
         /* =========================================================
-           30. PENCERE BOYUTU
+           PLACEHOLDER KONU KARTLARI
+           Gelecekte backend/API ile gerçek veriler burada
+           render edilebilir.
         ========================================================== */
 
-        window.addEventListener(
-            "resize",
-            () => {
+        const topicTemplate = {
+            user: "",
+            title: "",
+            category: "",
+            replies: 0,
+            lastActivity: ""
+        };
 
-                if (
-                    window.innerWidth > 1100
-                ) {
+        /*
+            Örnek veri yapısı:
 
-                    const nav =
-                        document.querySelector(
-                            "nav"
-                        );
-
-                    nav.style = "";
-
+            const topics = [
+                {
+                    user: "MeepleKralı",
+                    title: "Yeni oyun önerisi",
+                    category: "Eurogame",
+                    replies: 12,
+                    lastActivity: "5 dk önce"
                 }
+            ];
 
-            }
-        );
+            Backend bağlantısı yapıldığında
+            .topics içerisine bu veriler render edilebilir.
+        */
 
 
         /* =========================================================
-           FIREBASE HAZIR
+           PENCERE BOYUTU DEĞİŞİNCE MOBİL MENÜ RESET
         ========================================================== */
 
-        console.log(
-            "MeepleForum Firebase sistemi hazır."
-        );
+        window.addEventListener("resize", () => {
+
+            if (window.innerWidth > 1100) {
+
+                const nav =
+                    document.querySelector("nav");
+
+                nav.style = "";
+
+            }
+
+        });
+
+
+        /* =========================================================
+           FIREBASE MODÜLÜ İÇİN GÜVENLİ UI KÖPRÜSÜ
+        ========================================================== */
+
+        window.meepleForumUI = {
+            openModal,
+            closeModal,
+            showToast
+        };
 
     </script>
 
-<!-- Mevcut sayfa içeriğin burada -->
+
+    <!-- =========================================================
+         FIREBASE AUTHENTICATION
+
+         UI kodundan ayrı tutulduğu için Firebase bağlantısında bir
+         sorun olsa bile giriş/kayıt pencereleri açılmaya devam eder.
+    ========================================================== -->
+
+    <script type="module">
+
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
+        import {
+            getAuth,
+            GoogleAuthProvider,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signInWithPopup,
+            signOut,
+            onAuthStateChanged,
+            setPersistence,
+            browserLocalPersistence,
+            browserSessionPersistence,
+            sendPasswordResetEmail,
+            updateProfile
+        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
 
-<!-- FIREBASE -->
-<script type="module">
-
-    // Firebase
-    import { initializeApp } from
-    "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-
-    import {
-        getAuth,
-        GoogleAuthProvider,
-        signInWithPopup,
-        signInWithEmailAndPassword,
-        createUserWithEmailAndPassword,
-        signOut,
-        onAuthStateChanged
-    } from
-    "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-
-    import {
-        getFirestore,
-        collection,
-        addDoc,
-        getDocs,
-        query,
-        orderBy,
-        serverTimestamp
-    } from
-    "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvYVvoeG8Dw99DOJeVKgkcaRBxezCRVso",
+            authDomain: "meepleforum.firebaseapp.com",
+            projectId: "meepleforum",
+            storageBucket: "meepleforum.firebasestorage.app",
+            messagingSenderId: "398143304572",
+            appId: "1:398143304572:web:cf6830dbfa22e4ed6c2af9",
+            measurementId: "G-RSP81XMB1V"
+        };
 
 
-    // Firebase Console'daki bilgiler
-    const firebaseConfig = {
-        apiKey: "SENIN_API_KEY",
-        authDomain: "meepleforum.firebaseapp.com",
-        projectId: "meepleforum",
-        storageBucket: "meepleforum.firebasestorage.app",
-        messagingSenderId: "398143304572",
-        appId: "SENIN_APP_ID"
-    };
+        const {
+            closeModal,
+            showToast
+        } = window.meepleForumUI;
 
 
-    // Firebase'i başlat
-    const app = initializeApp(firebaseConfig);
+        const loginForm = document.getElementById("loginForm");
+        const registerForm = document.getElementById("registerForm");
 
-    // Authentication
-    const auth = getAuth(app);
+        const loginSubmit = document.getElementById("loginSubmit");
+        const registerSubmit = document.getElementById("registerSubmit");
 
-    // Firestore
-    const db = getFirestore(app);
+        const googleLoginBtn = document.getElementById("googleLoginBtn");
+        const googleRegisterBtn = document.getElementById("googleRegisterBtn");
+
+        const loginMessage = document.getElementById("loginMessage");
+        const registerMessage = document.getElementById("registerMessage");
+
+        const forgotPasswordBtn =
+            document.getElementById("forgotPasswordBtn");
+
+        const guestArea = document.getElementById("guestArea");
+        const userArea = document.getElementById("userArea");
+        const userName = document.getElementById("userName");
+        const logoutBtn = document.getElementById("logoutBtn");
 
 
-    // Google giriş sağlayıcısı
-    const googleProvider = new GoogleAuthProvider();
+        function setButtonBusy(button, isBusy, busyText, normalText) {
 
-</script>
+            button.disabled = isBusy;
+
+            button.innerHTML = isBusy
+                ? `<i class="fa-solid fa-spinner fa-spin"></i> ${busyText}`
+                : normalText;
+        }
+
+
+        function setFormMessage(element, message = "") {
+            element.textContent = message;
+        }
+
+
+        function getAuthErrorMessage(error) {
+
+            const messages = {
+                "auth/email-already-in-use":
+                    "Bu e-posta adresiyle daha önce hesap oluşturulmuş.",
+
+                "auth/invalid-email":
+                    "Geçerli bir e-posta adresi gir.",
+
+                "auth/weak-password":
+                    "Şifren en az 8 karakter olmalı.",
+
+                "auth/invalid-credential":
+                    "E-posta adresi veya şifre hatalı.",
+
+                "auth/user-disabled":
+                    "Bu hesap devre dışı bırakılmış.",
+
+                "auth/too-many-requests":
+                    "Çok fazla deneme yapıldı. Biraz bekleyip tekrar dene.",
+
+                "auth/network-request-failed":
+                    "Bağlantı kurulamadı. İnternet bağlantını kontrol et.",
+
+                "auth/popup-closed-by-user":
+                    "Google giriş penceresi tamamlanmadan kapatıldı.",
+
+                "auth/popup-blocked":
+                    "Tarayıcı Google giriş penceresini engelledi. Açılır pencerelere izin ver.",
+
+                "auth/cancelled-popup-request":
+                    "Google giriş işlemi iptal edildi.",
+
+                "auth/unauthorized-domain":
+                    "Bu site adresi Firebase Authorized domains listesinde değil.",
+
+                "auth/operation-not-allowed":
+                    "Bu giriş yöntemi Firebase Authentication içinde henüz etkinleştirilmemiş.",
+
+                "auth/account-exists-with-different-credential":
+                    "Bu e-posta başka bir giriş yöntemiyle kayıtlı. Önce o yöntemle giriş yap."
+            };
+
+            return messages[error.code] ||
+                "Giriş işlemi tamamlanamadı. Lütfen tekrar dene.";
+        }
+
+
+        try {
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+
+            auth.useDeviceLanguage();
+
+            const googleProvider = new GoogleAuthProvider();
+
+            googleProvider.setCustomParameters({
+                prompt: "select_account"
+            });
+
+
+            loginForm.addEventListener("submit", async event => {
+
+                event.preventDefault();
+                setFormMessage(loginMessage);
+
+                const email =
+                    document.getElementById("loginEmail").value.trim();
+
+                const password =
+                    document.getElementById("loginPassword").value;
+
+                const rememberMe =
+                    document.getElementById("rememberMe").checked;
+
+                setButtonBusy(
+                    loginSubmit,
+                    true,
+                    "Giriş yapılıyor...",
+                    "Giriş Yap"
+                );
+
+                try {
+
+                    await setPersistence(
+                        auth,
+                        rememberMe
+                            ? browserLocalPersistence
+                            : browserSessionPersistence
+                    );
+
+                    await signInWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
+                    );
+
+                    closeModal(document.getElementById("loginModal"));
+                    loginForm.reset();
+
+                    showToast("Başarıyla giriş yaptın. Hoş geldin!");
+
+                } catch (error) {
+
+                    console.error("Giriş hatası:", error);
+                    setFormMessage(loginMessage, getAuthErrorMessage(error));
+
+                } finally {
+
+                    setButtonBusy(
+                        loginSubmit,
+                        false,
+                        "",
+                        "Giriş Yap"
+                    );
+                }
+            });
+
+
+            registerForm.addEventListener("submit", async event => {
+
+                event.preventDefault();
+                setFormMessage(registerMessage);
+
+                const username =
+                    document.getElementById("registerUsername").value.trim();
+
+                const email =
+                    document.getElementById("registerEmail").value.trim();
+
+                const password =
+                    document.getElementById("registerPassword").value;
+
+                if (username.length < 3) {
+                    setFormMessage(
+                        registerMessage,
+                        "Kullanıcı adı en az 3 karakter olmalı."
+                    );
+                    return;
+                }
+
+                setButtonBusy(
+                    registerSubmit,
+                    true,
+                    "Hesap oluşturuluyor...",
+                    "Hesap Oluştur"
+                );
+
+                try {
+
+                    await setPersistence(auth, browserLocalPersistence);
+
+                    const userCredential =
+                        await createUserWithEmailAndPassword(
+                            auth,
+                            email,
+                            password
+                        );
+
+                    await updateProfile(userCredential.user, {
+                        displayName: username
+                    });
+
+                    closeModal(document.getElementById("registerModal"));
+                    registerForm.reset();
+
+                    showToast("Hesabın oluşturuldu. MeepleForum'a hoş geldin!");
+
+                } catch (error) {
+
+                    console.error("Kayıt hatası:", error);
+                    setFormMessage(registerMessage, getAuthErrorMessage(error));
+
+                } finally {
+
+                    setButtonBusy(
+                        registerSubmit,
+                        false,
+                        "",
+                        "Hesap Oluştur"
+                    );
+                }
+            });
+
+
+            async function signInWithGoogle(source) {
+
+                const isLogin = source === "login";
+
+                const button = isLogin
+                    ? googleLoginBtn
+                    : googleRegisterBtn;
+
+                const message = isLogin
+                    ? loginMessage
+                    : registerMessage;
+
+                const normalText = isLogin
+                    ? '<i class="fa-brands fa-google"></i> Google ile Giriş Yap'
+                    : '<i class="fa-brands fa-google"></i> Google ile Kayıt Ol';
+
+                setFormMessage(message);
+
+                setButtonBusy(
+                    button,
+                    true,
+                    "Google açılıyor...",
+                    normalText
+                );
+
+                try {
+
+                    const rememberMe =
+                        document.getElementById("rememberMe").checked;
+
+                    await setPersistence(
+                        auth,
+                        isLogin && !rememberMe
+                            ? browserSessionPersistence
+                            : browserLocalPersistence
+                    );
+
+                    await signInWithPopup(auth, googleProvider);
+
+                    closeModal(
+                        document.getElementById(
+                            isLogin ? "loginModal" : "registerModal"
+                        )
+                    );
+
+                    showToast("Google hesabınla giriş yaptın. Hoş geldin!");
+
+                } catch (error) {
+
+                    console.error("Google giriş hatası:", error);
+                    setFormMessage(message, getAuthErrorMessage(error));
+
+                } finally {
+
+                    setButtonBusy(
+                        button,
+                        false,
+                        "",
+                        normalText
+                    );
+                }
+            }
+
+
+            googleLoginBtn.addEventListener("click", () => {
+                signInWithGoogle("login");
+            });
+
+            googleRegisterBtn.addEventListener("click", () => {
+                signInWithGoogle("register");
+            });
+
+
+            forgotPasswordBtn.addEventListener("click", async event => {
+
+                event.preventDefault();
+                setFormMessage(loginMessage);
+
+                const email =
+                    document.getElementById("loginEmail").value.trim();
+
+                if (!email) {
+                    setFormMessage(
+                        loginMessage,
+                        "Şifre sıfırlamak için önce e-posta adresini yaz."
+                    );
+                    return;
+                }
+
+                try {
+
+                    await sendPasswordResetEmail(auth, email);
+
+                    showToast(
+                        "Şifre sıfırlama bağlantısı e-posta adresine gönderildi."
+                    );
+
+                } catch (error) {
+
+                    console.error("Şifre sıfırlama hatası:", error);
+                    setFormMessage(loginMessage, getAuthErrorMessage(error));
+                }
+            });
+
+
+            logoutBtn.addEventListener("click", async () => {
+
+                try {
+
+                    await signOut(auth);
+                    showToast("Başarıyla çıkış yaptın.");
+
+                } catch (error) {
+
+                    console.error("Çıkış hatası:", error);
+                    showToast("Çıkış yapılamadı. Lütfen tekrar dene.", "error");
+                }
+            });
+
+
+            onAuthStateChanged(auth, user => {
+
+                window.meepleForumAuthUser = user || null;
+
+                if (user) {
+
+                    guestArea.style.display = "none";
+                    userArea.style.display = "flex";
+
+                    userName.textContent =
+                        user.displayName || user.email || "Kullanıcı";
+
+                } else {
+
+                    guestArea.style.display = "flex";
+                    userArea.style.display = "none";
+                    userName.textContent = "Kullanıcı";
+                }
+            });
+
+        } catch (error) {
+
+            console.error("Firebase başlatılamadı:", error);
+
+            const setupMessage =
+                "Giriş sistemi şu anda başlatılamadı. Firebase ayarlarını kontrol et.";
+
+            setFormMessage(loginMessage, setupMessage);
+            setFormMessage(registerMessage, setupMessage);
+        }
+
+    </script>
 
 </body>
 </html>
-
-</body>
-</html>
-```
