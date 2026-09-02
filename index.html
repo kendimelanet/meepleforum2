@@ -413,6 +413,19 @@
             white-space: nowrap;
         }
 
+        .user-upvote-badge {
+            display: inline-flex !important;
+            align-items: center;
+            gap: 3px;
+            flex: 0 0 auto;
+            padding: 2px 5px;
+            border-radius: 999px;
+            background: rgba(210,167,92,.12);
+            color: var(--gold-light);
+            font-size: 10px;
+            font-weight: 800;
+        }
+
         .header-avatar {
             width: 22px;
             height: 22px;
@@ -945,6 +958,19 @@
 
             color: var(--text-muted);
             font-size: 10px;
+        }
+
+        .author-link {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--gold-light);
+            font: inherit;
+            font-weight: 700;
+        }
+
+        .author-link:hover {
+            text-decoration: underline;
         }
 
         .topic-category {
@@ -2159,6 +2185,192 @@
             color: var(--text-muted);
         }
 
+        .owner-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+
+        .profile-page {
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 120px minmax(0,1fr);
+            gap: 24px;
+            padding: 26px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+        }
+
+        .profile-page-avatar {
+            width: 108px;
+            height: 108px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border: 1px solid var(--border-strong);
+            border-radius: 50%;
+            background: linear-gradient(145deg, #3a3531, #272320);
+            color: var(--gold);
+            font-size: 36px;
+            font-weight: 800;
+        }
+
+        .profile-page-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-page h2 {
+            margin-bottom: 7px;
+            font-family: "Playfair Display", serif;
+            font-size: 28px;
+        }
+
+        .profile-page-bio {
+            margin: 15px 0;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .profile-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .profile-stat {
+            min-width: 120px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .profile-stat strong,
+        .profile-stat span {
+            display: block;
+        }
+
+        .profile-stat strong {
+            color: var(--gold-light);
+            font-size: 20px;
+        }
+
+        .profile-stat span {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .giveaway-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 14px;
+        }
+
+        .giveaway-card {
+            padding: 20px;
+            border: 1px solid rgba(210,167,92,.22);
+            border-radius: var(--radius-md);
+            background: linear-gradient(145deg, rgba(113,52,56,.18), var(--bg-card));
+        }
+
+        .giveaway-label {
+            display: inline-flex;
+            margin-bottom: 12px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(210,167,92,.12);
+            color: var(--gold-light);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .giveaway-card h3 {
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .giveaway-card p {
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        .giveaway-form {
+            max-width: 700px;
+            display: grid;
+            gap: 12px;
+            margin-bottom: 22px;
+            padding: 20px;
+            border: 1px solid rgba(210,167,92,.25);
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+        }
+
+        .chat-shell {
+            max-width: 900px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: var(--bg-card);
+        }
+
+        .chat-messages {
+            height: min(58vh, 520px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            padding: 18px;
+        }
+
+        .chat-message {
+            max-width: 78%;
+            align-self: flex-start;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px 12px 12px 3px;
+            background: #25211e;
+        }
+
+        .chat-message.own {
+            align-self: flex-end;
+            border-color: rgba(210,167,92,.25);
+            border-radius: 12px 12px 3px 12px;
+            background: rgba(210,167,92,.09);
+        }
+
+        .chat-message-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .chat-message p {
+            white-space: pre-wrap;
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 9px;
+            padding: 14px;
+            border-top: 1px solid var(--border);
+            background: #181513;
+        }
+
+        .chat-form input {
+            flex: 1;
+        }
+
         .modal-footer {
             margin-top: 17px;
 
@@ -2331,6 +2543,22 @@
 
             .user-chip {
                 max-width: 120px;
+            }
+
+            .user-upvote-badge {
+                display: none !important;
+            }
+
+            .profile-page {
+                grid-template-columns: 1fr;
+            }
+
+            .giveaway-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-message {
+                max-width: 92%;
             }
 
             .hero {
@@ -2533,6 +2761,14 @@
                     Etkinlikler
                 </a>
 
+                <a href="#" data-action="chat">
+                    Sohbet
+                </a>
+
+                <a href="#" data-action="giveaways">
+                    Çekilişler
+                </a>
+
             </nav>
 
 
@@ -2594,6 +2830,10 @@
                             ></i>
                         </span>
                         <span id="userName">Kullanıcı</span>
+                        <span class="user-upvote-badge" id="userUpvoteBadge" title="Toplam alınan upvote">
+                            <i class="fa-solid fa-arrow-up"></i>
+                            <span>0</span>
+                        </span>
                     </button>
 
                     <button
@@ -4411,6 +4651,8 @@
                         popular: "popular",
                         reviews: "reviews",
                         events: "events",
+                        chat: "chat",
+                        giveaways: "giveaways",
                         "all-topics": "topics"
                     };
 
@@ -4683,6 +4925,8 @@
             remove,
             onValue,
             onDisconnect,
+            query as databaseQuery,
+            limitToLast,
             serverTimestamp as databaseServerTimestamp
         } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
 
@@ -4724,6 +4968,7 @@
         const guestArea = document.getElementById("guestArea");
         const userArea = document.getElementById("userArea");
         const userName = document.getElementById("userName");
+        const userUpvoteBadge = document.getElementById("userUpvoteBadge");
         const profileBtn = document.getElementById("profileBtn");
         const adminBtn = document.getElementById("adminBtn");
         const logoutBtn = document.getElementById("logoutBtn");
@@ -4802,6 +5047,9 @@
         let cachedTopics = [];
         let cachedComments = [];
         let cachedVotes = [];
+        let cachedPublicProfiles = [];
+        let cachedGiveaways = [];
+        let cachedChatMessages = [];
         let isCurrentUserAdmin = false;
         let pendingPhotoFile = null;
         let pendingPhotoPromise = null;
@@ -4896,6 +5144,7 @@
                         const excerpt = String(topic.content || "").slice(0, 145);
                         const replyCount = getTargetComments("topic", topic.id).length;
                         const voteCount = getTargetVotes("topic", topic.id).length;
+                        const authorUpvotes = getUserUpvoteCount(topic.authorId);
 
                         return `
                             <article class="topic-card">
@@ -4913,9 +5162,17 @@
                                         ${escapeHTML(topic.title || "Başlıksız konu")}
                                     </button>
                                     <div class="topic-meta">
-                                        <span>${escapeHTML(authorName)}</span>
+                                        ${topic.authorId ? `
+                                            <button
+                                                class="author-link"
+                                                type="button"
+                                                data-profile-open="${escapeHTML(topic.authorId)}"
+                                            >${escapeHTML(authorName)}</button>
+                                        ` : `<span>${escapeHTML(authorName)}</span>`}
                                         <span>•</span>
                                         <span>${escapeHTML(formatTopicDate(topic.createdAt))}</span>
+                                        <span>•</span>
+                                        <span><i class="fa-solid fa-arrow-up"></i> ${authorUpvotes}</span>
                                         <span class="topic-category">
                                             ${escapeHTML(topic.category || "Genel")}
                                         </span>
@@ -4943,6 +5200,50 @@
         }
 
 
+        function getUserUpvoteCount(userId) {
+
+            if (!userId) return 0;
+
+            const userTopicIds = new Set(
+                cachedTopics
+                    .filter(topic => topic.authorId === userId)
+                    .map(topic => topic.id)
+            );
+
+            return cachedVotes.filter(vote =>
+                vote.targetType === "topic" && userTopicIds.has(vote.targetId)
+            ).length;
+        }
+
+
+        function renderCurrentUserUpvotes() {
+
+            const currentUser = window.meepleForumAuthUser;
+            const count = currentUser ? getUserUpvoteCount(currentUser.uid) : 0;
+            const countElement = userUpvoteBadge.querySelector("span");
+
+            if (countElement) {
+                countElement.textContent = count.toLocaleString("tr-TR");
+            }
+
+            userUpvoteBadge.title = `${count} toplam upvote`;
+        }
+
+
+        function profileLinkMarkup(userId, displayName) {
+
+            if (!userId) return `<strong>${escapeHTML(displayName)}</strong>`;
+
+            return `
+                <button
+                    class="author-link"
+                    type="button"
+                    data-profile-open="${escapeHTML(userId)}"
+                >${escapeHTML(displayName)}</button>
+            `;
+        }
+
+
         function getTargetComments(targetType, targetId) {
             return cachedComments
                 .filter(comment =>
@@ -4956,7 +5257,7 @@
         }
 
 
-        function engagementMarkup(targetType, targetId) {
+        function engagementMarkup(targetType, targetId, showVote = true) {
 
             const currentUser = window.meepleForumAuthUser;
             const votes = getTargetVotes(targetType, targetId);
@@ -4967,7 +5268,7 @@
 
             return `
                 <section class="engagement-panel">
-                    <div class="engagement-actions">
+                    ${showVote ? `<div class="engagement-actions">
                         <button
                             class="vote-btn ${hasVoted ? "active" : ""}"
                             type="button"
@@ -4978,7 +5279,7 @@
                             ${hasVoted ? "Oyunu geri al" : "Upvote"}
                             <span>${votes.length}</span>
                         </button>
-                    </div>
+                    </div>` : ""}
 
                     <h2 class="comments-title">Yorumlar (${comments.length})</h2>
 
@@ -4993,7 +5294,10 @@
                                 <article class="comment-card">
                                     <div class="comment-head">
                                         <span>
-                                            <strong>${escapeHTML(comment.authorName || "Meeple Oyuncusu")}</strong>
+                                            ${profileLinkMarkup(
+                                                comment.authorId,
+                                                comment.authorName || "Meeple Oyuncusu"
+                                            )}
                                             · ${escapeHTML(formatTopicDate(comment.createdAt))}
                                         </span>
                                         ${canDelete ? `
@@ -5046,6 +5350,185 @@
         }
 
 
+        function publicProfileMarkup(userId) {
+
+            const profile = cachedPublicProfiles.find(item => item.uid === userId);
+            const userTopics = cachedTopics.filter(topic => topic.authorId === userId);
+            const fallbackTopic = userTopics[0];
+            const displayName =
+                profile?.displayName || fallbackTopic?.authorName || "Meeple Oyuncusu";
+            const photoURL = safeImageURL(
+                profile?.photoURL || fallbackTopic?.authorPhotoURL || ""
+            );
+            const initial = displayName.charAt(0).toLocaleUpperCase("tr-TR") || "M";
+
+            return `
+                <article class="profile-page">
+                    <div class="profile-page-avatar">
+                        ${photoURL
+                            ? `<img src="${escapeHTML(photoURL)}" alt="${escapeHTML(displayName)} profil resmi">`
+                            : escapeHTML(initial)}
+                    </div>
+                    <div>
+                        <h2>${escapeHTML(displayName)}</h2>
+                        ${profile?.favoriteGame ? `
+                            <p><i class="fa-solid fa-dice"></i> Favori oyun: ${escapeHTML(profile.favoriteGame)}</p>
+                        ` : ""}
+                        <p class="profile-page-bio">
+                            ${escapeHTML(profile?.bio || "Bu kullanıcı henüz kendisi hakkında bir bilgi eklememiş.")}
+                        </p>
+                        <div class="profile-stats">
+                            <div class="profile-stat">
+                                <strong>${userTopics.length}</strong>
+                                <span>Açılan başlık</span>
+                            </div>
+                            <div class="profile-stat">
+                                <strong>${getUserUpvoteCount(userId)}</strong>
+                                <span>Toplam upvote</span>
+                            </div>
+                            <div class="profile-stat">
+                                <strong>${cachedComments.filter(comment => comment.authorId === userId).length}</strong>
+                                <span>Yorum</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                <div style="margin-top:22px">
+                    <h2 class="comments-title">Açtığı Başlıklar</h2>
+                    ${topicCardsMarkup(userTopics)}
+                </div>
+            `;
+        }
+
+
+        function giveawaysMarkup() {
+
+            const adminForm = isCurrentUserAdmin ? `
+                <form class="giveaway-form" id="giveawayForm">
+                    <h2>Yeni Çekiliş Aç</h2>
+                    <div class="form-group">
+                        <label for="giveawayTitle">Çekiliş Başlığı</label>
+                        <input
+                            class="form-input"
+                            id="giveawayTitle"
+                            name="title"
+                            maxlength="120"
+                            placeholder="Örn: Eylül Ayı Masaüstü Oyunu Çekilişi"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="giveawayPeriod">Dönem</label>
+                        <select class="form-select" id="giveawayPeriod" name="period" required>
+                            <option value="weekly">Haftalık</option>
+                            <option value="monthly">Aylık</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="giveawayDescription">Açıklama</label>
+                        <textarea
+                            class="form-textarea"
+                            id="giveawayDescription"
+                            name="description"
+                            maxlength="2000"
+                            placeholder="Katılım koşullarını ve kullanıcıların hangi oyunu neden istediklerini yazmalarını belirt..."
+                            required
+                        ></textarea>
+                    </div>
+                    <button class="primary-btn" type="submit">
+                        <i class="fa-solid fa-gift"></i>
+                        Çekilişi Yayınla
+                    </button>
+                </form>
+            ` : "";
+
+            return `
+                ${adminForm}
+                <div class="giveaway-grid">
+                    ${cachedGiveaways.length ? cachedGiveaways.map(giveaway => `
+                        <article class="giveaway-card">
+                            <span class="giveaway-label">
+                                ${giveaway.period === "monthly" ? "Aylık Çekiliş" : "Haftalık Çekiliş"}
+                            </span>
+                            <h3>${escapeHTML(giveaway.title || "MeepleForum Çekilişi")}</h3>
+                            <p>${escapeHTML(String(giveaway.description || "").slice(0, 180))}${String(giveaway.description || "").length > 180 ? "…" : ""}</p>
+                            <button class="primary-btn" type="button" data-giveaway-open="${escapeHTML(giveaway.id)}">
+                                Çekilişi Aç
+                            </button>
+                        </article>
+                    `).join("") : `
+                        <div class="empty-state">
+                            <i class="fa-solid fa-gift"></i>
+                            Henüz aktif bir çekiliş bulunmuyor.
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+
+        function chatMarkup() {
+
+            const currentUser = window.meepleForumAuthUser;
+
+            return `
+                <section class="chat-shell">
+                    <div class="chat-messages" id="chatMessages">
+                        ${cachedChatMessages.length ? cachedChatMessages.map(message => {
+                            const own = currentUser?.uid === message.authorId;
+                            return `
+                                <article class="chat-message ${own ? "own" : ""}">
+                                    <div class="chat-message-head">
+                                        <span>
+                                            ${profileLinkMarkup(
+                                                message.authorId,
+                                                message.authorName || "Meeple Oyuncusu"
+                                            )}
+                                            · ${new Date(Number(message.createdAt || Date.now())).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
+                                        </span>
+                                        ${own ? `
+                                            <button class="danger-btn" type="button" data-delete-chat="${escapeHTML(message.id)}" aria-label="Mesajı sil">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        ` : ""}
+                                    </div>
+                                    <p>${escapeHTML(message.text || "")}</p>
+                                </article>
+                            `;
+                        }).join("") : `
+                            <div class="empty-state">
+                                <i class="fa-regular fa-comments"></i>
+                                Sohbeti başlatan ilk kişi sen olabilirsin.
+                            </div>
+                        `}
+                    </div>
+                    ${currentUser ? `
+                        <form class="chat-form" id="chatForm">
+                            <input
+                                class="form-input"
+                                name="message"
+                                maxlength="500"
+                                autocomplete="off"
+                                placeholder="Mesajını yaz..."
+                                required
+                            >
+                            <button class="primary-btn" type="submit">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                Gönder
+                            </button>
+                        </form>
+                    ` : `
+                        <div class="chat-form">
+                            <button class="primary-btn" type="button" data-login-for-chat>
+                                Sohbete katılmak için giriş yap
+                            </button>
+                        </div>
+                    `}
+                </section>
+            `;
+        }
+
+
         function adminPanelMarkup() {
 
             if (!isCurrentUserAdmin) {
@@ -5066,7 +5549,7 @@
                                 <strong>${escapeHTML(topic.title || "Başlıksız konu")}</strong>
                                 <small>${escapeHTML(topic.authorName || "Bilinmeyen kullanıcı")}</small>
                             </div>
-                            <button class="danger-btn" type="button" data-admin-delete-topic="${escapeHTML(topic.id)}">
+                            <button class="danger-btn" type="button" data-delete-topic="${escapeHTML(topic.id)}">
                                 <i class="fa-solid fa-trash"></i> Gönderiyi Sil
                             </button>
                         </div>
@@ -5084,6 +5567,19 @@
                             </button>
                         </div>
                     `).join("") || '<div class="empty-state">Henüz yorum yok.</div>'}
+
+                    <h2>Çekilişler (${cachedGiveaways.length})</h2>
+                    ${cachedGiveaways.map(giveaway => `
+                        <div class="admin-row">
+                            <div>
+                                <strong>${escapeHTML(giveaway.title || "Adsız çekiliş")}</strong>
+                                <small>${giveaway.period === "monthly" ? "Aylık" : "Haftalık"}</small>
+                            </div>
+                            <button class="danger-btn" type="button" data-delete-giveaway="${escapeHTML(giveaway.id)}">
+                                <i class="fa-solid fa-trash"></i> Çekilişi Sil
+                            </button>
+                        </div>
+                    `).join("") || '<div class="empty-state">Henüz çekiliş yok.</div>'}
                 </div>
             `;
         }
@@ -5189,20 +5685,49 @@
                     setRouteHeader("Forum", "Konu bulunamadı", "Bu konu silinmiş veya henüz yüklenmemiş olabilir.");
                     routeContent.innerHTML = '<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i>Konu bulunamadı.</div>';
                 } else {
+                    const currentUser = window.meepleForumAuthUser;
+                    const canDeleteTopic = Boolean(
+                        currentUser &&
+                        (isCurrentUserAdmin || currentUser.uid === topic.authorId)
+                    );
                     setRouteHeader("Forum Konusu", topic.title, topic.category || "Genel");
                     routeContent.innerHTML = `
                         <article class="topic-detail">
                             <div class="topic-detail-meta">
-                                <span>${escapeHTML(topic.authorName || "Meeple Oyuncusu")}</span>
+                                ${profileLinkMarkup(
+                                    topic.authorId,
+                                    topic.authorName || "Meeple Oyuncusu"
+                                )}
                                 <span>•</span>
                                 <span>${escapeHTML(formatTopicDate(topic.createdAt))}</span>
                                 <span class="topic-category">${escapeHTML(topic.category || "Genel")}</span>
                             </div>
                             <div class="topic-detail-body">${escapeHTML(topic.content || "")}</div>
+                            ${canDeleteTopic ? `
+                                <div class="owner-actions">
+                                    <button class="danger-btn" type="button" data-delete-topic="${escapeHTML(topic.id)}">
+                                        <i class="fa-solid fa-trash"></i>
+                                        Gönderiyi Sil
+                                    </button>
+                                </div>
+                            ` : ""}
                         </article>
                         ${engagementMarkup("topic", topic.id)}
                     `;
                 }
+
+            } else if (rawHash.startsWith("profile=")) {
+                const userId = rawHash.slice("profile=".length);
+                const profile = cachedPublicProfiles.find(item => item.uid === userId);
+                const fallbackTopic = cachedTopics.find(topic => topic.authorId === userId);
+                const displayName =
+                    profile?.displayName || fallbackTopic?.authorName || "Kullanıcı Profili";
+                setRouteHeader(
+                    "Topluluk Üyesi",
+                    displayName,
+                    "Kullanıcının herkese açık profili ve topluluk katkıları."
+                );
+                routeContent.innerHTML = publicProfileMarkup(userId);
 
             } else if (rawHash === "reviews") {
                 setRouteHeader(
@@ -5261,11 +5786,61 @@
                 `;
                 document.querySelector('nav a[data-action="events"]')?.classList.add("active");
 
+            } else if (rawHash === "chat") {
+                setRouteHeader(
+                    "Topluluk Sohbeti",
+                    "Meeple Masası",
+                    "Masaüstü oyunlar hakkında toplulukla gerçek zamanlı sohbet et."
+                );
+                routeContent.innerHTML = chatMarkup();
+                document.querySelector('nav a[data-action="chat"]')?.classList.add("active");
+
+                requestAnimationFrame(() => {
+                    const messages = document.getElementById("chatMessages");
+                    if (messages) messages.scrollTop = messages.scrollHeight;
+                });
+
+            } else if (rawHash === "giveaways") {
+                setRouteHeader(
+                    "Topluluk Ödülleri",
+                    "Çekilişler",
+                    "Haftalık ve aylık çekilişlere katıl; istediğin oyunu ve nedenini yorumlarda paylaş."
+                );
+                routeContent.innerHTML = giveawaysMarkup();
+                document.querySelector('nav a[data-action="giveaways"]')?.classList.add("active");
+
+            } else if (rawHash.startsWith("giveaway=")) {
+                const giveawayId = rawHash.slice("giveaway=".length);
+                const giveaway = cachedGiveaways.find(item => item.id === giveawayId);
+
+                if (!giveaway) {
+                    setRouteHeader("Çekilişler", "Çekiliş bulunamadı", "Bu çekiliş kaldırılmış olabilir.");
+                    routeContent.innerHTML = '<div class="empty-state"><i class="fa-solid fa-gift"></i>Çekiliş bulunamadı.</div>';
+                } else {
+                    setRouteHeader(
+                        giveaway.period === "monthly" ? "Aylık Çekiliş" : "Haftalık Çekiliş",
+                        giveaway.title,
+                        "Katılmak için istediğin oyunu ve nedenini yorum olarak yaz."
+                    );
+                    routeContent.innerHTML = `
+                        <article class="topic-detail">
+                            <div class="topic-detail-meta">
+                                <span>${giveaway.period === "monthly" ? "Aylık" : "Haftalık"}</span>
+                                <span>•</span>
+                                <span>${escapeHTML(formatTopicDate(giveaway.createdAt))}</span>
+                            </div>
+                            <div class="topic-detail-body">${escapeHTML(giveaway.description || "")}</div>
+                        </article>
+                        ${engagementMarkup("giveaway", giveaway.id, false)}
+                    `;
+                }
+                document.querySelector('nav a[data-action="giveaways"]')?.classList.add("active");
+
             } else if (rawHash === "admin") {
                 setRouteHeader(
                     "Moderasyon",
                     "Admin Paneli",
-                    "Başlıkları ve yorumları tek noktadan yönet."
+                    "Başlıkları, yorumları ve çekilişleri tek noktadan yönet."
                 );
                 routeContent.innerHTML = adminPanelMarkup();
 
@@ -5282,6 +5857,8 @@
 
             const topicButton = event.target.closest("[data-topic-open]");
             const categoryLink = event.target.closest("[data-category-route]");
+            const profileLink = event.target.closest("[data-profile-open]");
+            const giveawayButton = event.target.closest("[data-giveaway-open]");
 
             if (topicButton) {
                 window.location.hash =
@@ -5293,13 +5870,28 @@
                 window.location.hash =
                     "category=" + encodeURIComponent(categoryLink.dataset.categoryRoute);
             }
+
+            if (profileLink) {
+                window.location.hash =
+                    "profile=" + encodeURIComponent(profileLink.dataset.profileOpen);
+            }
+
+            if (giveawayButton) {
+                window.location.hash =
+                    "giveaway=" + encodeURIComponent(giveawayButton.dataset.giveawayOpen);
+            }
         });
 
         homeTopics.addEventListener("click", event => {
             const topicButton = event.target.closest("[data-topic-open]");
+            const profileLink = event.target.closest("[data-profile-open]");
             if (topicButton) {
                 window.location.hash =
                     "topic=" + encodeURIComponent(topicButton.dataset.topicOpen);
+            }
+            if (profileLink) {
+                window.location.hash =
+                    "profile=" + encodeURIComponent(profileLink.dataset.profileOpen);
             }
         });
 
@@ -6157,6 +6749,117 @@
 
             routeContent.addEventListener("submit", async event => {
 
+                const giveawayForm = event.target.closest(".giveaway-form");
+
+                if (giveawayForm) {
+                    event.preventDefault();
+
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Çekiliş açmak için admin yetkisi gerekiyor.", "error");
+                        return;
+                    }
+
+                    const title = giveawayForm.elements.title.value.trim();
+                    const period = giveawayForm.elements.period.value;
+                    const description = giveawayForm.elements.description.value.trim();
+                    const submitButton = giveawayForm.querySelector('button[type="submit"]');
+
+                    if (!title || !description || !["weekly", "monthly"].includes(period)) return;
+
+                    setButtonBusy(
+                        submitButton,
+                        true,
+                        "Yayınlanıyor...",
+                        '<i class="fa-solid fa-gift"></i> Çekilişi Yayınla'
+                    );
+
+                    try {
+                        await addDoc(collection(db, "giveaways"), {
+                            title,
+                            period,
+                            description,
+                            createdBy: auth.currentUser.uid,
+                            authorName: getDefaultDisplayName(auth.currentUser),
+                            status: "active",
+                            createdAt: serverTimestamp()
+                        });
+                        giveawayForm.reset();
+                        showToast("Çekiliş yayınlandı.");
+                    } catch (error) {
+                        console.error("Çekiliş yayınlanamadı:", error);
+                        showToast(
+                            getDataErrorMessage(error, "Çekiliş yayınlanamadı."),
+                            "error"
+                        );
+                    } finally {
+                        setButtonBusy(
+                            submitButton,
+                            false,
+                            "",
+                            '<i class="fa-solid fa-gift"></i> Çekilişi Yayınla'
+                        );
+                    }
+
+                    return;
+                }
+
+                const chatForm = event.target.closest(".chat-form");
+
+                if (chatForm && chatForm.matches("form")) {
+                    event.preventDefault();
+
+                    const user = auth.currentUser;
+                    if (!user || !realtimeDb) {
+                        openModal("loginModal");
+                        return;
+                    }
+
+                    const input = chatForm.elements.message;
+                    const messageText = input.value.trim();
+                    const submitButton = chatForm.querySelector('button[type="submit"]');
+
+                    if (!messageText) return;
+
+                    setButtonBusy(
+                        submitButton,
+                        true,
+                        "Gönderiliyor...",
+                        '<i class="fa-solid fa-paper-plane"></i> Gönder'
+                    );
+
+                    try {
+                        const profile =
+                            cachedProfileUid === user.uid && cachedProfile
+                                ? cachedProfile
+                                : {};
+                        const messageRef = push(databaseRef(realtimeDb, "chatMessages"));
+
+                        await set(messageRef, {
+                            text: messageText,
+                            authorId: user.uid,
+                            authorName:
+                                profile.displayName || getDefaultDisplayName(user),
+                            authorPhotoURL:
+                                profile.photoURL || user.photoURL || "",
+                            createdAt: databaseServerTimestamp()
+                        });
+
+                        input.value = "";
+                    } catch (error) {
+                        console.error("Sohbet mesajı gönderilemedi:", error);
+                        showToast("Mesaj gönderilemedi. Realtime Database kurallarını kontrol et.", "error");
+                    } finally {
+                        setButtonBusy(
+                            submitButton,
+                            false,
+                            "",
+                            '<i class="fa-solid fa-paper-plane"></i> Gönder'
+                        );
+                    }
+
+                    return;
+                }
+
                 const form = event.target.closest(".comment-form");
                 if (!form) return;
 
@@ -6225,9 +6928,16 @@
                     return;
                 }
 
+                if (event.target.closest("[data-login-for-chat]")) {
+                    openModal("loginModal");
+                    return;
+                }
+
                 const voteButton = event.target.closest("[data-vote-type]");
                 const deleteCommentButton = event.target.closest("[data-delete-comment]");
-                const deleteTopicButton = event.target.closest("[data-admin-delete-topic]");
+                const deleteTopicButton = event.target.closest("[data-delete-topic]");
+                const deleteGiveawayButton = event.target.closest("[data-delete-giveaway]");
+                const deleteChatButton = event.target.closest("[data-delete-chat]");
 
                 if (voteButton) {
 
@@ -6293,12 +7003,15 @@
 
                 if (deleteTopicButton) {
 
-                    if (!isCurrentUserAdmin) {
-                        showToast("Bu işlem için admin yetkisi gerekiyor.", "error");
+                    const user = auth.currentUser;
+                    const topicId = deleteTopicButton.dataset.deleteTopic;
+                    const topic = cachedTopics.find(item => item.id === topicId);
+
+                    if (!user || (!isCurrentUserAdmin && topic?.authorId !== user.uid)) {
+                        showToast("Yalnızca kendi gönderini silebilirsin.", "error");
                         return;
                     }
 
-                    const topicId = deleteTopicButton.dataset.adminDeleteTopic;
                     if (!window.confirm("Bu başlığı ve bağlı yorumları silmek istediğine emin misin?")) return;
 
                     try {
@@ -6327,6 +7040,61 @@
                             "error"
                         );
                     }
+
+                    return;
+                }
+
+                if (deleteGiveawayButton) {
+
+                    if (!isCurrentUserAdmin) {
+                        showToast("Çekilişi yalnızca admin silebilir.", "error");
+                        return;
+                    }
+
+                    const giveawayId = deleteGiveawayButton.dataset.deleteGiveaway;
+                    if (!window.confirm("Bu çekilişi ve yorumlarını silmek istediğine emin misin?")) return;
+
+                    try {
+                        const relatedComments = cachedComments.filter(comment =>
+                            comment.targetType === "giveaway" && comment.targetId === giveawayId
+                        );
+
+                        await Promise.all([
+                            deleteDoc(doc(db, "giveaways", giveawayId)),
+                            ...relatedComments.map(comment =>
+                                deleteDoc(doc(db, "comments", comment.id))
+                            )
+                        ]);
+
+                        showToast("Çekiliş silindi.");
+                    } catch (error) {
+                        console.error("Çekiliş silinemedi:", error);
+                        showToast(
+                            getDataErrorMessage(error, "Çekiliş silinemedi."),
+                            "error"
+                        );
+                    }
+
+                    return;
+                }
+
+                if (deleteChatButton) {
+
+                    const user = auth.currentUser;
+                    const messageId = deleteChatButton.dataset.deleteChat;
+                    const message = cachedChatMessages.find(item => item.id === messageId);
+
+                    if (!user || message?.authorId !== user.uid || !realtimeDb) {
+                        showToast("Yalnızca kendi mesajını silebilirsin.", "error");
+                        return;
+                    }
+
+                    try {
+                        await remove(databaseRef(realtimeDb, `chatMessages/${messageId}`));
+                    } catch (error) {
+                        console.error("Sohbet mesajı silinemedi:", error);
+                        showToast("Mesaj silinemedi.", "error");
+                    }
                 }
             });
 
@@ -6349,6 +7117,7 @@
                     topicCount.textContent =
                         cachedTopics.length.toLocaleString("tr-TR");
 
+                    renderCurrentUserUpvotes();
                     renderHomeTopics();
                     renderRoute();
                 },
@@ -6368,8 +7137,13 @@
             onSnapshot(
                 collection(db, "publicProfiles"),
                 snapshot => {
+                    cachedPublicProfiles = snapshot.docs.map(profileDocument => ({
+                        id: profileDocument.id,
+                        ...profileDocument.data()
+                    }));
                     memberCount.textContent =
                         snapshot.size.toLocaleString("tr-TR");
+                    renderRoute();
                 },
                 error => {
                     console.error("Üye sayısı alınamadı:", error);
@@ -6401,6 +7175,7 @@
                         id: voteDocument.id,
                         ...voteDocument.data()
                     }));
+                    renderCurrentUserUpvotes();
                     renderHomeTopics();
                     renderRoute();
                 },
@@ -6410,9 +7185,31 @@
             );
 
 
+            onSnapshot(
+                collection(db, "giveaways"),
+                snapshot => {
+                    cachedGiveaways = snapshot.docs
+                        .map(giveawayDocument => ({
+                            id: giveawayDocument.id,
+                            ...giveawayDocument.data()
+                        }))
+                        .sort((a, b) => {
+                            const aTime = a.createdAt?.toMillis?.() || 0;
+                            const bTime = b.createdAt?.toMillis?.() || 0;
+                            return bTime - aTime;
+                        });
+                    renderRoute();
+                },
+                error => {
+                    console.error("Çekilişler alınamadı:", error);
+                }
+            );
+
+
             let realtimeDb = null;
             let presenceStatusUnsubscribe = null;
             let onlineCountUnsubscribe = null;
+            let chatMessagesUnsubscribe = null;
             let currentPresenceRef = null;
 
 
@@ -6498,6 +7295,34 @@
                     }
                 );
 
+                chatMessagesUnsubscribe = onValue(
+                    databaseQuery(
+                        databaseRef(realtimeDb, "chatMessages"),
+                        limitToLast(100)
+                    ),
+                    snapshot => {
+                        const messages = [];
+
+                        snapshot.forEach(messageSnapshot => {
+                            messages.push({
+                                id: messageSnapshot.key,
+                                ...messageSnapshot.val()
+                            });
+                        });
+
+                        cachedChatMessages = messages.sort(
+                            (a, b) => Number(a.createdAt || 0) - Number(b.createdAt || 0)
+                        );
+
+                        if (decodeURIComponent(window.location.hash.slice(1)) === "chat") {
+                            renderRoute();
+                        }
+                    },
+                    error => {
+                        console.error("Sohbet mesajları alınamadı:", error);
+                    }
+                );
+
             } else {
                 onlineCount.title =
                     "Canlı sayı için firebaseConfig.databaseURL alanını doldur.";
@@ -6572,6 +7397,7 @@
 
                     startPresence(user);
                     refreshAdminStatus(user);
+                    renderCurrentUserUpvotes();
                     renderRoute();
 
                     if (!isRegistering) {
@@ -6607,6 +7433,7 @@
                     guestArea.style.display = "flex";
                     userArea.style.display = "none";
                     userName.textContent = "Kullanıcı";
+                    renderCurrentUserUpvotes();
                     renderRoute();
 
                     closeModal(profileModal);
