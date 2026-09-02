@@ -1,0 +1,3536 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MeepleForum — Masaüstü Oyun Topluluğu</title>
+
+    <!-- =========================================================
+         FONT AWESOME
+    ========================================================== -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- =========================================================
+         GOOGLE FONTS
+    ========================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        /* =========================================================
+           1. RENKLER VE TASARIM DEĞİŞKENLERİ
+        ========================================================== */
+
+        :root {
+            --bg-main: #11100f;
+            --bg-secondary: #171513;
+            --bg-card: #1d1a18;
+            --bg-card-hover: #25211e;
+
+            --border: rgba(255,255,255,0.08);
+            --border-strong: rgba(255,255,255,0.14);
+
+            --text-main: #f5f0e8;
+            --text-secondary: #aaa29a;
+            --text-muted: #77716b;
+
+            --wood: #a9683d;
+            --wood-light: #c88959;
+
+            --burgundy: #713438;
+
+            --green: #3e654f;
+            --green-light: #5f9274;
+
+            --gold: #d2a75c;
+            --gold-light: #e7c57e;
+
+            --success: #68b58a;
+            --danger: #b96a6a;
+
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+
+            --shadow: 0 15px 45px rgba(0,0,0,0.28);
+
+            --container: 1240px;
+        }
+
+
+        /* =========================================================
+           2. RESET
+        ========================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 80% 0%,
+                    rgba(113,52,56,0.13),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 0% 30%,
+                    rgba(62,101,79,0.08),
+                    transparent 28%
+                ),
+                var(--bg-main);
+
+            color: var(--text-main);
+            font-family: "Inter", sans-serif;
+            line-height: 1.5;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =========================================================
+           3. GENEL
+        ========================================================== */
+
+        .container {
+            width: min(
+                var(--container),
+                calc(100% - 40px)
+            );
+
+            margin: 0 auto;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+            margin-bottom: 18px;
+        }
+
+        .section-title h2 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+        }
+
+        .section-title a {
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: color .2s ease;
+        }
+
+        .section-title a:hover {
+            color: var(--gold-light);
+        }
+
+
+        /* =========================================================
+           4. HEADER
+        ========================================================== */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            background: rgba(17,16,15,0.91);
+            backdrop-filter: blur(18px);
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-inner {
+            min-height: 76px;
+
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+
+        /* LOGO */
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    var(--wood-light),
+                    var(--burgundy)
+                );
+
+            border-radius: 12px;
+
+            color: white;
+            font-size: 19px;
+
+            box-shadow:
+                inset 0 1px rgba(255,255,255,0.18),
+                0 8px 25px rgba(113,52,56,0.25);
+
+            transition:
+                transform .25s ease,
+                box-shadow .25s ease;
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(-5deg) translateY(-2px);
+
+            box-shadow:
+                inset 0 1px rgba(255,255,255,0.22),
+                0 10px 30px rgba(113,52,56,0.38);
+        }
+
+        .logo-text {
+            font-family: "Playfair Display", serif;
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--gold);
+        }
+
+
+        /* NAV */
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+
+            margin-left: auto;
+        }
+
+        nav a {
+            position: relative;
+
+            padding: 9px 11px;
+
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+
+            border-radius: 8px;
+
+            transition:
+                color .2s ease,
+                background .2s ease;
+        }
+
+        nav a::after {
+            content: "";
+
+            position: absolute;
+
+            left: 11px;
+            right: 11px;
+            bottom: 4px;
+
+            height: 2px;
+
+            background: var(--gold);
+
+            transform: scaleX(0);
+            transform-origin: center;
+
+            transition: transform .2s ease;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.055);
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            transform: scaleX(1);
+        }
+
+
+        /* HEADER ARAMA */
+
+        .header-search {
+            position: relative;
+            width: 190px;
+        }
+
+        .header-search i {
+            position: absolute;
+
+            left: 13px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .header-search input {
+            width: 100%;
+            height: 38px;
+
+            padding: 0 12px 0 36px;
+
+            background: rgba(255,255,255,0.045);
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            color: var(--text-main);
+
+            outline: none;
+
+            font-size: 12px;
+
+            transition:
+                border .2s ease,
+                box-shadow .2s ease,
+                background .2s ease;
+        }
+
+        .header-search input::placeholder {
+            color: #67615c;
+        }
+
+        .header-search input:focus {
+            background: rgba(255,255,255,0.065);
+
+            border-color: rgba(210,167,92,0.5);
+
+            box-shadow:
+                0 0 0 3px rgba(210,167,92,0.08);
+        }
+
+
+        /* AUTH */
+
+        .auth {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .login-btn,
+        .register-btn {
+            border-radius: 8px;
+
+            padding: 9px 13px;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            transition:
+                transform .2s ease,
+                background .2s ease,
+                color .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .login-btn {
+            background: transparent;
+
+            border: 1px solid var(--border-strong);
+
+            color: var(--text-secondary);
+        }
+
+        .login-btn:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.06);
+
+            transform: translateY(-1px);
+        }
+
+        .register-btn {
+            background: var(--gold);
+
+            border: 1px solid var(--gold);
+
+            color: #211a10;
+        }
+
+        .register-btn:hover {
+            background: var(--gold-light);
+            border-color: var(--gold-light);
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 8px 25px rgba(210,167,92,0.18);
+        }
+
+
+        /* MOBİL MENÜ */
+
+        .mobile-menu {
+            display: none;
+
+            width: 38px;
+            height: 38px;
+
+            border: 1px solid var(--border);
+            border-radius: 8px;
+
+            background: transparent;
+            color: var(--text-main);
+        }
+
+
+        /* =========================================================
+           5. HERO
+        ========================================================== */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+
+            margin-top: 28px;
+
+            padding: 54px 52px;
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+
+            background:
+                linear-gradient(
+                    115deg,
+                    rgba(113,52,56,0.38),
+                    rgba(34,28,24,0.88) 48%,
+                    rgba(62,101,79,0.20)
+                );
+
+            box-shadow: var(--shadow);
+        }
+
+        .hero::before {
+            content: "";
+
+            position: absolute;
+
+            width: 400px;
+            height: 400px;
+
+            right: -130px;
+            top: -220px;
+
+            border-radius: 50%;
+
+            background: rgba(210,167,92,0.08);
+        }
+
+        .hero::after {
+            content: "♟";
+
+            position: absolute;
+
+            right: 80px;
+            bottom: -40px;
+
+            color: rgba(255,255,255,0.035);
+
+            font-size: 260px;
+
+            transform: rotate(-10deg);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+
+            max-width: 680px;
+        }
+
+        .hero-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 6px 10px;
+            margin-bottom: 17px;
+
+            border: 1px solid rgba(210,167,92,0.24);
+            border-radius: 100px;
+
+            background: rgba(210,167,92,0.08);
+
+            color: var(--gold-light);
+
+            font-size: 11px;
+            font-weight: 700;
+
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            max-width: 700px;
+
+            margin-bottom: 16px;
+
+            font-family: "Playfair Display", serif;
+
+            font-size: clamp(32px, 4vw, 48px);
+            line-height: 1.1;
+
+            letter-spacing: -1.5px;
+        }
+
+        .hero h1 span {
+            color: var(--gold-light);
+        }
+
+        .hero p {
+            max-width: 620px;
+
+            margin-bottom: 28px;
+
+            color: #bdb5ac;
+            font-size: 15px;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .primary-btn,
+        .secondary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            transition:
+                transform .2s ease,
+                background .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .primary-btn {
+            padding: 12px 17px;
+
+            border: none;
+
+            background: var(--gold);
+            color: #241b10;
+        }
+
+        .primary-btn:hover {
+            background: var(--gold-light);
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 8px 25px rgba(210,167,92,0.18);
+        }
+
+        .secondary-btn {
+            padding: 11px 16px;
+
+            border: 1px solid var(--border-strong);
+
+            background: rgba(255,255,255,0.035);
+            color: var(--text-secondary);
+        }
+
+        .secondary-btn:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.07);
+
+            transform: translateY(-2px);
+        }
+
+
+        /* =========================================================
+           6. ANA LAYOUT
+        ========================================================== */
+
+        .main-layout {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                330px;
+
+            gap: 28px;
+
+            margin-top: 38px;
+            margin-bottom: 50px;
+        }
+
+
+        /* =========================================================
+           7. KATEGORİLER
+        ========================================================== */
+
+        .category-grid {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 10px;
+
+            margin-bottom: 34px;
+        }
+
+        .category-card {
+            display: flex;
+            align-items: center;
+
+            gap: 14px;
+
+            padding: 16px;
+
+            background: var(--bg-card);
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+
+            transition:
+                transform .22s ease,
+                background .22s ease,
+                border .22s ease,
+                box-shadow .22s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-3px);
+
+            background: var(--bg-card-hover);
+
+            border-color: rgba(210,167,92,0.18);
+
+            box-shadow:
+                0 10px 25px rgba(0,0,0,0.20);
+        }
+
+        .category-icon {
+            width: 43px;
+            height: 43px;
+
+            flex-shrink: 0;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 11px;
+
+            background: rgba(169,104,61,0.12);
+            color: var(--wood-light);
+
+            font-size: 16px;
+
+            transition:
+                transform .22s ease,
+                box-shadow .22s ease;
+        }
+
+        .category-card:hover .category-icon {
+            transform: scale(1.06);
+
+            box-shadow:
+                0 0 18px rgba(200,137,89,0.12);
+        }
+
+        .category-card:nth-child(2) .category-icon {
+            background: rgba(113,52,56,0.18);
+            color: #c17c82;
+        }
+
+        .category-card:nth-child(3) .category-icon {
+            background: rgba(62,101,79,0.18);
+            color: var(--green-light);
+        }
+
+        .category-card:nth-child(4) .category-icon {
+            background: rgba(210,167,92,0.11);
+            color: var(--gold);
+        }
+
+        .category-card:nth-child(5) .category-icon {
+            background: rgba(110,78,119,0.16);
+            color: #b798c5;
+        }
+
+        .category-card:nth-child(6) .category-icon {
+            background: rgba(78,86,100,0.18);
+            color: #aab2c2;
+        }
+
+        .category-info {
+            min-width: 0;
+        }
+
+        .category-info h3 {
+            margin-bottom: 3px;
+
+            font-size: 13px;
+        }
+
+        .category-info p {
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .category-arrow {
+            margin-left: auto;
+
+            color: #5f5a55;
+            font-size: 11px;
+
+            transition:
+                transform .2s ease,
+                color .2s ease;
+        }
+
+        .category-card:hover .category-arrow {
+            color: var(--gold);
+            transform: translateX(3px);
+        }
+
+
+        /* =========================================================
+           8. BOŞ KONU ŞABLONLARI
+        ========================================================== */
+
+        .topics {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .topic-card {
+            display: grid;
+
+            grid-template-columns:
+                48px
+                minmax(0,1fr)
+                auto;
+
+            align-items: center;
+
+            gap: 14px;
+
+            padding: 15px 16px;
+
+            background: var(--bg-card);
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+
+            transition:
+                background .2s ease,
+                border .2s ease,
+                transform .2s ease;
+        }
+
+        .topic-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-strong);
+
+            transform: translateY(-1px);
+        }
+
+        /* Avatar placeholder */
+
+        .topic-avatar {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #3a3531,
+                    #272320
+                );
+
+            border: 1px dashed rgba(255,255,255,0.12);
+
+            color: #625c56;
+
+            font-size: 14px;
+        }
+
+        .topic-main {
+            min-width: 0;
+        }
+
+        /* Placeholder başlık */
+
+        .placeholder-line {
+            height: 10px;
+
+            border-radius: 5px;
+
+            background: rgba(255,255,255,0.07);
+
+            margin-bottom: 10px;
+        }
+
+        .placeholder-line.title {
+            width: 70%;
+            height: 11px;
+        }
+
+        .placeholder-line.short {
+            width: 32%;
+            margin-bottom: 0;
+        }
+
+        .topic-meta-placeholder {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .placeholder-tag {
+            width: 62px;
+            height: 18px;
+
+            border-radius: 5px;
+
+            background: rgba(62,101,79,0.16);
+        }
+
+        .topic-stats {
+            min-width: 75px;
+
+            text-align: right;
+        }
+
+        .placeholder-number {
+            width: 25px;
+            height: 12px;
+
+            margin-left: auto;
+            margin-bottom: 6px;
+
+            border-radius: 5px;
+
+            background: rgba(255,255,255,0.07);
+        }
+
+        .placeholder-label {
+            width: 42px;
+            height: 7px;
+
+            margin-left: auto;
+
+            border-radius: 4px;
+
+            background: rgba(255,255,255,0.04);
+        }
+
+
+        /* =========================================================
+           9. SIDEBAR
+        ========================================================== */
+
+        .side-card {
+            overflow: hidden;
+
+            margin-bottom: 17px;
+
+            background: var(--bg-card);
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+
+            transition:
+                border .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .side-card:hover {
+            border-color: rgba(255,255,255,0.11);
+        }
+
+        .side-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 17px 18px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .side-card-header h3 {
+            font-size: 14px;
+        }
+
+        .side-card-header i {
+            color: var(--gold);
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           10. HAFTANIN OYUNU
+        ========================================================== */
+
+        .game-cover {
+            position: relative;
+
+            height: 175px;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #26372d,
+                    #5a392c 45%,
+                    #1a1715
+                );
+        }
+
+        .game-art {
+            position: absolute;
+            inset: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-direction: column;
+
+            background:
+                radial-gradient(
+                    circle at 50% 30%,
+                    rgba(210,167,92,0.25),
+                    transparent 45%
+                );
+
+            transition: transform .35s ease;
+        }
+
+        .side-card:hover .game-art {
+            transform: scale(1.03);
+        }
+
+        .game-art i {
+            margin-bottom: 8px;
+
+            color: rgba(231,197,126,0.82);
+
+            font-size: 58px;
+
+            filter:
+                drop-shadow(
+                    0 8px 15px rgba(0,0,0,.45)
+                );
+        }
+
+        .game-art span {
+            color: #eee2cc;
+
+            font-family: "Playfair Display", serif;
+
+            font-size: 20px;
+            font-weight: 700;
+
+            text-shadow:
+                0 2px 8px rgba(0,0,0,.7);
+        }
+
+        .game-rating {
+            position: absolute;
+
+            top: 12px;
+            right: 12px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 5px;
+
+            padding: 6px 8px;
+
+            background: rgba(0,0,0,.65);
+
+            border-radius: 7px;
+
+            color: var(--gold-light);
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .game-content {
+            padding: 17px;
+        }
+
+        .game-content h4 {
+            margin-bottom: 6px;
+
+            font-size: 16px;
+        }
+
+        .game-content p {
+            margin-bottom: 13px;
+
+            color: var(--text-secondary);
+
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .game-link {
+            color: var(--gold);
+
+            font-size: 11px;
+            font-weight: 700;
+
+            transition: color .2s ease;
+        }
+
+        .game-link:hover {
+            color: var(--gold-light);
+        }
+
+
+        /* =========================================================
+           11. İSTATİSTİKLER
+        ========================================================== */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .stat {
+            padding: 16px 8px;
+
+            text-align: center;
+        }
+
+        .stat + .stat {
+            border-left: 1px solid var(--border);
+        }
+
+        .stat-number {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color: var(--text-main);
+
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 9px;
+        }
+
+        .online-dot {
+            display: inline-block;
+
+            width: 6px;
+            height: 6px;
+
+            margin-right: 4px;
+
+            border-radius: 50%;
+
+            background: var(--success);
+
+            box-shadow:
+                0 0 8px rgba(104,181,138,.6);
+        }
+
+
+        /* =========================================================
+           12. ETİKETLER
+        ========================================================== */
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 7px;
+
+            padding: 17px;
+        }
+
+        .tag-cloud a {
+            padding: 7px 9px;
+
+            background: rgba(255,255,255,0.04);
+
+            border: 1px solid var(--border);
+
+            border-radius: 7px;
+
+            color: var(--text-secondary);
+
+            font-size: 10px;
+            font-weight: 500;
+
+            transition:
+                color .2s ease,
+                border .2s ease,
+                background .2s ease,
+                transform .2s ease;
+        }
+
+        .tag-cloud a:hover {
+            color: var(--gold-light);
+
+            border-color: rgba(210,167,92,.25);
+
+            background: rgba(210,167,92,.07);
+
+            transform: translateY(-2px);
+        }
+
+
+        /* =========================================================
+           13. FOOTER
+        ========================================================== */
+
+        footer {
+            background: #0c0b0a;
+
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-inner {
+            display: grid;
+
+            grid-template-columns:
+                1.5fr
+                1fr
+                1fr
+                1fr;
+
+            gap: 40px;
+
+            padding: 42px 0 30px;
+        }
+
+        .footer-brand p {
+            max-width: 290px;
+
+            margin-top: 11px;
+
+            color: var(--text-muted);
+
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .footer-column h4 {
+            margin-bottom: 13px;
+
+            font-size: 12px;
+        }
+
+        .footer-column a {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: var(--text-muted);
+
+            font-size: 11px;
+
+            transition:
+                color .2s ease,
+                transform .2s ease;
+        }
+
+        .footer-column a:hover {
+            color: var(--gold-light);
+            transform: translateX(2px);
+        }
+
+        .socials {
+            display: flex;
+            gap: 7px;
+
+            margin-top: 17px;
+        }
+
+        .socials a {
+            width: 32px;
+            height: 32px;
+
+            display: grid;
+            place-items: center;
+
+            margin: 0;
+
+            border: 1px solid var(--border);
+            border-radius: 8px;
+
+            color: var(--text-muted);
+
+            transition: .2s ease;
+        }
+
+        .socials a:hover {
+            color: var(--gold-light);
+
+            border-color: rgba(210,167,92,.3);
+
+            background: rgba(210,167,92,.06);
+
+            transform: translateY(-2px);
+        }
+
+        .copyright {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 17px 0;
+
+            border-top: 1px solid var(--border);
+
+            color: #59544f;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================================
+           14. MODAL
+        ========================================================== */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            background: rgba(0,0,0,0.72);
+
+            backdrop-filter: blur(9px);
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition:
+                opacity .25s ease,
+                visibility .25s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            width: min(430px, 100%);
+
+            position: relative;
+
+            padding: 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #211e1b,
+                    #171513
+                );
+
+            border: 1px solid var(--border-strong);
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 30px 90px rgba(0,0,0,0.55);
+
+            transform:
+                translateY(20px)
+                scale(.97);
+
+            transition:
+                transform .25s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform:
+                translateY(0)
+                scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+
+            top: 13px;
+            right: 13px;
+
+            width: 34px;
+            height: 34px;
+
+            display: grid;
+            place-items: center;
+
+            border: 1px solid var(--border);
+            border-radius: 8px;
+
+            background: rgba(255,255,255,0.04);
+
+            color: var(--text-muted);
+
+            transition: .2s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+
+            display: grid;
+            place-items: center;
+
+            margin-bottom: 15px;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(200,137,89,.2),
+                    rgba(113,52,56,.2)
+                );
+
+            color: var(--gold);
+
+            font-size: 18px;
+        }
+
+        .modal h2 {
+            margin-bottom: 7px;
+
+            font-family: "Playfair Display", serif;
+
+            font-size: 25px;
+        }
+
+        .modal-description {
+            margin-bottom: 22px;
+
+            color: var(--text-secondary);
+
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: var(--text-secondary);
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 43px;
+
+            padding: 0 12px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            outline: none;
+
+            background: rgba(255,255,255,0.045);
+
+            color: var(--text-main);
+
+            font-size: 12px;
+
+            transition:
+                border .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .form-input:focus {
+            border-color: rgba(210,167,92,.5);
+
+            box-shadow:
+                0 0 0 3px rgba(210,167,92,.07);
+        }
+
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin: 4px 0 18px;
+
+            font-size: 10px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            color: var(--text-muted);
+        }
+
+        .remember input {
+            accent-color: var(--gold);
+        }
+
+        .forgot-password {
+            color: var(--gold);
+        }
+
+        .modal-submit {
+            width: 100%;
+
+            height: 44px;
+
+            border: none;
+            border-radius: 9px;
+
+            background: var(--gold);
+            color: #241b10;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            transition: .2s ease;
+        }
+
+        .modal-submit:hover {
+            background: var(--gold-light);
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 8px 25px rgba(210,167,92,.16);
+        }
+
+        .modal-footer {
+            margin-top: 17px;
+
+            text-align: center;
+
+            color: var(--text-muted);
+
+            font-size: 10px;
+        }
+
+        .modal-footer button {
+            border: none;
+
+            background: transparent;
+
+            color: var(--gold);
+
+            font-weight: 700;
+        }
+
+        .modal-footer button:hover {
+            color: var(--gold-light);
+        }
+
+
+        /* =========================================================
+           15. TOAST / BİLDİRİM
+        ========================================================== */
+
+        .toast {
+            position: fixed;
+
+            right: 22px;
+            bottom: 22px;
+
+            z-index: 2000;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            max-width: 350px;
+
+            padding: 13px 16px;
+
+            background: #211f1c;
+
+            border: 1px solid var(--border-strong);
+            border-radius: 10px;
+
+            box-shadow:
+                0 15px 40px rgba(0,0,0,.35);
+
+            color: var(--text-secondary);
+
+            font-size: 11px;
+
+            transform: translateY(20px);
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition: .25s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .toast i {
+            color: var(--success);
+        }
+
+
+        /* =========================================================
+           16. TABLET
+        ========================================================== */
+
+        @media (max-width: 1100px) {
+
+            nav {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .header-search {
+                margin-left: auto;
+            }
+
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: grid;
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+
+                gap: 15px;
+            }
+
+            .side-card {
+                margin-bottom: 0;
+            }
+
+            .game-cover {
+                height: 145px;
+            }
+
+            .footer-inner {
+                grid-template-columns:
+                    2fr
+                    1fr
+                    1fr;
+            }
+        }
+
+
+        /* =========================================================
+           17. MOBİL
+        ========================================================== */
+
+        @media (max-width: 700px) {
+
+            .container {
+                width:
+                    min(
+                        100% - 24px,
+                        var(--container)
+                    );
+            }
+
+            .header-inner {
+                min-height: 65px;
+                gap: 10px;
+            }
+
+            .logo-text {
+                font-size: 18px;
+            }
+
+            .logo-icon {
+                width: 37px;
+                height: 37px;
+            }
+
+            .header-search {
+                display: none;
+            }
+
+            .auth {
+                margin-left: auto;
+            }
+
+            .login-btn {
+                display: none;
+            }
+
+            .register-btn {
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+
+            .hero {
+                margin-top: 16px;
+
+                padding: 34px 24px;
+
+                border-radius: 16px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 13px;
+            }
+
+            .hero::after {
+                right: -30px;
+                font-size: 180px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .primary-btn,
+            .secondary-btn {
+                width: 100%;
+            }
+
+            .main-layout {
+                margin-top: 28px;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topic-card {
+                grid-template-columns:
+                    40px
+                    minmax(0,1fr);
+            }
+
+            .topic-avatar {
+                width: 38px;
+                height: 38px;
+            }
+
+            .topic-stats {
+                display: none;
+            }
+
+            .sidebar {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .game-cover {
+                height: 180px;
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+
+            .footer-brand {
+                grid-column: 1 / -1;
+            }
+
+            .copyright {
+                flex-direction: column;
+                align-items: flex-start;
+
+                gap: 6px;
+            }
+        }
+
+
+        /* =========================================================
+           18. ÇOK KÜÇÜK EKRAN
+        ========================================================== */
+
+        @media (max-width: 420px) {
+
+            .auth .register-btn {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .section-title h2 {
+                font-size: 18px;
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <header>
+
+        <div class="container header-inner">
+
+            <!-- LOGO -->
+            <a href="#" class="logo" data-action="home">
+
+                <div class="logo-icon">
+                    <i class="fa-solid fa-chess-knight"></i>
+                </div>
+
+                <div class="logo-text">
+                    Meeple<span>Forum</span>
+                </div>
+
+            </a>
+
+
+            <!-- NAVİGASYON -->
+            <nav>
+
+                <a href="#" class="active" data-action="home">
+                    Ana Sayfa
+                </a>
+
+                <a href="#" data-action="categories">
+                    Kategoriler
+                </a>
+
+                <a href="#" data-action="popular">
+                    Popüler Başlıklar
+                </a>
+
+                <a href="#" data-action="reviews">
+                    İncelemeler
+                </a>
+
+                <a href="#" data-action="events">
+                    Etkinlikler
+                </a>
+
+            </nav>
+
+
+            <!-- ARAMA -->
+            <div class="header-search">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Forumda ara..."
+                    aria-label="Forumda ara"
+                >
+
+            </div>
+
+
+            <!-- GİRİŞ / KAYIT -->
+            <div class="auth">
+
+                <button
+                    class="login-btn"
+                    type="button"
+                    data-modal="loginModal"
+                >
+                    Giriş Yap
+                </button>
+
+                <button
+                    class="register-btn"
+                    type="button"
+                    data-modal="registerModal"
+                >
+                    Kayıt Ol
+                </button>
+
+            </div>
+
+
+            <!-- MOBİL MENÜ -->
+            <button
+                class="mobile-menu"
+                type="button"
+                id="mobileMenuBtn"
+                aria-label="Menüyü aç"
+            >
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================================
+         ANA İÇERİK
+    ========================================================== -->
+
+    <main>
+
+        <div class="container">
+
+
+            <!-- =====================================================
+                 HERO
+            ====================================================== -->
+
+            <section class="hero">
+
+                <div class="hero-content">
+
+                    <div class="hero-label">
+                        <i class="fa-solid fa-dice-d20"></i>
+                        Masaüstü Oyun Topluluğu
+                    </div>
+
+                    <h1>
+                        Masaüstü stratejilerinizi paylaşın,
+                        <span>yeni oyunlar keşfedin.</span>
+                    </h1>
+
+                    <p>
+                        Binlerce oyuncuyla sohbet edin, oyun geceleri
+                        organize edin, kuralları tartışın ve bir sonraki
+                        favori kutu oyununuzu toplulukla birlikte keşfedin.
+                    </p>
+
+                    <div class="hero-actions">
+
+                        <button
+                            class="primary-btn"
+                            type="button"
+                            id="newTopicBtn"
+                        >
+                            <i class="fa-solid fa-plus"></i>
+                            Yeni Konu Aç
+                        </button>
+
+                        <a
+                            href="#categories"
+                            class="secondary-btn"
+                        >
+                            <i class="fa-solid fa-compass"></i>
+                            Topluluğu Keşfet
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =====================================================
+                 ANA GRID
+            ====================================================== -->
+
+            <div class="main-layout" id="categories">
+
+
+                <!-- =================================================
+                     SOL KOLON
+                ================================================== -->
+
+                <section class="content">
+
+
+                    <!-- KATEGORİLER -->
+
+                    <div class="section-title">
+
+                        <h2>
+                            Forum Kategorileri
+                        </h2>
+
+                        <a href="#" data-action="all-categories">
+                            Tümünü Gör
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                    </div>
+
+
+                    <div class="category-grid">
+
+
+                        <!-- 1 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Strateji Oyunları"
+                        >
+
+                            <div class="category-icon">
+                                <i class="fa-solid fa-chess"></i>
+                            </div>
+
+                            <div class="category-info">
+
+                                <h3>
+                                    Strateji Oyunları
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
+                            </div>
+
+                            <div class="category-arrow">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+
+                        </a>
+
+
+                        <!-- 2 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Tematik / Ameritrash"
+                        >
+
+                            <div class="category-icon">
+                                <i class="fa-solid fa-dragon"></i>
+                            </div>
+
+                            <div class="category-info">
+
+                                <h3>
+                                    Tematik / Ameritrash
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
+                            </div>
+
+                            <div class="category-arrow">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+
+                        </a>
+
+
+                        <!-- 3 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Eurogame"
+                        >
+
+                            <div class="category-icon">
+                                <i class="fa-solid fa-landmark"></i>
+                            </div>
+
+                            <div class="category-info">
+
+                                <h3>
+                                    Eurogame
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
+                            </div>
+
+                            <div class="category-arrow">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+
+                        </a>
+
+
+                        <!-- 4 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Kart Oyunları"
+                        >
+
+                            <div class="category-icon">
+                                <i class="fa-solid fa-clone"></i>
+                            </div>
+
+                            <div class="category-info">
+
+                                <h3>
+                                    Kart Oyunları
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
+                            </div>
+
+                            <div class="category-arrow">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+
+                        </a>
+
+
+                        <!-- 5 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Miniatür & Boyama"
+                        >
+
+                            <div class="category-icon">
+                                <i class="fa-solid fa-paintbrush"></i>
+                            </div>
+
+                            <div class="category-info">
+
+                                <h3>
+                                    Miniatür & Boyama
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
+                            </div>
+
+                            <div class="category-arrow">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+
+                        </a>
+
+
+                        <!-- 6 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="İkinci El / Takas"
+                        >
+
+                            <div class="category-icon">
+                                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                            </div>
+
+                            <div class="category-info">
+
+                                <h3>
+                                    İkinci El / Takas
+                                </h3>
+
+                                <p>
+                                    Forum kategorisini keşfet
+                                </p>
+
+                            </div>
+
+                            <div class="category-arrow">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+
+                        </a>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         SON KONUŞULANLAR
+                    ================================================== -->
+
+                    <div class="section-title">
+
+                        <h2>
+                            Son Konuşulanlar
+                        </h2>
+
+                        <a href="#" data-action="all-topics">
+                            Tüm Başlıklar
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                    </div>
+
+
+                    <!--
+                        =================================================
+                        DİNAMİK İÇERİK ALANI
+
+                        Bu kartlar özellikle BOŞ ŞABLON olarak bırakılmıştır.
+                        Gerçek kullanıcı verileri JavaScript/backend
+                        üzerinden buraya aktarılabilir.
+                        =================================================
+                    -->
+
+                    <div class="topics">
+
+
+                        <!-- BOŞ KONU 1 -->
+
+                        <article class="topic-card">
+
+                            <div class="topic-avatar">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+
+                            <div class="topic-main">
+
+                                <div class="placeholder-line title"></div>
+
+                                <div class="topic-meta-placeholder">
+
+                                    <div class="placeholder-line short"></div>
+
+                                    <div class="placeholder-tag"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="topic-stats">
+
+                                <div class="placeholder-number"></div>
+
+                                <div class="placeholder-label"></div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- BOŞ KONU 2 -->
+
+                        <article class="topic-card">
+
+                            <div class="topic-avatar">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+
+                            <div class="topic-main">
+
+                                <div class="placeholder-line title"></div>
+
+                                <div class="topic-meta-placeholder">
+
+                                    <div class="placeholder-line short"></div>
+
+                                    <div class="placeholder-tag"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="topic-stats">
+
+                                <div class="placeholder-number"></div>
+
+                                <div class="placeholder-label"></div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- BOŞ KONU 3 -->
+
+                        <article class="topic-card">
+
+                            <div class="topic-avatar">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+
+                            <div class="topic-main">
+
+                                <div class="placeholder-line title"></div>
+
+                                <div class="topic-meta-placeholder">
+
+                                    <div class="placeholder-line short"></div>
+
+                                    <div class="placeholder-tag"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="topic-stats">
+
+                                <div class="placeholder-number"></div>
+
+                                <div class="placeholder-label"></div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- BOŞ KONU 4 -->
+
+                        <article class="topic-card">
+
+                            <div class="topic-avatar">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+
+                            <div class="topic-main">
+
+                                <div class="placeholder-line title"></div>
+
+                                <div class="topic-meta-placeholder">
+
+                                    <div class="placeholder-line short"></div>
+
+                                    <div class="placeholder-tag"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="topic-stats">
+
+                                <div class="placeholder-number"></div>
+
+                                <div class="placeholder-label"></div>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- =================================================
+                     SIDEBAR
+                ================================================== -->
+
+                <aside class="sidebar">
+
+
+                    <!-- HAFTANIN OYUNU -->
+
+                    <div
+                        class="side-card"
+                        id="weeklyGameCard"
+                        role="button"
+                        tabindex="0"
+                    >
+
+                        <div class="side-card-header">
+
+                            <h3>
+                                Haftanın Oyunu
+                            </h3>
+
+                            <i class="fa-solid fa-crown"></i>
+
+                        </div>
+
+
+                        <div class="game-cover">
+
+                            <div class="game-art">
+
+                                <i class="fa-solid fa-chess-rook"></i>
+
+                                <span>
+                                    DUNE
+                                </span>
+
+                            </div>
+
+                            <div class="game-rating">
+
+                                <i class="fa-solid fa-star"></i>
+
+                                9.1
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="game-content">
+
+                            <h4>
+                                Dune: Imperium
+                            </h4>
+
+                            <p>
+                                Güçlü deste oluşturma mekanikleri,
+                                işçi yerleştirme ve entrikalarla dolu
+                                rekabetçi bir strateji deneyimi.
+                            </p>
+
+                            <a
+                                href="#"
+                                class="game-link"
+                                id="reviewLink"
+                            >
+                                İncelemeyi Gör
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- İSTATİSTİKLER -->
+
+                    <div class="side-card">
+
+                        <div class="side-card-header">
+
+                            <h3>
+                                Topluluk İstatistikleri
+                            </h3>
+
+                            <i class="fa-solid fa-chart-simple"></i>
+
+                        </div>
+
+
+                        <div class="stats">
+
+                            <div class="stat">
+
+                                <span class="stat-number">
+                                    18.4K
+                                </span>
+
+                                <span class="stat-label">
+                                    Toplam Üye
+                                </span>
+
+                            </div>
+
+
+                            <div class="stat">
+
+                                <span class="stat-number">
+                                    42.8K
+                                </span>
+
+                                <span class="stat-label">
+                                    Toplam Konu
+                                </span>
+
+                            </div>
+
+
+                            <div class="stat">
+
+                                <span class="stat-number">
+                                    <span class="online-dot"></span>
+                                    386
+                                </span>
+
+                                <span class="stat-label">
+                                    Çevrimiçi
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ETİKETLER -->
+
+                    <div class="side-card">
+
+                        <div class="side-card-header">
+
+                            <h3>
+                                Popüler Etiketler
+                            </h3>
+
+                            <i class="fa-solid fa-hashtag"></i>
+
+                        </div>
+
+
+                        <div class="tag-cloud">
+
+                            <a href="#" data-tag="#TwilightImperium">
+                                #TwilightImperium
+                            </a>
+
+                            <a href="#" data-tag="#Catan">
+                                #Catan
+                            </a>
+
+                            <a href="#" data-tag="#MiniaturePainting">
+                                #MiniaturePainting
+                            </a>
+
+                            <a href="#" data-tag="#RulesCheck">
+                                #RulesCheck
+                            </a>
+
+                            <a href="#" data-tag="#BrassBirmingham">
+                                #BrassBirmingham
+                            </a>
+
+                            <a href="#" data-tag="#Wingspan">
+                                #Wingspan
+                            </a>
+
+                            <a href="#" data-tag="#ArkNova">
+                                #ArkNova
+                            </a>
+
+                            <a href="#" data-tag="#GameNight">
+                                #GameNight
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer>
+
+        <div class="container">
+
+            <div class="footer-inner">
+
+
+                <!-- MARKA -->
+
+                <div class="footer-brand">
+
+                    <a href="#" class="logo">
+
+                        <div class="logo-icon">
+                            <i class="fa-solid fa-chess-knight"></i>
+                        </div>
+
+                        <div class="logo-text">
+                            Meeple<span>Forum</span>
+                        </div>
+
+                    </a>
+
+                    <p>
+                        Masaüstü oyunlarını seven herkes için;
+                        strateji, keşif, sohbet ve yeni oyun arkadaşlıklarının
+                        buluşma noktası.
+                    </p>
+
+
+                    <!-- SOSYAL MEDYA -->
+
+                    <div class="socials">
+
+                        <a href="#" aria-label="Discord">
+                            <i class="fa-brands fa-discord"></i>
+                        </a>
+
+                        <a href="#" aria-label="Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+
+                        <a href="#" aria-label="X">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+
+                        <a href="#" aria-label="YouTube">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- KEŞFET -->
+
+                <div class="footer-column">
+
+                    <h4>
+                        Keşfet
+                    </h4>
+
+                    <a href="#" data-action="popular">
+                        Popüler Başlıklar
+                    </a>
+
+                    <a href="#" data-action="reviews">
+                        Oyun İncelemeleri
+                    </a>
+
+                    <a href="#" data-action="all-topics">
+                        Yeni Konular
+                    </a>
+
+                    <a href="#" data-action="events">
+                        Etkinlikler
+                    </a>
+
+                </div>
+
+
+                <!-- TOPLULUK -->
+
+                <div class="footer-column">
+
+                    <h4>
+                        Topluluk
+                    </h4>
+
+                    <a href="#" data-action="members">
+                        Üyeler
+                    </a>
+
+                    <a href="#" data-action="rules">
+                        Kurallar
+                    </a>
+
+                    <a href="#" data-action="moderators">
+                        Moderatörler
+                    </a>
+
+                    <a href="#" data-action="help">
+                        Yardım Merkezi
+                    </a>
+
+                </div>
+
+
+                <!-- BİLGİ -->
+
+                <div class="footer-column">
+
+                    <h4>
+                        Bilgi
+                    </h4>
+
+                    <a href="#" data-action="about">
+                        Hakkımızda
+                    </a>
+
+                    <a href="#" data-action="contact">
+                        İletişim
+                    </a>
+
+                    <a href="#" data-action="privacy">
+                        Gizlilik
+                    </a>
+
+                    <a href="#" data-action="terms">
+                        Kullanım Koşulları
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="copyright">
+
+                <span>
+                    © 2026 MeepleForum. Tüm hakları saklıdır.
+                </span>
+
+                <span>
+                    Zarlar sizinle olsun. 🎲
+                </span>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =========================================================
+         GİRİŞ MODALI
+    ========================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="loginModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="loginTitle"
+        >
+
+            <button
+                class="modal-close"
+                type="button"
+                data-close-modal
+                aria-label="Kapat"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+
+            <div class="modal-icon">
+                <i class="fa-solid fa-right-to-bracket"></i>
+            </div>
+
+            <h2 id="loginTitle">
+                Tekrar Hoş Geldin
+            </h2>
+
+            <p class="modal-description">
+                MeepleForum hesabına giriş yaparak topluluğa katıl.
+            </p>
+
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="loginEmail">
+                        E-posta
+                    </label>
+
+                    <input
+                        class="form-input"
+                        id="loginEmail"
+                        type="email"
+                        placeholder="ornek@mail.com"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="loginPassword">
+                        Şifre
+                    </label>
+
+                    <input
+                        class="form-input"
+                        id="loginPassword"
+                        type="password"
+                        placeholder="••••••••"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-options">
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                        >
+
+                        Beni hatırla
+
+                    </label>
+
+                    <a
+                        href="#"
+                        class="forgot-password"
+                    >
+                        Şifremi unuttum
+                    </a>
+
+                </div>
+
+
+                <button
+                    class="modal-submit"
+                    type="submit"
+                >
+                    Giriş Yap
+                </button>
+
+            </form>
+
+
+            <div class="modal-footer">
+
+                Henüz hesabın yok mu?
+
+                <button
+                    type="button"
+                    data-switch-modal="registerModal"
+                >
+                    Kayıt Ol
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         KAYIT MODALI
+    ========================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="registerModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="registerTitle"
+        >
+
+            <button
+                class="modal-close"
+                type="button"
+                data-close-modal
+                aria-label="Kapat"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+
+            <div class="modal-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+
+            <h2 id="registerTitle">
+                Topluluğa Katıl
+            </h2>
+
+            <p class="modal-description">
+                Hesabını oluştur ve binlerce masaüstü oyun severine katıl.
+            </p>
+
+
+            <form id="registerForm">
+
+                <div class="form-group">
+
+                    <label for="registerUsername">
+                        Kullanıcı Adı
+                    </label>
+
+                    <input
+                        class="form-input"
+                        id="registerUsername"
+                        type="text"
+                        placeholder="MeepleKralı"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="registerEmail">
+                        E-posta
+                    </label>
+
+                    <input
+                        class="form-input"
+                        id="registerEmail"
+                        type="email"
+                        placeholder="ornek@mail.com"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="registerPassword">
+                        Şifre
+                    </label>
+
+                    <input
+                        class="form-input"
+                        id="registerPassword"
+                        type="password"
+                        placeholder="En az 8 karakter"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    class="modal-submit"
+                    type="submit"
+                >
+                    Hesap Oluştur
+                </button>
+
+            </form>
+
+
+            <div class="modal-footer">
+
+                Zaten hesabın var mı?
+
+                <button
+                    type="button"
+                    data-switch-modal="loginModal"
+                >
+                    Giriş Yap
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         TOAST
+    ========================================================== -->
+
+    <div
+        class="toast"
+        id="toast"
+        role="status"
+    >
+
+        <i class="fa-solid fa-circle-check"></i>
+
+        <span id="toastMessage">
+            İşlem tamamlandı.
+        </span>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+         Modal, navigasyon, arama, kartlar ve etkileşimler
+    ========================================================== -->
+
+    <script>
+
+        /* =========================================================
+           ELEMENTLER
+        ========================================================== */
+
+        const body = document.body;
+
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+
+        let toastTimer;
+
+
+        /* =========================================================
+           TOAST BİLDİRİMİ
+        ========================================================== */
+
+        function showToast(message) {
+
+            toastMessage.textContent = message;
+
+            toast.classList.add("show");
+
+            clearTimeout(toastTimer);
+
+            toastTimer = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2800);
+        }
+
+
+        /* =========================================================
+           MODAL AÇ
+        ========================================================== */
+
+        function openModal(modalId) {
+
+            const modal = document.getElementById(modalId);
+
+            if (!modal) return;
+
+            modal.classList.add("active");
+
+            modal.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            body.classList.add("modal-open");
+
+            const firstInput =
+                modal.querySelector("input");
+
+            if (firstInput) {
+
+                setTimeout(() => {
+                    firstInput.focus();
+                }, 200);
+
+            }
+        }
+
+
+        /* =========================================================
+           MODAL KAPAT
+        ========================================================== */
+
+        function closeModal(modal) {
+
+            if (!modal) return;
+
+            modal.classList.remove("active");
+
+            modal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            body.classList.remove("modal-open");
+        }
+
+
+        /* =========================================================
+           MODAL BUTONLARI
+        ========================================================== */
+
+        document
+            .querySelectorAll("[data-modal]")
+            .forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    openModal(
+                        button.dataset.modal
+                    );
+
+                });
+
+            });
+
+
+        document
+            .querySelectorAll("[data-close-modal]")
+            .forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    closeModal(
+                        button.closest(".modal-overlay")
+                    );
+
+                });
+
+            });
+
+
+        /* =========================================================
+           MODAL DEĞİŞTİR
+        ========================================================== */
+
+        document
+            .querySelectorAll("[data-switch-modal]")
+            .forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    const currentModal =
+                        button.closest(".modal-overlay");
+
+                    closeModal(currentModal);
+
+                    setTimeout(() => {
+
+                        openModal(
+                            button.dataset.switchModal
+                        );
+
+                    }, 180);
+
+                });
+
+            });
+
+
+        /* =========================================================
+           MODAL DIŞINA TIKLAYARAK KAPAT
+        ========================================================== */
+
+        document
+            .querySelectorAll(".modal-overlay")
+            .forEach(overlay => {
+
+                overlay.addEventListener("click", event => {
+
+                    if (event.target === overlay) {
+                        closeModal(overlay);
+                    }
+
+                });
+
+            });
+
+
+        /* =========================================================
+           ESC TUŞU İLE MODAL KAPAT
+        ========================================================== */
+
+        document.addEventListener("keydown", event => {
+
+            if (event.key !== "Escape") return;
+
+            const activeModal =
+                document.querySelector(
+                    ".modal-overlay.active"
+                );
+
+            if (activeModal) {
+                closeModal(activeModal);
+            }
+
+        });
+
+
+        /* =========================================================
+           GİRİŞ FORMU
+        ========================================================== */
+
+        document
+            .getElementById("loginForm")
+            .addEventListener("submit", event => {
+
+                event.preventDefault();
+
+                closeModal(
+                    document.getElementById("loginModal")
+                );
+
+                event.target.reset();
+
+                showToast(
+                    "Demo giriş formu gönderildi."
+                );
+
+            });
+
+
+        /* =========================================================
+           KAYIT FORMU
+        ========================================================== */
+
+        document
+            .getElementById("registerForm")
+            .addEventListener("submit", event => {
+
+                event.preventDefault();
+
+                closeModal(
+                    document.getElementById("registerModal")
+                );
+
+                event.target.reset();
+
+                showToast(
+                    "Demo kayıt formu gönderildi."
+                );
+
+            });
+
+
+        /* =========================================================
+           YENİ KONU
+        ========================================================== */
+
+        document
+            .getElementById("newTopicBtn")
+            .addEventListener("click", () => {
+
+                showToast(
+                    "Yeni konu oluşturma ekranı burada açılacak."
+                );
+
+            });
+
+
+        /* =========================================================
+           KATEGORİ KARTLARI
+        ========================================================== */
+
+        document
+            .querySelectorAll("[data-category]")
+            .forEach(card => {
+
+                card.addEventListener("click", event => {
+
+                    event.preventDefault();
+
+                    const category =
+                        card.dataset.category;
+
+                    showToast(
+                        category +
+                        " kategorisine yönlendiriliyorsunuz."
+                    );
+
+                });
+
+            });
+
+
+        /* =========================================================
+           DUNE: IMPERIUM
+        ========================================================== */
+
+        const weeklyGame =
+            document.getElementById(
+                "weeklyGameCard"
+            );
+
+        weeklyGame.addEventListener("click", event => {
+
+            if (
+                event.target.closest("#reviewLink")
+            ) {
+                event.preventDefault();
+            }
+
+            showToast(
+                "Dune: Imperium inceleme sayfası açılacak."
+            );
+
+        });
+
+        weeklyGame.addEventListener("keydown", event => {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+                showToast(
+                    "Dune: Imperium inceleme sayfası açılacak."
+                );
+
+            }
+
+        });
+
+
+        /* =========================================================
+           POPÜLER ETİKETLER
+        ========================================================== */
+
+        document
+            .querySelectorAll("[data-tag]")
+            .forEach(tag => {
+
+                tag.addEventListener("click", event => {
+
+                    event.preventDefault();
+
+                    showToast(
+                        tag.dataset.tag +
+                        " etiketi filtreleniyor."
+                    );
+
+                });
+
+            });
+
+
+        /* =========================================================
+           GENEL DATA-ACTION LINKLERİ
+        ========================================================== */
+
+        document
+            .querySelectorAll("[data-action]")
+            .forEach(link => {
+
+                link.addEventListener("click", event => {
+
+                    event.preventDefault();
+
+                    const action =
+                        link.dataset.action;
+
+                    const messages = {
+
+                        home:
+                            "Ana sayfaya dönüyorsunuz.",
+
+                        categories:
+                            "Kategoriler açılacak.",
+
+                        "all-categories":
+                            "Tüm kategoriler açılacak.",
+
+                        popular:
+                            "Popüler başlıklar açılacak.",
+
+                        reviews:
+                            "İncelemeler açılacak.",
+
+                        events:
+                            "Etkinlikler açılacak.",
+
+                        "all-topics":
+                            "Tüm başlıklar açılacak.",
+
+                        members:
+                            "Topluluk üyeleri açılacak.",
+
+                        rules:
+                            "Topluluk kuralları açılacak.",
+
+                        moderators:
+                            "Moderatörler açılacak.",
+
+                        help:
+                            "Yardım merkezi açılacak.",
+
+                        about:
+                            "Hakkımızda sayfası açılacak.",
+
+                        contact:
+                            "İletişim sayfası açılacak.",
+
+                        privacy:
+                            "Gizlilik sayfası açılacak.",
+
+                        terms:
+                            "Kullanım koşulları açılacak."
+
+                    };
+
+                    showToast(
+                        messages[action] ||
+                        "Sayfa açılacak."
+                    );
+
+                });
+
+            });
+
+
+        /* =========================================================
+           ARAMA
+        ========================================================== */
+
+        const searchInput =
+            document.getElementById(
+                "searchInput"
+            );
+
+        searchInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (event.key !== "Enter") return;
+
+                const query =
+                    searchInput.value.trim();
+
+                if (!query) {
+
+                    showToast(
+                        "Aramak için bir kelime yazın."
+                    );
+
+                    return;
+                }
+
+                showToast(
+                    '"' +
+                    query +
+                    '" için arama yapılıyor.'
+                );
+
+            }
+        );
+
+
+        /* =========================================================
+           MOBİL MENÜ
+        ========================================================== */
+
+        const mobileMenuBtn =
+            document.getElementById(
+                "mobileMenuBtn"
+            );
+
+        mobileMenuBtn.addEventListener(
+            "click",
+            () => {
+
+                const nav =
+                    document.querySelector("nav");
+
+                const isVisible =
+                    nav.style.display === "flex";
+
+                nav.style.display =
+                    isVisible ? "none" : "flex";
+
+                if (!isVisible) {
+
+                    nav.style.position = "absolute";
+                    nav.style.top = "65px";
+                    nav.style.left = "12px";
+                    nav.style.right = "12px";
+
+                    nav.style.padding = "10px";
+
+                    nav.style.flexDirection = "column";
+                    nav.style.alignItems = "stretch";
+
+                    nav.style.background = "#1d1a18";
+
+                    nav.style.border =
+                        "1px solid rgba(255,255,255,0.08)";
+
+                    nav.style.borderRadius = "12px";
+
+                    nav.style.boxShadow =
+                        "0 20px 50px rgba(0,0,0,.4)";
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           MOBİLDE NAV LINKİNE TIKLANINCA MENÜYÜ KAPAT
+        ========================================================== */
+
+        document
+            .querySelectorAll("nav a")
+            .forEach(link => {
+
+                link.addEventListener("click", () => {
+
+                    if (window.innerWidth <= 1100) {
+
+                        document.querySelector(
+                            "nav"
+                        ).style.display = "none";
+
+                    }
+
+                });
+
+            });
+
+
+        /* =========================================================
+           PLACEHOLDER KONU KARTLARI
+           Gelecekte backend/API ile gerçek veriler burada
+           render edilebilir.
+        ========================================================== */
+
+        const topicTemplate = {
+            user: "",
+            title: "",
+            category: "",
+            replies: 0,
+            lastActivity: ""
+        };
+
+        /*
+            Örnek veri yapısı:
+
+            const topics = [
+                {
+                    user: "MeepleKralı",
+                    title: "Yeni oyun önerisi",
+                    category: "Eurogame",
+                    replies: 12,
+                    lastActivity: "5 dk önce"
+                }
+            ];
+
+            Backend bağlantısı yapıldığında
+            .topics içerisine bu veriler render edilebilir.
+        */
+
+
+        /* =========================================================
+           PENCERE BOYUTU DEĞİŞİNCE MOBİL MENÜ RESET
+        ========================================================== */
+
+        window.addEventListener("resize", () => {
+
+            if (window.innerWidth > 1100) {
+
+                const nav =
+                    document.querySelector("nav");
+
+                nav.style = "";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>
