@@ -2941,6 +2941,8 @@
         .game-card > i { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 15px; background: rgba(210,167,92,.13); color: var(--gold-light); font-size: 24px; }
         .game-card h3 { margin: 18px 0 8px; font-size: 20px; }
         .game-card p { color: var(--text-secondary); min-height: 66px; }
+        .game-card-stats { margin-top: 14px; color: var(--text-secondary); font-size: 13px; }
+        .game-card-stats i { color: var(--gold); margin-right: 5px; }
         .personal-best { display: flex; justify-content: space-between; align-items: center; margin: 18px 0; padding: 12px; border-radius: 10px; background: rgba(255,255,255,.035); color: var(--text-secondary); }
         .personal-best strong { color: var(--gold-light); font-size: 20px; }
         .game-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
@@ -2962,8 +2964,10 @@
         .memory-pads button { min-height: 110px; font-size: 36px; }
         .memory-pads button.flash { background: var(--gold); color: #171513; transform: scale(.96); }
         .game-help { margin-top: 16px; color: var(--text-secondary); font-size: 13px; }
-        .game-leaderboard h3 { margin-bottom: 14px; }
+        .leaderboard-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .game-leaderboard h3 { margin: 0; }
         .game-leaderboard h3 i { color: var(--gold); margin-right: 7px; }
+        .contestant-count { color: var(--text-secondary); font-size: 12px; white-space: nowrap; }
         .score-row { display: flex; justify-content: space-between; gap: 12px; padding: 11px 8px; border-bottom: 1px solid var(--border); }
         .score-row.is-me { background: rgba(210,167,92,.09); color: var(--gold-light); border-radius: 8px; }
         .score-row .profile-link { display: inline; }
@@ -6497,10 +6501,17 @@
         }
 
 
+        function gamePlayerCount(gameId) {
+            return new Set(cachedGameScores
+                .filter(item => item.gameId === gameId && item.userId)
+                .map(item => item.userId)).size;
+        }
+
+
         function gameLeaderboardMarkup(gameId) {
             const rows = cachedGameScores.filter(item => item.gameId === gameId)
                 .sort((a, b) => Number(b.score || 0) - Number(a.score || 0)).slice(0, 3);
-            return `<aside class="game-leaderboard"><h3><i class="fa-solid fa-trophy"></i> İlk 3 Oyuncu</h3>
+            return `<aside class="game-leaderboard" id="gameLeaderboard"><div class="leaderboard-heading"><h3><i class="fa-solid fa-trophy"></i> İlk 3 Oyuncu</h3><span class="contestant-count"><i class="fa-solid fa-users"></i> ${gamePlayerCount(gameId)} yarışmacı</span></div>
                 ${rows.map((row, index) => {
                     const profile = cachedPublicProfiles.find(item => (item.uid || item.id) === row.userId);
                     const playerName = profile?.displayName || row.displayName || "Meeple Oyuncusu";
@@ -6510,7 +6521,7 @@
 
 
         function gamesMarkup() {
-            return `<div class="game-grid">${Object.entries(miniGames).map(([id, game]) => `<article class="game-card"><i class="fa-solid ${game.icon}"></i><h3>${game.title}</h3><p>${game.description}</p><div class="personal-best"><span>En iyi skorun</span><strong>${gameBestScore(id).toLocaleString("tr-TR")}</strong></div><a class="primary-btn" href="#game=${id}"><i class="fa-solid fa-play"></i> Oyna</a></article>`).join("")}</div>`;
+            return `<div class="game-grid">${Object.entries(miniGames).map(([id, game]) => `<article class="game-card"><i class="fa-solid ${game.icon}"></i><h3>${game.title}</h3><p>${game.description}</p><div class="game-card-stats"><span><i class="fa-solid fa-users"></i> ${gamePlayerCount(id)} yarışmacı</span></div><div class="personal-best"><span>En iyi skorun</span><strong>${gameBestScore(id).toLocaleString("tr-TR")}</strong></div><a class="primary-btn" href="#game=${id}"><i class="fa-solid fa-play"></i> Oyna</a></article>`).join("")}</div>`;
         }
 
 
@@ -6518,7 +6529,7 @@
             const gameEntries = Object.entries(miniGames).map(([id, game]) => {
                 const scores = cachedGameScores.filter(item => item.gameId === id)
                     .sort((a,b) => Number(b.score || 0) - Number(a.score || 0));
-                return {id, game, scores, playerCount: scores.length};
+                return {id, game, scores, playerCount: gamePlayerCount(id)};
             }).sort((a,b) => b.playerCount - a.playerCount || Number(b.scores[0]?.score || 0) - Number(a.scores[0]?.score || 0));
 
             homeGamesShowcase.innerHTML = gameEntries.slice(0,3).map(({id,game,scores,playerCount}) => {
@@ -6575,6 +6586,28 @@
             } catch (error) {
                 console.error("Oyun skoru kaydedilemedi:", error);
                 showToast(getDataErrorMessage(error, "Skor kaydedilemedi. Firestore kurallarını kontrol et."), "error");
+            }
+        }
+
+
+        async function registerGameParticipant(gameId) {
+            const user = auth.currentUser;
+            if (!user) return;
+            const scoreRef = doc(db, "gameScores", `${gameId}_${user.uid}`);
+            try {
+                await runTransaction(db, async transaction => {
+                    const current = await transaction.get(scoreRef);
+                    transaction.set(scoreRef, {
+                        gameId,
+                        score: current.exists() ? Number(current.data().score || 0) : 0,
+                        userId: user.uid,
+                        displayName: cachedProfile?.displayName || getDefaultDisplayName(user),
+                        lastPlayedAt: serverTimestamp(),
+                        updatedAt: current.exists() ? (current.data().updatedAt || serverTimestamp()) : serverTimestamp()
+                    });
+                });
+            } catch (error) {
+                console.error("Oyun katılımı kaydedilemedi:", error);
             }
         }
 
@@ -6702,6 +6735,7 @@
             };
             let gameHasStarted = false;
             startButton.addEventListener("click", () => {
+                if (!gameHasStarted) registerGameParticipant(gameId);
                 if (gameHasStarted && currentVisibleScore() > 0) {
                     saveGameScore(gameId, currentVisibleScore());
                 }
@@ -9311,7 +9345,13 @@
                     }));
                     renderHomeChallenges();
                     const route = decodeURIComponent(window.location.hash.slice(1));
-                    if (route === "games" || route.startsWith("game=")) renderRoute();
+                    if (route === "games") {
+                        renderRoute();
+                    } else if (route.startsWith("game=")) {
+                        const gameId = route.slice("game=".length);
+                        const leaderboard = document.getElementById("gameLeaderboard");
+                        if (leaderboard) leaderboard.outerHTML = gameLeaderboardMarkup(gameId);
+                    }
                 },
                 error => console.error("Oyun skorları alınamadı:", error)
             );
