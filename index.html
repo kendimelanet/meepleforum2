@@ -2402,6 +2402,18 @@
             line-height: 1.65;
         }
 
+        .venue-photo-credit {
+            margin: -5px 0 12px;
+            color: var(--text-muted);
+            font-size: 9px;
+            line-height: 1.45;
+        }
+
+        .venue-photo-credit a {
+            color: var(--gold-light);
+            text-decoration: none;
+        }
+
         .directory-card-body {
             padding: 17px;
         }
@@ -6386,7 +6398,7 @@
                         <div class="directory-grid">
                             ${cachedVenues.filter(venue => venue.city === city).map(venue => `
                                 <article class="directory-card">
-                                    ${safeImageURL(venue.photoURL) ? `<img class="directory-card-image" src="${escapeHTML(safeImageURL(venue.photoURL))}" alt="${escapeHTML(venue.name || "Mekan")}">` : '<div class="directory-card-image"></div>'}
+                                    ${safeImageURL(venue.photoURL) ? `<img class="directory-card-image" src="${escapeHTML(safeImageURL(venue.photoURL))}" alt="${escapeHTML(venue.name || "Mekan")}" loading="lazy">` : '<div class="directory-card-image"></div>'}
                                     ${Number.isFinite(Number(venue.latitude)) && Number.isFinite(Number(venue.longitude)) ? `
                                         <iframe
                                             class="venue-map"
@@ -6399,6 +6411,17 @@
                                     <div class="directory-card-body">
                                         <h3>${escapeHTML(venue.name || "Google Maps Mekanı")}</h3>
                                         <p>${escapeHTML(venue.address || "Adres için Google Maps bağlantısını aç.")}</p>
+                                        ${Array.isArray(venue.photoAttributions) && venue.photoAttributions.length ? `
+                                            <div class="venue-photo-credit">
+                                                Fotoğraf: ${venue.photoAttributions.map(item => {
+                                                    const attributionURL = safeImageURL(item?.uri || "");
+                                                    const attributionName = escapeHTML(item?.displayName || "Google Maps kullanıcısı");
+                                                    return attributionURL
+                                                        ? `<a href="${escapeHTML(attributionURL)}" target="_blank" rel="noopener">${attributionName}</a>`
+                                                        : attributionName;
+                                                }).join(", ")}
+                                            </div>
+                                        ` : ""}
                                         ${Array.isArray(venue.openingHours) && venue.openingHours.length ? `
                                             <div class="venue-hours">
                                                 <strong><i class="fa-regular fa-clock"></i> Çalışma Saatleri</strong><br>
@@ -6444,10 +6467,17 @@
 
 
         async function fetchGooglePlaceFromMapsLink(linkData) {
+            const user = auth?.currentUser;
+            if (!user) throw new Error("Mekan eklemek için giriş yapmalısın.");
+
+            const idToken = await user.getIdToken();
             const response = await withTimeout(
                 fetch(GOOGLE_PLACES_PROXY_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${idToken}`
+                    },
                     body: JSON.stringify({ mapsUrl: linkData.mapsUrl })
                 }),
                 25000
@@ -6456,6 +6486,9 @@
             const result = await response.json().catch(() => ({}));
 
             if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error("Google Maps Function henüz Firebase'e yayınlanmamış.");
+                }
                 throw new Error(result.error || "Google Maps bilgileri alınamadı.");
             }
 
@@ -8766,6 +8799,8 @@
                             address: googleData?.address || "Adres için Google Maps bağlantısını aç.",
                             mapsUrl: googleData?.mapsUrl || linkData.mapsUrl,
                             photoURL: googleData?.photoURL || "",
+                            photoResourceName: googleData?.photoResourceName || "",
+                            photoAttributions: Array.isArray(googleData?.photoAttributions) ? googleData.photoAttributions : [],
                             openingHours: Array.isArray(googleData?.openingHours) ? googleData.openingHours : [],
                             latitude: Number.isFinite(Number(googleData?.latitude)) ? Number(googleData.latitude) : null,
                             longitude: Number.isFinite(Number(googleData?.longitude)) ? Number(googleData.longitude) : null,
@@ -9003,6 +9038,8 @@
                         await setDoc(doc(db, "venues", venue.id), {
                             placeId: googleData.placeId || venue.placeId || "", name: googleData.name, city: googleData.city,
                             address: googleData.address, mapsUrl: googleData.mapsUrl || venue.mapsUrl, photoURL: googleData.photoURL || "",
+                            photoResourceName: googleData.photoResourceName || venue.photoResourceName || "",
+                            photoAttributions: Array.isArray(googleData.photoAttributions) ? googleData.photoAttributions : [],
                             openingHours: Array.isArray(googleData.openingHours) ? googleData.openingHours : [],
                             latitude: Number.isFinite(Number(googleData.latitude)) ? Number(googleData.latitude) : null,
                             longitude: Number.isFinite(Number(googleData.longitude)) ? Number(googleData.longitude) : null,
