@@ -7271,7 +7271,13 @@
                 setRouteHeader("Mini Oyun", game.title, game.description);
                 routeContent.innerHTML = gamePageMarkup(gameId);
                 document.querySelector('nav a[data-action="games"]')?.classList.add("active");
-                requestAnimationFrame(() => initializeGame(gameId));
+                /*
+                 * Oyun dinleyicilerini DOM oluşturulur oluşturulmaz bağla.
+                 * requestAnimationFrame bazı mobil tarayıcılarda veya art arda
+                 * gelen Firestore çizimlerinde ertelenebildiği için başlatma
+                 * düğmesi dinleyicisiz kalabiliyordu.
+                 */
+                initializeGame(gameId);
 
             } else if (rawHash === "admin") {
                 setRouteHeader(
@@ -9532,7 +9538,11 @@
                 onlineCountUnsubscribe = onValue(
                     databaseRef(realtimeDb, "presence"),
                     snapshot => {
-                        renderOnlineCount(snapshot.numChildren());
+                        let activeConnectionCount = 0;
+                        snapshot.forEach(() => {
+                            activeConnectionCount += 1;
+                        });
+                        renderOnlineCount(activeConnectionCount);
                     },
                     error => {
                         console.error("Çevrimiçi sayısı alınamadı:", error);
