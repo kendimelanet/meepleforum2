@@ -183,7 +183,7 @@
 
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 14px;
         }
 
 
@@ -250,19 +250,22 @@
         nav {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 1px;
 
             margin-left: auto;
+            white-space: nowrap;
         }
 
         nav a {
             position: relative;
 
-            padding: 9px 11px;
+            padding: 8px 8px;
 
             color: var(--text-secondary);
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 500;
+            line-height: 1.2;
+            white-space: nowrap;
 
             border-radius: 8px;
 
@@ -276,8 +279,8 @@
 
             position: absolute;
 
-            left: 11px;
-            right: 11px;
+            left: 8px;
+            right: 8px;
             bottom: 4px;
 
             height: 2px;
@@ -306,7 +309,8 @@
 
         .header-search {
             position: relative;
-            width: 190px;
+            width: 150px;
+            flex: 0 0 150px;
         }
 
         .header-search i {
@@ -2069,6 +2073,16 @@
             line-height: 1.8;
         }
 
+        .topic-detail-image {
+            width: 100%;
+            max-height: 560px;
+            margin-top: 20px;
+            object-fit: contain;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: #11100f;
+        }
+
         .engagement-panel {
             max-width: 900px;
             margin-top: 16px;
@@ -2188,6 +2202,8 @@
         .owner-actions {
             display: flex;
             justify-content: flex-end;
+            gap: 9px;
+            flex-wrap: wrap;
             margin-top: 18px;
         }
 
@@ -2307,6 +2323,92 @@
             border: 1px solid rgba(210,167,92,.25);
             border-radius: var(--radius-md);
             background: var(--bg-card);
+        }
+
+        .directory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0,1fr));
+            gap: 14px;
+        }
+
+        .directory-card {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+        }
+
+        .directory-card-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: linear-gradient(145deg, rgba(113,52,56,.25), rgba(62,101,79,.2));
+        }
+
+        .directory-card-body {
+            padding: 17px;
+        }
+
+        .directory-card h3 {
+            margin-bottom: 6px;
+            font-size: 17px;
+        }
+
+        .directory-card p {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .status-chip {
+            display: inline-flex;
+            margin-bottom: 9px;
+            padding: 4px 7px;
+            border-radius: 999px;
+            background: rgba(62,101,79,.16);
+            color: var(--green-light);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .status-chip.pending {
+            background: rgba(210,167,92,.12);
+            color: var(--gold-light);
+        }
+
+        .community-form,
+        .venue-form {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 22px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+        }
+
+        .member-list {
+            display: grid;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .member-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .profile-clubs {
+            margin-top: 14px;
+            color: var(--text-secondary);
+            font-size: 13px;
         }
 
         .chat-shell {
@@ -2557,6 +2659,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .directory-grid {
+                grid-template-columns: 1fr;
+            }
+
             .chat-message {
                 max-width: 92%;
             }
@@ -2767,6 +2873,14 @@
 
                 <a href="#" data-action="giveaways">
                     Çekilişler
+                </a>
+
+                <a href="#" data-action="communities">
+                    Topluluklar
+                </a>
+
+                <a href="#" data-action="venues">
+                    Mekanlar
                 </a>
 
             </nav>
@@ -3153,6 +3267,26 @@
                                 <i class="fa-solid fa-chevron-right"></i>
                             </div>
 
+                        </a>
+
+
+                        <!-- 7 -->
+
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="FRP / Rol Yapma Oyunları"
+                        >
+                            <div class="category-icon">
+                                <i class="fa-solid fa-dice-d20"></i>
+                            </div>
+                            <div class="category-info">
+                                <h3>FRP / Rol Yapma Oyunları</h3>
+                                <p>Sistemler, senaryolar ve oyuncu arayışları</p>
+                            </div>
+                            <div class="category-arrow">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
                         </a>
 
                     </div>
@@ -4254,6 +4388,7 @@
                         <option value="Kart Oyunları">Kart Oyunları</option>
                         <option value="Miniatür & Boyama">Miniatür & Boyama</option>
                         <option value="İkinci El / Takas">İkinci El / Takas</option>
+                        <option value="FRP / Rol Yapma Oyunları">FRP / Rol Yapma Oyunları</option>
                     </select>
                 </div>
 
@@ -4266,6 +4401,17 @@
                         maxlength="5000"
                         required
                     ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="topicImage">Gönderi Fotoğrafı <span style="color:var(--text-muted)">(isteğe bağlı)</span></label>
+                    <input
+                        class="form-input"
+                        id="topicImage"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
+                    <small style="color:var(--text-muted)">JPG, PNG veya WebP · otomatik küçültülür</small>
                 </div>
 
                 <button
@@ -4653,6 +4799,8 @@
                         events: "events",
                         chat: "chat",
                         giveaways: "giveaways",
+                        communities: "communities",
+                        venues: "venues",
                         "all-topics": "topics"
                     };
 
@@ -4905,6 +5053,7 @@
             getDoc,
             setDoc,
             deleteDoc,
+            writeBatch,
             runTransaction,
             onSnapshot,
             serverTimestamp
@@ -4941,6 +5090,10 @@
             appId: "1:398143304572:web:cf6830dbfa22e4ed6c2af9",
             measurementId: "G-RSP81XMB1V"
         };
+
+        // Google Cloud Console'da Places API (New) anahtarı oluşturduğunda
+        // buraya yaz. Firebase apiKey bu alan için kullanılmaz.
+        const GOOGLE_MAPS_PLACES_API_KEY = "";
 
 
         const {
@@ -5041,7 +5194,8 @@
             { name: "Eurogame", icon: "fa-landmark" },
             { name: "Kart Oyunları", icon: "fa-clone" },
             { name: "Miniatür & Boyama", icon: "fa-paintbrush" },
-            { name: "İkinci El / Takas", icon: "fa-arrow-right-arrow-left" }
+            { name: "İkinci El / Takas", icon: "fa-arrow-right-arrow-left" },
+            { name: "FRP / Rol Yapma Oyunları", icon: "fa-dice-d20" }
         ];
 
         let cachedTopics = [];
@@ -5050,6 +5204,15 @@
         let cachedPublicProfiles = [];
         let cachedGiveaways = [];
         let cachedChatMessages = [];
+        let cachedCommunities = [];
+        let cachedMemberships = [];
+        let cachedVenues = [];
+        let cachedReviews = {
+            "dune-imperium": {
+                title: "Dune: Imperium",
+                content: "Dune: Imperium; deste oluşturma, işçi yerleştirme ve çatışma mekaniklerini güçlü bir politik gerilimle birleştiriyor. Her turdaki sınırlı ajan seçimi, kartların hem kaynak hem de aksiyon olarak kullanılması ve ittifak yarışları oyuna sürekli zor kararlar katıyor."
+            }
+        };
         let isCurrentUserAdmin = false;
         let pendingPhotoFile = null;
         let pendingPhotoPromise = null;
@@ -5361,6 +5524,10 @@
                 profile?.photoURL || fallbackTopic?.authorPhotoURL || ""
             );
             const initial = displayName.charAt(0).toLocaleUpperCase("tr-TR") || "M";
+            const memberships = getApprovedCommunityMemberships(userId);
+            const joinedCommunities = memberships
+                .map(membership => cachedCommunities.find(community => community.id === membership.communityId))
+                .filter(Boolean);
 
             return `
                 <article class="profile-page">
@@ -5390,7 +5557,19 @@
                                 <strong>${cachedComments.filter(comment => comment.authorId === userId).length}</strong>
                                 <span>Yorum</span>
                             </div>
+                            <div class="profile-stat">
+                                <strong>${joinedCommunities.length}</strong>
+                                <span>Topluluk / kulüp</span>
+                            </div>
                         </div>
+                        ${joinedCommunities.length ? `
+                            <div class="profile-clubs">
+                                <strong>Katıldığı topluluklar:</strong>
+                                ${joinedCommunities.map(community => `
+                                    <button class="author-link" type="button" data-community-open="${escapeHTML(community.id)}">${escapeHTML(community.name)}</button>
+                                `).join(" · ")}
+                            </div>
+                        ` : ""}
                     </div>
                 </article>
                 <div style="margin-top:22px">
@@ -5476,6 +5655,7 @@
                     <div class="chat-messages" id="chatMessages">
                         ${cachedChatMessages.length ? cachedChatMessages.map(message => {
                             const own = currentUser?.uid === message.authorId;
+                            const canDelete = Boolean(own || isCurrentUserAdmin);
                             return `
                                 <article class="chat-message ${own ? "own" : ""}">
                                     <div class="chat-message-head">
@@ -5486,7 +5666,7 @@
                                             )}
                                             · ${new Date(Number(message.createdAt || Date.now())).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
                                         </span>
-                                        ${own ? `
+                                        ${canDelete ? `
                                             <button class="danger-btn" type="button" data-delete-chat="${escapeHTML(message.id)}" aria-label="Mesajı sil">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
@@ -5529,6 +5709,209 @@
         }
 
 
+        function getApprovedCommunityMemberships(userId) {
+            return cachedMemberships.filter(membership =>
+                membership.userId === userId && membership.status === "approved"
+            );
+        }
+
+
+        function communitiesMarkup() {
+
+            const currentUser = window.meepleForumAuthUser;
+            const visibleCommunities = cachedCommunities.filter(community =>
+                community.status === "active" ||
+                isCurrentUserAdmin ||
+                community.ownerId === currentUser?.uid
+            );
+
+            return `
+                ${currentUser ? `
+                    <form class="community-form" id="communityForm">
+                        <h2>Yeni Topluluk Aç</h2>
+                        <div class="form-group">
+                            <label for="communityName">Topluluk Adı</label>
+                            <input class="form-input" id="communityName" name="name" maxlength="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="communityType">Topluluk Türü</label>
+                            <select class="form-select" id="communityType" name="type" required>
+                                <option value="community">Oyuncu Topluluğu</option>
+                                <option value="bkfk">Üniversite BKFK Kulübü (admin onaylı)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="communityUniversity">Üniversite / Kurum</label>
+                            <input class="form-input" id="communityUniversity" name="university" maxlength="120" placeholder="BKFK kulüpleri için üniversite adını yaz">
+                        </div>
+                        <div class="form-group">
+                            <label for="communityCity">Şehir</label>
+                            <input class="form-input" id="communityCity" name="city" maxlength="60" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="communityDescription">Açıklama</label>
+                            <textarea class="form-textarea" id="communityDescription" name="description" maxlength="1200" required></textarea>
+                        </div>
+                        <button class="primary-btn" type="submit"><i class="fa-solid fa-users"></i> Topluluğu Oluştur</button>
+                    </form>
+                ` : '<button class="primary-btn" type="button" data-login-for-community>Topluluk açmak için giriş yap</button>'}
+
+                <div class="directory-grid" style="margin-top:18px">
+                    ${visibleCommunities.length ? visibleCommunities.map(community => {
+                        const members = cachedMemberships.filter(membership =>
+                            membership.communityId === community.id && membership.status === "approved"
+                        ).length;
+                        return `
+                            <article class="directory-card">
+                                <div class="directory-card-body">
+                                    <span class="status-chip ${community.status === "pending" ? "pending" : ""}">
+                                        ${community.status === "pending" ? "Admin onayı bekliyor" : community.type === "bkfk" ? "Üniversite BKFK" : "Topluluk"}
+                                    </span>
+                                    <h3>${escapeHTML(community.name || "Adsız topluluk")}</h3>
+                                    <p>${escapeHTML(community.city || "Şehir belirtilmedi")}${community.university ? ` · ${escapeHTML(community.university)}` : ""}</p>
+                                    <p>${members} üye</p>
+                                    <button class="primary-btn" type="button" data-community-open="${escapeHTML(community.id)}">Topluluğu Aç</button>
+                                </div>
+                            </article>
+                        `;
+                    }).join("") : '<div class="empty-state"><i class="fa-solid fa-users"></i>Henüz topluluk oluşturulmamış.</div>'}
+                </div>
+            `;
+        }
+
+
+        function communityDetailMarkup(community) {
+
+            const currentUser = window.meepleForumAuthUser;
+            const currentMembership = cachedMemberships.find(membership =>
+                membership.communityId === community.id && membership.userId === currentUser?.uid
+            );
+            const isOwner = currentUser?.uid === community.ownerId;
+            const canManage = Boolean(isOwner || isCurrentUserAdmin);
+            const approvedMembers = cachedMemberships.filter(membership =>
+                membership.communityId === community.id && membership.status === "approved"
+            );
+            const pendingMembers = cachedMemberships.filter(membership =>
+                membership.communityId === community.id && membership.status === "pending"
+            );
+
+            let joinAction = "";
+            if (!currentUser) joinAction = '<button class="primary-btn" type="button" data-login-for-community>Katılmak için giriş yap</button>';
+            else if (isOwner) joinAction = '<span class="status-chip">Topluluk sahibisin</span>';
+            else if (currentMembership?.status === "approved") joinAction = '<span class="status-chip">Üyesin</span>';
+            else if (currentMembership?.status === "pending") joinAction = '<span class="status-chip pending">Katılım isteğin bekliyor</span>';
+            else joinAction = `<button class="primary-btn" type="button" data-request-membership="${escapeHTML(community.id)}">Katılma İsteği Gönder</button>`;
+
+            return `
+                <article class="topic-detail">
+                    <div class="topic-detail-meta">
+                        <span>${community.type === "bkfk" ? "Üniversite BKFK Kulübü" : "Oyuncu Topluluğu"}</span>
+                        <span>•</span>
+                        <span>${escapeHTML(community.city || "Şehir belirtilmedi")}</span>
+                    </div>
+                    <div class="topic-detail-body">${escapeHTML(community.description || "")}</div>
+                    ${community.university ? `<p class="profile-clubs"><strong>Üniversite:</strong> ${escapeHTML(community.university)}</p>` : ""}
+                    <p class="profile-clubs"><strong>Kurucu:</strong> ${profileLinkMarkup(community.ownerId, community.ownerName || "Topluluk sahibi")}</p>
+                    <div class="owner-actions">${joinAction}</div>
+                </article>
+                <div class="member-list">
+                    <h2 class="comments-title">Üyeler (${approvedMembers.length})</h2>
+                    ${approvedMembers.map(membership => `
+                        <div class="member-row">
+                            ${profileLinkMarkup(membership.userId, membership.userName || "Üye")}
+                            <span>${membership.role === "owner" ? "Kurucu" : "Üye"}</span>
+                        </div>
+                    `).join("") || '<div class="empty-state">Henüz üye yok.</div>'}
+                </div>
+                ${canManage && pendingMembers.length ? `
+                    <div class="member-list">
+                        <h2 class="comments-title">Katılım İstekleri (${pendingMembers.length})</h2>
+                        ${pendingMembers.map(membership => `
+                            <div class="member-row">
+                                ${profileLinkMarkup(membership.userId, membership.userName || "Kullanıcı")}
+                                <button class="primary-btn" type="button" data-approve-membership="${escapeHTML(membership.id)}">Onayla</button>
+                            </div>
+                        `).join("")}
+                    </div>
+                ` : ""}
+            `;
+        }
+
+
+        function venuesMarkup() {
+
+            const cities = [...new Set(cachedVenues.map(venue => venue.city).filter(Boolean))]
+                .sort((a, b) => a.localeCompare(b, "tr"));
+
+            const adminForm = isCurrentUserAdmin ? `
+                <form class="venue-form" id="venueForm">
+                    <h2>Yeni Mekan Ekle</h2>
+                    <div class="form-group"><label for="venuePlaceId">Google Place ID</label><input class="form-input" id="venuePlaceId" name="placeId" placeholder="Places API ile otomatik bilgi çekmek için"></div>
+                    <div class="form-group"><label for="venueName">Mekan Adı</label><input class="form-input" id="venueName" name="name" maxlength="120"></div>
+                    <div class="form-group"><label for="venueCity">Şehir</label><input class="form-input" id="venueCity" name="city" maxlength="60"></div>
+                    <div class="form-group"><label for="venueAddress">Adres</label><input class="form-input" id="venueAddress" name="address" maxlength="240"></div>
+                    <div class="form-group"><label for="venueMapsUrl">Google Maps Bağlantısı</label><input class="form-input" id="venueMapsUrl" name="mapsUrl" type="url"></div>
+                    <div class="form-group"><label for="venuePhotoUrl">Fotoğraf URL'si</label><input class="form-input" id="venuePhotoUrl" name="photoURL" type="url"></div>
+                    <button class="primary-btn" type="submit"><i class="fa-solid fa-location-dot"></i> Mekanı Ekle</button>
+                </form>
+            ` : "";
+
+            return `
+                ${adminForm}
+                ${cities.length ? cities.map(city => `
+                    <section style="margin-bottom:26px">
+                        <h2 class="comments-title">${escapeHTML(city)}</h2>
+                        <div class="directory-grid">
+                            ${cachedVenues.filter(venue => venue.city === city).map(venue => `
+                                <article class="directory-card">
+                                    ${safeImageURL(venue.photoURL) ? `<img class="directory-card-image" src="${escapeHTML(safeImageURL(venue.photoURL))}" alt="${escapeHTML(venue.name || "Mekan")}">` : '<div class="directory-card-image"></div>'}
+                                    <div class="directory-card-body">
+                                        <h3>${escapeHTML(venue.name || "Adsız mekan")}</h3>
+                                        <p>${escapeHTML(venue.address || "Adres belirtilmedi")}</p>
+                                        <div class="owner-actions">
+                                            ${safeImageURL(venue.mapsUrl) ? `<a class="primary-btn" href="${escapeHTML(safeImageURL(venue.mapsUrl))}" target="_blank" rel="noopener">Google Maps</a>` : ""}
+                                            ${isCurrentUserAdmin ? `<button class="danger-btn" type="button" data-delete-venue="${escapeHTML(venue.id)}">Sil</button>` : ""}
+                                        </div>
+                                    </div>
+                                </article>
+                            `).join("")}
+                        </div>
+                    </section>
+                `).join("") : '<div class="empty-state"><i class="fa-solid fa-location-dot"></i>Henüz mekan eklenmemiş.</div>'}
+            `;
+        }
+
+
+        async function fetchGooglePlaceDetails(placeId) {
+
+            if (!placeId || !GOOGLE_MAPS_PLACES_API_KEY) return null;
+
+            const response = await fetch(
+                `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`,
+                { headers: {
+                    "X-Goog-Api-Key": GOOGLE_MAPS_PLACES_API_KEY,
+                    "X-Goog-FieldMask": "id,displayName,formattedAddress,addressComponents,googleMapsUri,photos"
+                } }
+            );
+
+            if (!response.ok) throw new Error("Google Places bilgisi alınamadı.");
+
+            const place = await response.json();
+            const photoName = place.photos?.[0]?.name || "";
+            const city = place.addressComponents?.find(component =>
+                component.types?.includes("administrative_area_level_1") || component.types?.includes("locality")
+            )?.longText || "";
+
+            return {
+                name: place.displayName?.text || "",
+                city,
+                address: place.formattedAddress || "",
+                mapsUrl: place.googleMapsUri || "",
+                photoURL: photoName ? `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=900&key=${encodeURIComponent(GOOGLE_MAPS_PLACES_API_KEY)}` : ""
+            };
+        }
+
+
         function adminPanelMarkup() {
 
             if (!isCurrentUserAdmin) {
@@ -5549,9 +5932,10 @@
                                 <strong>${escapeHTML(topic.title || "Başlıksız konu")}</strong>
                                 <small>${escapeHTML(topic.authorName || "Bilinmeyen kullanıcı")}</small>
                             </div>
-                            <button class="danger-btn" type="button" data-delete-topic="${escapeHTML(topic.id)}">
-                                <i class="fa-solid fa-trash"></i> Gönderiyi Sil
-                            </button>
+                            <div class="owner-actions">
+                                <button class="vote-btn" type="button" data-edit-topic="${escapeHTML(topic.id)}"><i class="fa-solid fa-pen"></i> Düzenle</button>
+                                <button class="danger-btn" type="button" data-delete-topic="${escapeHTML(topic.id)}"><i class="fa-solid fa-trash"></i> Sil</button>
+                            </div>
                         </div>
                     `).join("") || '<div class="empty-state">Henüz başlık yok.</div>'}
 
@@ -5580,6 +5964,20 @@
                             </button>
                         </div>
                     `).join("") || '<div class="empty-state">Henüz çekiliş yok.</div>'}
+
+                    <h2>İncelemeler</h2>
+                    <div class="admin-row">
+                        <div><strong>${escapeHTML(cachedReviews["dune-imperium"].title)}</strong><small>Yayınlanmış inceleme</small></div>
+                        <button class="vote-btn" type="button" data-edit-review="dune-imperium"><i class="fa-solid fa-pen"></i> Düzenle</button>
+                    </div>
+
+                    <h2>BKFK Onayları</h2>
+                    ${cachedCommunities.filter(community => community.type === "bkfk" && community.status === "pending").map(community => `
+                        <div class="admin-row">
+                            <div><strong>${escapeHTML(community.name)}</strong><small>${escapeHTML(community.university || "Üniversite belirtilmedi")} · ${escapeHTML(community.city || "")}</small></div>
+                            <button class="primary-btn" type="button" data-approve-community="${escapeHTML(community.id)}">Kulübü Onayla</button>
+                        </div>
+                    `).join("") || '<div class="empty-state">Bekleyen BKFK kulübü yok.</div>'}
                 </div>
             `;
         }
@@ -5703,8 +6101,10 @@
                                 <span class="topic-category">${escapeHTML(topic.category || "Genel")}</span>
                             </div>
                             <div class="topic-detail-body">${escapeHTML(topic.content || "")}</div>
+                            ${safeImageURL(topic.imageURL) ? `<img class="topic-detail-image" src="${escapeHTML(safeImageURL(topic.imageURL))}" alt="${escapeHTML(topic.title || "Gönderi görseli")}">` : ""}
                             ${canDeleteTopic ? `
                                 <div class="owner-actions">
+                                    <button class="vote-btn" type="button" data-edit-topic="${escapeHTML(topic.id)}"><i class="fa-solid fa-pen"></i> Gönderiyi Düzenle</button>
                                     <button class="danger-btn" type="button" data-delete-topic="${escapeHTML(topic.id)}">
                                         <i class="fa-solid fa-trash"></i>
                                         Gönderiyi Sil
@@ -5754,9 +6154,10 @@
                 document.querySelector('nav a[data-action="reviews"]')?.classList.add("active");
 
             } else if (rawHash === "review=dune-imperium") {
+                const review = cachedReviews["dune-imperium"];
                 setRouteHeader(
                     "Oyun İncelemesi",
-                    "Dune: Imperium",
+                    review.title,
                     "Topluluk incelemesi, yorumlar ve oylar."
                 );
                 routeContent.innerHTML = `
@@ -5766,7 +6167,8 @@
                             <span>•</span>
                             <span>Strateji</span>
                         </div>
-                        <div class="topic-detail-body">Dune: Imperium; deste oluşturma, işçi yerleştirme ve çatışma mekaniklerini güçlü bir politik gerilimle birleştiriyor. Her turdaki sınırlı ajan seçimi, kartların hem kaynak hem de aksiyon olarak kullanılması ve ittifak yarışları oyuna sürekli zor kararlar katıyor.</div>
+                        <div class="topic-detail-body">${escapeHTML(review.content)}</div>
+                        ${isCurrentUserAdmin ? `<div class="owner-actions"><button class="vote-btn" type="button" data-edit-review="dune-imperium"><i class="fa-solid fa-pen"></i> İncelemeyi Düzenle</button></div>` : ""}
                     </article>
                     ${engagementMarkup("review", "dune-imperium")}
                 `;
@@ -5836,11 +6238,34 @@
                 }
                 document.querySelector('nav a[data-action="giveaways"]')?.classList.add("active");
 
+            } else if (rawHash === "communities") {
+                setRouteHeader("Kulüpler ve Oyuncu Grupları", "Topluluklar", "Yeni bir topluluk kur veya mevcut bir kulübe katılma isteği gönder.");
+                routeContent.innerHTML = communitiesMarkup();
+                document.querySelector('nav a[data-action="communities"]')?.classList.add("active");
+
+            } else if (rawHash.startsWith("community=")) {
+                const communityId = rawHash.slice("community=".length);
+                const community = cachedCommunities.find(item => item.id === communityId);
+
+                if (!community || (community.status !== "active" && !isCurrentUserAdmin && community.ownerId !== window.meepleForumAuthUser?.uid)) {
+                    setRouteHeader("Topluluklar", "Topluluk bulunamadı", "Bu topluluk henüz onaylanmamış veya kaldırılmış olabilir.");
+                    routeContent.innerHTML = '<div class="empty-state"><i class="fa-solid fa-users"></i>Topluluk bulunamadı.</div>';
+                } else {
+                    setRouteHeader(community.type === "bkfk" ? "Üniversite BKFK Kulübü" : "Oyuncu Topluluğu", community.name, community.city || "Topluluk detayları");
+                    routeContent.innerHTML = communityDetailMarkup(community);
+                }
+                document.querySelector('nav a[data-action="communities"]')?.classList.add("active");
+
+            } else if (rawHash === "venues") {
+                setRouteHeader("Şehir Rehberi", "Mekanlar", "Masaüstü oyun oynanabilecek mekanları şehir şehir keşfet.");
+                routeContent.innerHTML = venuesMarkup();
+                document.querySelector('nav a[data-action="venues"]')?.classList.add("active");
+
             } else if (rawHash === "admin") {
                 setRouteHeader(
                     "Moderasyon",
                     "Admin Paneli",
-                    "Başlıkları, yorumları ve çekilişleri tek noktadan yönet."
+                    "Başlıkları, incelemeleri, yorumları, çekilişleri ve BKFK onaylarını yönet."
                 );
                 routeContent.innerHTML = adminPanelMarkup();
 
@@ -5859,6 +6284,7 @@
             const categoryLink = event.target.closest("[data-category-route]");
             const profileLink = event.target.closest("[data-profile-open]");
             const giveawayButton = event.target.closest("[data-giveaway-open]");
+            const communityButton = event.target.closest("[data-community-open]");
 
             if (topicButton) {
                 window.location.hash =
@@ -5879,6 +6305,11 @@
             if (giveawayButton) {
                 window.location.hash =
                     "giveaway=" + encodeURIComponent(giveawayButton.dataset.giveawayOpen);
+            }
+
+            if (communityButton) {
+                window.location.hash =
+                    "community=" + encodeURIComponent(communityButton.dataset.communityOpen);
             }
         });
 
@@ -5988,7 +6419,7 @@
             if (!("createImageBitmap" in window)) return file;
 
             const bitmap = await createImageBitmap(file);
-            const maxDimension = 512;
+            const maxDimension = 384;
             const scale = Math.min(
                 1,
                 maxDimension / Math.max(bitmap.width, bitmap.height)
@@ -6007,11 +6438,38 @@
                 canvas.toBlob(
                     result => result ? resolve(result) : reject(new Error("Görsel dönüştürülemedi.")),
                     "image/webp",
-                    0.82
+                    0.78
                 );
             });
 
             return new File([blob], "avatar.webp", { type: "image/webp" });
+        }
+
+
+        async function optimizeTopicImage(file) {
+
+            if (!("createImageBitmap" in window)) return file;
+
+            const bitmap = await createImageBitmap(file);
+            const maxDimension = 1200;
+            const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+            const width = Math.max(1, Math.round(bitmap.width * scale));
+            const height = Math.max(1, Math.round(bitmap.height * scale));
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext("2d").drawImage(bitmap, 0, 0, width, height);
+            bitmap.close?.();
+
+            const blob = await new Promise((resolve, reject) => {
+                canvas.toBlob(
+                    result => result ? resolve(result) : reject(new Error("Gönderi görseli dönüştürülemedi.")),
+                    "image/webp",
+                    0.82
+                );
+            });
+
+            return new File([blob], "topic.webp", { type: "image/webp" });
         }
 
 
@@ -6527,6 +6985,19 @@
                     return;
                 }
 
+                const profileUnchanged =
+                    !pendingPhotoFile &&
+                    !pendingPhotoPromise &&
+                    displayName === (cachedProfile?.displayName || getDefaultDisplayName(user)) &&
+                    favoriteGame === (cachedProfile?.favoriteGame || "") &&
+                    bio === (cachedProfile?.bio || "");
+
+                if (profileUnchanged) {
+                    closeModal(profileModal);
+                    showToast("Profilinde değişiklik yok.");
+                    return;
+                }
+
                 setButtonBusy(
                     profileSubmit,
                     true,
@@ -6576,17 +7047,33 @@
                         updatedAt: serverTimestamp()
                     };
 
+                    const publicProfileData = {
+                        uid: user.uid,
+                        displayName,
+                        favoriteGame,
+                        bio,
+                        photoURL,
+                        updatedAt: serverTimestamp()
+                    };
+
+                    const profileBatch = writeBatch(db);
+                    profileBatch.set(
+                        doc(db, "users", user.uid),
+                        profileData,
+                        { merge: true }
+                    );
+                    profileBatch.set(
+                        doc(db, "publicProfiles", user.uid),
+                        publicProfileData,
+                        { merge: true }
+                    );
+
                     await Promise.all([
                         updateProfile(user, {
                             displayName,
                             photoURL
                         }),
-                        setDoc(
-                            doc(db, "users", user.uid),
-                            profileData,
-                            { merge: true }
-                        ),
-                        syncPublicProfile(user, profileData)
+                        profileBatch.commit()
                     ]);
 
                     cachedProfile = {
@@ -6646,11 +7133,21 @@
                 const title = document.getElementById("topicTitle").value.trim();
                 const category = document.getElementById("topicCategory").value;
                 const content = document.getElementById("topicContent").value.trim();
+                const topicImageFile = document.getElementById("topicImage").files?.[0] || null;
 
                 setFormMessage(topicMessage);
 
                 if (!title || !category || !content) {
                     setFormMessage(topicMessage, "Lütfen bütün alanları doldur.");
+                    return;
+                }
+
+                if (
+                    topicImageFile &&
+                    (!["image/jpeg", "image/png", "image/webp"].includes(topicImageFile.type) ||
+                    topicImageFile.size > 10 * 1024 * 1024)
+                ) {
+                    setFormMessage(topicMessage, "Gönderi fotoğrafı JPG, PNG veya WebP olmalı ve 10 MB'ı geçmemeli.");
                     return;
                 }
 
@@ -6668,6 +7165,19 @@
                             ? cachedProfile
                             : {};
 
+                    let imageURL = "";
+
+                    if (topicImageFile) {
+                        const optimizedImage = await optimizeTopicImage(topicImageFile).catch(() => topicImageFile);
+                        const imageRef = storageRef(storage, `topic-images/${user.uid}/${Date.now()}-topic`);
+                        const uploadSnapshot = await uploadBytes(
+                            imageRef,
+                            optimizedImage,
+                            { contentType: optimizedImage.type }
+                        );
+                        imageURL = await getDownloadURL(uploadSnapshot.ref);
+                    }
+
                     const topicData = {
                         title,
                         category,
@@ -6677,6 +7187,7 @@
                             profile.displayName || getDefaultDisplayName(user),
                         authorPhotoURL:
                             profile.photoURL || user.photoURL || "",
+                        imageURL,
                         replies: 0,
                         createdAt: serverTimestamp(),
                         updatedAt: serverTimestamp()
@@ -6748,6 +7259,102 @@
 
 
             routeContent.addEventListener("submit", async event => {
+
+                const communityForm = event.target.closest(".community-form");
+
+                if (communityForm) {
+                    event.preventDefault();
+                    const user = auth.currentUser;
+                    if (!user) return openModal("loginModal");
+
+                    const name = communityForm.elements.name.value.trim();
+                    const type = communityForm.elements.type.value;
+                    const university = communityForm.elements.university.value.trim();
+                    const city = communityForm.elements.city.value.trim();
+                    const description = communityForm.elements.description.value.trim();
+                    const button = communityForm.querySelector('button[type="submit"]');
+
+                    if (!name || !city || !description || !["community", "bkfk"].includes(type)) return;
+                    if (type === "bkfk" && !university) {
+                        showToast("BKFK kulübü için üniversite adını yazmalısın.", "error");
+                        return;
+                    }
+
+                    setButtonBusy(button, true, "Oluşturuluyor...", '<i class="fa-solid fa-users"></i> Topluluğu Oluştur');
+
+                    try {
+                        const communityRef = doc(collection(db, "communities"));
+                        const membershipRef = doc(db, "communityMemberships", `${communityRef.id}_${user.uid}`);
+                        const batch = writeBatch(db);
+                        batch.set(communityRef, {
+                            name, type, university, city, description,
+                            ownerId: user.uid,
+                            ownerName: cachedProfile?.displayName || getDefaultDisplayName(user),
+                            status: type === "bkfk" ? "pending" : "active",
+                            createdAt: serverTimestamp(),
+                            updatedAt: serverTimestamp()
+                        });
+                        batch.set(membershipRef, {
+                            communityId: communityRef.id,
+                            userId: user.uid,
+                            userName: cachedProfile?.displayName || getDefaultDisplayName(user),
+                            role: "owner",
+                            status: "approved",
+                            createdAt: serverTimestamp()
+                        });
+                        await batch.commit();
+                        communityForm.reset();
+                        showToast(type === "bkfk" ? "BKFK kulübün admin onayına gönderildi." : "Topluluğun oluşturuldu.");
+                    } catch (error) {
+                        console.error("Topluluk oluşturulamadı:", error);
+                        showToast(getDataErrorMessage(error, "Topluluk oluşturulamadı."), "error");
+                    } finally {
+                        setButtonBusy(button, false, "", '<i class="fa-solid fa-users"></i> Topluluğu Oluştur');
+                    }
+                    return;
+                }
+
+                const venueForm = event.target.closest(".venue-form");
+
+                if (venueForm) {
+                    event.preventDefault();
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Mekanları yalnızca admin ekleyebilir.", "error");
+                        return;
+                    }
+
+                    const button = venueForm.querySelector('button[type="submit"]');
+                    setButtonBusy(button, true, "Bilgiler alınıyor...", '<i class="fa-solid fa-location-dot"></i> Mekanı Ekle');
+
+                    try {
+                        const placeId = venueForm.elements.placeId.value.trim();
+                        const googleData = await fetchGooglePlaceDetails(placeId);
+                        const venueData = {
+                            placeId,
+                            name: googleData?.name || venueForm.elements.name.value.trim(),
+                            city: googleData?.city || venueForm.elements.city.value.trim(),
+                            address: googleData?.address || venueForm.elements.address.value.trim(),
+                            mapsUrl: googleData?.mapsUrl || venueForm.elements.mapsUrl.value.trim(),
+                            photoURL: googleData?.photoURL || venueForm.elements.photoURL.value.trim(),
+                            createdBy: auth.currentUser.uid,
+                            createdAt: serverTimestamp()
+                        };
+
+                        if (!venueData.name || !venueData.city) {
+                            throw new Error("Mekan adı ve şehir gereklidir.");
+                        }
+
+                        await addDoc(collection(db, "venues"), venueData);
+                        venueForm.reset();
+                        showToast("Mekan eklendi.");
+                    } catch (error) {
+                        console.error("Mekan eklenemedi:", error);
+                        showToast(error.message || "Mekan eklenemedi.", "error");
+                    } finally {
+                        setButtonBusy(button, false, "", '<i class="fa-solid fa-location-dot"></i> Mekanı Ekle');
+                    }
+                    return;
+                }
 
                 const giveawayForm = event.target.closest(".giveaway-form");
 
@@ -6933,11 +7540,198 @@
                     return;
                 }
 
+                if (event.target.closest("[data-login-for-community]")) {
+                    openModal("loginModal");
+                    return;
+                }
+
                 const voteButton = event.target.closest("[data-vote-type]");
                 const deleteCommentButton = event.target.closest("[data-delete-comment]");
                 const deleteTopicButton = event.target.closest("[data-delete-topic]");
                 const deleteGiveawayButton = event.target.closest("[data-delete-giveaway]");
                 const deleteChatButton = event.target.closest("[data-delete-chat]");
+                const editTopicButton = event.target.closest("[data-edit-topic]");
+                const editReviewButton = event.target.closest("[data-edit-review]");
+                const requestMembershipButton = event.target.closest("[data-request-membership]");
+                const approveMembershipButton = event.target.closest("[data-approve-membership]");
+                const approveCommunityButton = event.target.closest("[data-approve-community]");
+                const deleteVenueButton = event.target.closest("[data-delete-venue]");
+
+                if (requestMembershipButton) {
+                    const user = auth.currentUser;
+                    if (!user) {
+                        openModal("loginModal");
+                        return;
+                    }
+
+                    const communityId = requestMembershipButton.dataset.requestMembership;
+                    const community = cachedCommunities.find(item => item.id === communityId);
+
+                    if (!community || community.status !== "active") {
+                        showToast("Bu topluluğa şu anda katılma isteği gönderilemez.", "error");
+                        return;
+                    }
+
+                    requestMembershipButton.disabled = true;
+
+                    try {
+                        await setDoc(
+                            doc(db, "communityMemberships", `${communityId}_${user.uid}`),
+                            {
+                                communityId,
+                                userId: user.uid,
+                                userName: cachedProfile?.displayName || getDefaultDisplayName(user),
+                                role: "member",
+                                status: "pending",
+                                createdAt: serverTimestamp()
+                            }
+                        );
+                        showToast("Katılma isteğin topluluk yöneticisine gönderildi.");
+                    } catch (error) {
+                        console.error("Katılma isteği gönderilemedi:", error);
+                        showToast(getDataErrorMessage(error, "Katılma isteği gönderilemedi."), "error");
+                        requestMembershipButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (approveMembershipButton) {
+                    const user = auth.currentUser;
+                    const membershipId = approveMembershipButton.dataset.approveMembership;
+                    const membership = cachedMemberships.find(item => item.id === membershipId);
+                    const community = cachedCommunities.find(item => item.id === membership?.communityId);
+
+                    if (!user || !membership || (!isCurrentUserAdmin && community?.ownerId !== user.uid)) {
+                        showToast("Bu üyelik isteğini onaylama yetkin yok.", "error");
+                        return;
+                    }
+
+                    approveMembershipButton.disabled = true;
+
+                    try {
+                        await setDoc(doc(db, "communityMemberships", membershipId), {
+                            status: "approved",
+                            approvedAt: serverTimestamp(),
+                            approvedBy: user.uid
+                        }, { merge: true });
+                        showToast("Üyelik isteği onaylandı.");
+                    } catch (error) {
+                        console.error("Üyelik onaylanamadı:", error);
+                        showToast(getDataErrorMessage(error, "Üyelik onaylanamadı."), "error");
+                        approveMembershipButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (approveCommunityButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("BKFK kulüplerini yalnızca admin onaylayabilir.", "error");
+                        return;
+                    }
+
+                    const communityId = approveCommunityButton.dataset.approveCommunity;
+                    approveCommunityButton.disabled = true;
+
+                    try {
+                        await setDoc(doc(db, "communities", communityId), {
+                            status: "active",
+                            approvedAt: serverTimestamp(),
+                            approvedBy: auth.currentUser.uid,
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+                        showToast("BKFK kulübü onaylandı.");
+                    } catch (error) {
+                        console.error("Kulüp onaylanamadı:", error);
+                        showToast(getDataErrorMessage(error, "Kulüp onaylanamadı."), "error");
+                        approveCommunityButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (deleteVenueButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Mekanları yalnızca admin silebilir.", "error");
+                        return;
+                    }
+
+                    if (!window.confirm("Bu mekanı silmek istediğine emin misin?")) return;
+
+                    try {
+                        await deleteDoc(doc(db, "venues", deleteVenueButton.dataset.deleteVenue));
+                        showToast("Mekan silindi.");
+                    } catch (error) {
+                        console.error("Mekan silinemedi:", error);
+                        showToast(getDataErrorMessage(error, "Mekan silinemedi."), "error");
+                    }
+                    return;
+                }
+
+                if (editTopicButton) {
+                    const user = auth.currentUser;
+                    const topicId = editTopicButton.dataset.editTopic;
+                    const topic = cachedTopics.find(item => item.id === topicId);
+
+                    if (!user || !topic || (!isCurrentUserAdmin && topic.authorId !== user.uid)) {
+                        showToast("Bu gönderiyi düzenleme yetkin yok.", "error");
+                        return;
+                    }
+
+                    const nextTitle = window.prompt("Gönderi başlığı", topic.title || "");
+                    if (nextTitle === null) return;
+                    const nextContent = window.prompt("Gönderi içeriği", topic.content || "");
+                    if (nextContent === null) return;
+
+                    if (!nextTitle.trim() || !nextContent.trim()) {
+                        showToast("Başlık ve içerik boş bırakılamaz.", "error");
+                        return;
+                    }
+
+                    try {
+                        await setDoc(doc(db, "topics", topicId), {
+                            title: nextTitle.trim().slice(0, 120),
+                            content: nextContent.trim().slice(0, 5000),
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+                        showToast("Gönderi güncellendi.");
+                    } catch (error) {
+                        console.error("Gönderi güncellenemedi:", error);
+                        showToast(getDataErrorMessage(error, "Gönderi güncellenemedi."), "error");
+                    }
+                    return;
+                }
+
+                if (editReviewButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("İncelemeleri yalnızca admin düzenleyebilir.", "error");
+                        return;
+                    }
+
+                    const reviewId = editReviewButton.dataset.editReview;
+                    const currentReview = cachedReviews[reviewId] || {};
+                    const nextTitle = window.prompt("İnceleme başlığı", currentReview.title || "");
+                    if (nextTitle === null) return;
+                    const nextContent = window.prompt("İnceleme metni", currentReview.content || "");
+                    if (nextContent === null) return;
+
+                    if (!nextTitle.trim() || !nextContent.trim()) {
+                        showToast("İnceleme başlığı ve metni boş bırakılamaz.", "error");
+                        return;
+                    }
+
+                    try {
+                        await setDoc(doc(db, "reviews", reviewId), {
+                            title: nextTitle.trim().slice(0, 140),
+                            content: nextContent.trim().slice(0, 10000),
+                            updatedAt: serverTimestamp(),
+                            updatedBy: auth.currentUser.uid
+                        }, { merge: true });
+                        showToast("İnceleme güncellendi.");
+                    } catch (error) {
+                        console.error("İnceleme güncellenemedi:", error);
+                        showToast(getDataErrorMessage(error, "İnceleme güncellenemedi."), "error");
+                    }
+                    return;
+                }
 
                 if (voteButton) {
 
@@ -7084,8 +7878,8 @@
                     const messageId = deleteChatButton.dataset.deleteChat;
                     const message = cachedChatMessages.find(item => item.id === messageId);
 
-                    if (!user || message?.authorId !== user.uid || !realtimeDb) {
-                        showToast("Yalnızca kendi mesajını silebilirsin.", "error");
+                    if (!user || !realtimeDb || (!isCurrentUserAdmin && message?.authorId !== user.uid)) {
+                        showToast("Bu mesajı silme yetkin yok.", "error");
                         return;
                     }
 
@@ -7095,6 +7889,7 @@
                         console.error("Sohbet mesajı silinemedi:", error);
                         showToast("Mesaj silinemedi.", "error");
                     }
+                    return;
                 }
             });
 
@@ -7202,6 +7997,75 @@
                 },
                 error => {
                     console.error("Çekilişler alınamadı:", error);
+                }
+            );
+
+
+            onSnapshot(
+                collection(db, "communities"),
+                snapshot => {
+                    cachedCommunities = snapshot.docs
+                        .map(communityDocument => ({
+                            id: communityDocument.id,
+                            ...communityDocument.data()
+                        }))
+                        .sort((a, b) => (a.name || "").localeCompare(b.name || "", "tr"));
+                    renderRoute();
+                },
+                error => {
+                    console.error("Topluluklar alınamadı:", error);
+                }
+            );
+
+
+            onSnapshot(
+                collection(db, "communityMemberships"),
+                snapshot => {
+                    cachedMemberships = snapshot.docs.map(membershipDocument => ({
+                        id: membershipDocument.id,
+                        ...membershipDocument.data()
+                    }));
+                    renderRoute();
+                },
+                error => {
+                    console.error("Topluluk üyelikleri alınamadı:", error);
+                }
+            );
+
+
+            onSnapshot(
+                collection(db, "venues"),
+                snapshot => {
+                    cachedVenues = snapshot.docs
+                        .map(venueDocument => ({
+                            id: venueDocument.id,
+                            ...venueDocument.data()
+                        }))
+                        .sort((a, b) => {
+                            const cityCompare = (a.city || "").localeCompare(b.city || "", "tr");
+                            return cityCompare || (a.name || "").localeCompare(b.name || "", "tr");
+                        });
+                    renderRoute();
+                },
+                error => {
+                    console.error("Mekanlar alınamadı:", error);
+                }
+            );
+
+
+            onSnapshot(
+                doc(db, "reviews", "dune-imperium"),
+                reviewSnapshot => {
+                    if (reviewSnapshot.exists()) {
+                        cachedReviews["dune-imperium"] = {
+                            ...cachedReviews["dune-imperium"],
+                            ...reviewSnapshot.data()
+                        };
+                    }
+                    renderRoute();
+                },
+                error => {
+                    console.error("İnceleme alınamadı:", error);
                 }
             );
 
