@@ -6570,15 +6570,18 @@
             if (!user) return showToast(`Skorun ${score}. Sıralamaya girmek için giriş yap.`, "error");
             const scoreRef = doc(db, "gameScores", `${gameId}_${user.uid}`);
             try {
-                let isNewRecord = false;
-                let savedBest = score;
-                await runTransaction(db, async transaction => {
-                    const current = await transaction.get(scoreRef);
-                    const previousBest = current.exists() ? Number(current.data().score || 0) : -1;
-                    savedBest = Math.max(previousBest, score);
-                    isNewRecord = score > previousBest;
-                    transaction.set(scoreRef, { gameId, score: savedBest, userId: user.uid, displayName: cachedProfile?.displayName || getDefaultDisplayName(user), updatedAt: serverTimestamp() });
-                });
+                const current = await withTimeout(getDoc(scoreRef), 12000);
+                const previousBest = current.exists() ? Number(current.data().score || 0) : -1;
+                const savedBest = Math.max(previousBest, score);
+                const isNewRecord = score > previousBest;
+                await withTimeout(setDoc(scoreRef, {
+                    gameId,
+                    score: savedBest,
+                    userId: user.uid,
+                    displayName: cachedProfile?.displayName || getDefaultDisplayName(user),
+                    updatedAt: serverTimestamp(),
+                    lastPlayedAt: serverTimestamp()
+                }, { merge: true }), 12000);
                 showToast(isNewRecord
                     ? `Yeni rekor: ${savedBest.toLocaleString("tr-TR")} puan!`
                     : `Skor kaydedildi. Rekorun: ${savedBest.toLocaleString("tr-TR")} puan.`
@@ -6595,19 +6598,28 @@
             if (!user) return;
             const scoreRef = doc(db, "gameScores", `${gameId}_${user.uid}`);
             try {
-                await runTransaction(db, async transaction => {
-                    const current = await transaction.get(scoreRef);
-                    transaction.set(scoreRef, {
+                const current = await withTimeout(getDoc(scoreRef), 12000);
+                if (current.exists()) {
+                    await withTimeout(setDoc(scoreRef, {
+                        displayName: cachedProfile?.displayName || getDefaultDisplayName(user),
+                        lastPlayedAt: serverTimestamp()
+                    }, { merge: true }), 12000);
+                } else {
+                    await withTimeout(setDoc(scoreRef, {
                         gameId,
-                        score: current.exists() ? Number(current.data().score || 0) : 0,
+                        score: 0,
                         userId: user.uid,
                         displayName: cachedProfile?.displayName || getDefaultDisplayName(user),
                         lastPlayedAt: serverTimestamp(),
-                        updatedAt: current.exists() ? (current.data().updatedAt || serverTimestamp()) : serverTimestamp()
-                    });
-                });
+                        updatedAt: serverTimestamp()
+                    }), 12000);
+                }
             } catch (error) {
                 console.error("Oyun katılımı kaydedilemedi:", error);
+                showToast(
+                    getDataErrorMessage(error, "Yarışmacı kaydı oluşturulamadı. Firestore gameScores kuralını kontrol et."),
+                    "error"
+                );
             }
         }
 
