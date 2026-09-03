@@ -2951,6 +2951,7 @@
         .game-hud strong { font-size: 18px; color: var(--gold-light); }
         .game-hud-actions { display: flex; align-items: center; gap: 9px; }
         .game-hud-actions .primary-btn, .game-hud-actions .secondary-btn { min-height: 42px; }
+        .auto-save-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 12px; border: 1px solid rgba(104,181,138,.25); border-radius: 10px; background: rgba(104,181,138,.08); color: var(--success); font-size: 12px; font-weight: 700; white-space: nowrap; }
         .space-game { display: block; width: min(100%, 360px); height: auto; margin: auto; border: 1px solid var(--border-strong); border-radius: 14px; background: #090b16; touch-action: none; }
         .space-game.wide-game { width: min(100%, 640px); }
         .space-game.blocks-game { width: min(100%, 300px); image-rendering: pixelated; }
@@ -5544,6 +5545,9 @@
         let cachedEvents = [];
         let cachedGameScores = [];
         let activeGameCleanup = null;
+        let activeGameSession = null;
+        let activeScoreObserver = null;
+        let activeScoreSaveTimer = null;
         let cachedWeeklyGame = {
             title: "Dune: Imperium",
             description: "Güçlü deste oluşturma mekanikleri, işçi yerleştirme ve entrikalarla dolu rekabetçi bir strateji deneyimi.",
@@ -6560,14 +6564,17 @@
             if (gameId === "reaction") board = `<button id="reactionBoard" class="reaction-board" type="button">Başlamak için dokun veya tıkla</button>`;
             if (gameId === "memory") board = `<div id="memoryStatus" class="memory-status">Başlamak için düğmeye bas</div><div class="memory-pads">${[1,2,3,4].map((n, i) => `<button type="button" data-memory-pad="${n}"><i class="fa-solid fa-dice-${["one","two","three","four"][i]}"></i></button>`).join("")}</div>`;
             const controls = gameId === "contra" ? "Bilgisayar: ← → hareket, ↑ zıpla, Boşluk ateş · Telefon: ekrandaki tuşlar." : gameId === "blocks" ? "Bilgisayar: ← → hareket, ↑ döndür, ↓ indir, Boşluk hızlı bırak · Telefon: ekrandaki tuşlar." : (gameId === "space" || gameId === "galaga") ? "Bilgisayar: ← → ve Boşluk · Telefon: alttaki dokunmatik tuşlar." : game.description;
-            return `<div class="game-layout"><section class="game-stage"><div class="game-hud"><strong id="liveGameScore">Skor: 0</strong><div class="game-hud-actions"><button class="secondary-btn" id="saveMiniGameScore" type="button"><i class="fa-solid fa-floppy-disk"></i> Skoru Kaydet</button><button class="primary-btn" id="startMiniGame" type="button"><i class="fa-solid fa-play"></i> Oyunu Başlat</button></div></div>${board}<p class="game-help">${controls}</p></section>${gameLeaderboardMarkup(gameId)}</div>`;
+            return `<div class="game-layout"><section class="game-stage"><div class="game-hud"><strong id="liveGameScore">Skor: 0</strong><div class="game-hud-actions"><span class="auto-save-chip"><i class="fa-solid fa-cloud-arrow-up"></i> Otomatik kayıt</span><button class="primary-btn" id="startMiniGame" type="button"><i class="fa-solid fa-play"></i> Oyunu Başlat</button></div></div>${board}<p class="game-help">${controls}</p></section>${gameLeaderboardMarkup(gameId)}</div>`;
         }
 
 
-        async function saveGameScore(gameId, score) {
+        async function saveGameScore(gameId, score, silent = false) {
             const user = auth.currentUser;
             score = Math.max(0, Math.floor(Number(score) || 0));
-            if (!user) return showToast(`Skorun ${score}. Sıralamaya girmek için giriş yap.`, "error");
+            if (!user) {
+                if (!silent) showToast(`Skorun ${score}. Sıralamaya girmek için giriş yap.`, "error");
+                return false;
+            }
             const scoreRef = doc(db, "gameScores", `${gameId}_${user.uid}`);
             try {
                 const current = await withTimeout(getDoc(scoreRef), 12000);
@@ -6582,13 +6589,15 @@
                     updatedAt: serverTimestamp(),
                     lastPlayedAt: serverTimestamp()
                 }, { merge: true }), 12000);
-                showToast(isNewRecord
+                if (activeGameSession?.gameId === gameId) activeGameSession.lastSaved = score;
+                if (!silent) showToast(isNewRecord
                     ? `Yeni rekor: ${savedBest.toLocaleString("tr-TR")} puan!`
-                    : `Skor kaydedildi. Rekorun: ${savedBest.toLocaleString("tr-TR")} puan.`
-                );
+                    : `Skor kaydedildi. Rekorun: ${savedBest.toLocaleString("tr-TR")} puan.`);
+                return true;
             } catch (error) {
                 console.error("Oyun skoru kaydedilemedi:", error);
                 showToast(getDataErrorMessage(error, "Skor kaydedilemedi. Firestore kurallarını kontrol et."), "error");
+                return false;
             }
         }
 
@@ -6738,24 +6747,31 @@
             if (activeGameCleanup) activeGameCleanup();
             const startButton = document.getElementById("startMiniGame");
             const scoreLabel = document.getElementById("liveGameScore");
-            const saveScoreButton = document.getElementById("saveMiniGameScore");
             if (!startButton || !scoreLabel) return;
 
             const currentVisibleScore = () => {
                 const match = scoreLabel.textContent.match(/Skor:\s*([\d.]+)/);
                 return match ? Number(match[1].replace(/\./g, "")) : 0;
             };
-            let gameHasStarted = false;
-            startButton.addEventListener("click", () => {
-                if (!gameHasStarted) registerGameParticipant(gameId);
-                if (gameHasStarted && currentVisibleScore() > 0) {
-                    saveGameScore(gameId, currentVisibleScore());
-                }
-                gameHasStarted = true;
-            }, { capture: true });
-            saveScoreButton?.addEventListener("click", () => {
-                saveGameScore(gameId, currentVisibleScore());
+            activeGameSession = { gameId, getScore: currentVisibleScore, started: false, lastSaved: -1 };
+            activeScoreObserver?.disconnect();
+            activeScoreObserver = new MutationObserver(() => {
+                if (!activeGameSession?.started) return;
+                const score = currentVisibleScore();
+                if (score === activeGameSession.lastSaved) return;
+                clearTimeout(activeScoreSaveTimer);
+                activeScoreSaveTimer = setTimeout(() => saveGameScore(gameId, score, true), 1600);
             });
+            activeScoreObserver.observe(scoreLabel, { childList: true, subtree: true, characterData: true });
+
+            startButton.addEventListener("click", () => {
+                if (!activeGameSession?.started) {
+                    registerGameParticipant(gameId);
+                } else if (currentVisibleScore() !== activeGameSession.lastSaved) {
+                    saveGameScore(gameId, currentVisibleScore(), true);
+                }
+                if (activeGameSession) activeGameSession.started = true;
+            }, { capture: true });
 
             if (gameId === "galaga") {
                 activeGameCleanup = initializeGalagaGame(startButton, scoreLabel);
@@ -6859,12 +6875,34 @@
 
         function renderRoute() {
 
+            const rawHash = decodeURIComponent(window.location.hash.slice(1));
+
+            if (
+                activeGameSession &&
+                rawHash === `game=${activeGameSession.gameId}` &&
+                document.getElementById("startMiniGame")
+            ) {
+                const leaderboard = document.getElementById("gameLeaderboard");
+                if (leaderboard) leaderboard.outerHTML = gameLeaderboardMarkup(activeGameSession.gameId);
+                return;
+            }
+
+            if (activeGameSession?.started) {
+                const finalScore = activeGameSession.getScore();
+                if (finalScore !== activeGameSession.lastSaved) {
+                    saveGameScore(activeGameSession.gameId, finalScore, true);
+                }
+            }
+
+            clearTimeout(activeScoreSaveTimer);
+            activeScoreObserver?.disconnect();
+            activeScoreObserver = null;
+            activeGameSession = null;
+
             if (activeGameCleanup) {
                 activeGameCleanup();
                 activeGameCleanup = null;
             }
-
-            const rawHash = decodeURIComponent(window.location.hash.slice(1));
 
             const showRouteNewTopic =
                 rawHash === "categories" ||
@@ -7282,6 +7320,14 @@
         });
 
         window.addEventListener("hashchange", renderRoute);
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState !== "hidden" || !activeGameSession?.started) return;
+            const score = activeGameSession.getScore();
+            if (score !== activeGameSession.lastSaved) {
+                saveGameScore(activeGameSession.gameId, score, true);
+            }
+        });
 
         homeTopics.innerHTML = `
             <div class="loading-state">
