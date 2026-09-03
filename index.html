@@ -991,6 +991,25 @@
             line-height: 1.55;
         }
 
+        .topic-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 9px;
+        }
+
+        .topic-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 7px;
+            border: 1px solid rgba(210,167,92,.2);
+            border-radius: 999px;
+            background: rgba(210,167,92,.07);
+            color: var(--gold-light);
+            font-size: 10px;
+            line-height: 1;
+        }
+
         .topic-main {
             min-width: 0;
         }
@@ -1959,6 +1978,10 @@
             flex-shrink: 0;
         }
 
+        .route-actions [hidden] {
+            display: none !important;
+        }
+
         .route-back {
             display: inline-flex;
             align-items: center;
@@ -2412,11 +2435,13 @@
         }
 
         .chat-shell {
+            width: 100%;
             max-width: 900px;
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             overflow: hidden;
             background: var(--bg-card);
+            direction: ltr;
         }
 
         .chat-messages {
@@ -2426,6 +2451,9 @@
             flex-direction: column;
             gap: 9px;
             padding: 18px;
+            direction: ltr;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
 
         .chat-message {
@@ -2456,9 +2484,13 @@
 
         .chat-message p {
             white-space: pre-wrap;
+            overflow-wrap: anywhere;
             color: var(--text-secondary);
             font-size: 13px;
             line-height: 1.55;
+            direction: ltr;
+            unicode-bidi: plaintext;
+            text-align: left;
         }
 
         .chat-form {
@@ -2467,10 +2499,23 @@
             padding: 14px;
             border-top: 1px solid var(--border);
             background: #181513;
+            direction: ltr;
         }
 
-        .chat-form input {
+        .chat-form input,
+        .chat-form textarea {
             flex: 1;
+            min-width: 0;
+            direction: ltr;
+            unicode-bidi: plaintext;
+            text-align: left;
+            writing-mode: horizontal-tb;
+        }
+
+        .chat-form textarea {
+            min-height: 72px;
+            max-height: 180px;
+            resize: vertical;
         }
 
         .modal-footer {
@@ -2732,6 +2777,44 @@
 
             .route-actions > * {
                 flex: 1;
+                justify-content: center;
+            }
+
+            .chat-shell {
+                border-radius: 12px;
+            }
+
+            .chat-messages {
+                height: min(58dvh, 520px);
+                min-height: 310px;
+                padding: 11px;
+            }
+
+            .chat-message {
+                max-width: 92%;
+            }
+
+            .chat-message-head {
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .chat-form {
+                position: sticky;
+                bottom: 0;
+                z-index: 2;
+                flex-direction: column;
+                padding: 11px;
+            }
+
+            .chat-form textarea {
+                width: 100%;
+                min-height: 92px;
+                font-size: 16px;
+            }
+
+            .chat-form .primary-btn {
+                width: 100%;
                 justify-content: center;
             }
 
@@ -3585,7 +3668,7 @@
 
                                 <span class="stat-number" id="onlineCount">
                                     <span class="online-dot"></span>
-                                    —
+                                    0
                                 </span>
 
                                 <span class="stat-label">
@@ -4404,6 +4487,18 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="topicTags">Etiketler <span style="color:var(--text-muted)">(isteğe bağlı)</span></label>
+                    <input
+                        class="form-input"
+                        id="topicTags"
+                        type="text"
+                        placeholder="Örn: TwilightImperium, GameNight, FRP"
+                        maxlength="180"
+                    >
+                    <small style="color:var(--text-muted)">En fazla 5 etiketi virgülle ayır.</small>
+                </div>
+
+                <div class="form-group">
                     <label for="topicImage">Gönderi Fotoğrafı <span style="color:var(--text-muted)">(isteğe bağlı)</span></label>
                     <input
                         class="form-input"
@@ -4765,10 +4860,8 @@
 
                     event.preventDefault();
 
-                    showToast(
-                        tag.dataset.tag +
-                        " etiketi filtreleniyor."
-                    );
+                    window.location.hash =
+                        "tag=" + encodeURIComponent(tag.dataset.tag);
 
                 });
 
@@ -5308,6 +5401,7 @@
                         const replyCount = getTargetComments("topic", topic.id).length;
                         const voteCount = getTargetVotes("topic", topic.id).length;
                         const authorUpvotes = getUserUpvoteCount(topic.authorId);
+                        const tags = Array.isArray(topic.tags) ? topic.tags : [];
 
                         return `
                             <article class="topic-card">
@@ -5343,6 +5437,15 @@
                                     ${excerpt
                                         ? `<p class="topic-excerpt">${escapeHTML(excerpt)}${String(topic.content).length > 145 ? "…" : ""}</p>`
                                         : ""}
+                                    ${tags.length ? `
+                                        <div class="topic-tags">
+                                            ${tags.map(tag => `
+                                                <button class="topic-tag" type="button" data-tag-route="${escapeHTML(tag)}">
+                                                    #${escapeHTML(tag)}
+                                                </button>
+                                            `).join("")}
+                                        </div>
+                                    ` : ""}
                                 </div>
                                 <div class="topic-stats">
                                     <span class="stat-number">${replyCount}</span>
@@ -5684,14 +5787,19 @@
                     </div>
                     ${currentUser ? `
                         <form class="chat-form" id="chatForm">
-                            <input
-                                class="form-input"
+                            <textarea
+                                class="form-textarea"
                                 name="message"
                                 maxlength="500"
                                 autocomplete="off"
+                                autocapitalize="sentences"
+                                spellcheck="true"
+                                rows="3"
+                                dir="ltr"
+                                lang="tr"
                                 placeholder="Mesajını yaz..."
                                 required
-                            >
+                            ></textarea>
                             <button class="primary-btn" type="submit">
                                 <i class="fa-solid fa-paper-plane"></i>
                                 Gönder
@@ -5845,13 +5953,20 @@
 
             const adminForm = isCurrentUserAdmin ? `
                 <form class="venue-form" id="venueForm">
-                    <h2>Yeni Mekan Ekle</h2>
-                    <div class="form-group"><label for="venuePlaceId">Google Place ID</label><input class="form-input" id="venuePlaceId" name="placeId" placeholder="Places API ile otomatik bilgi çekmek için"></div>
-                    <div class="form-group"><label for="venueName">Mekan Adı</label><input class="form-input" id="venueName" name="name" maxlength="120"></div>
-                    <div class="form-group"><label for="venueCity">Şehir</label><input class="form-input" id="venueCity" name="city" maxlength="60"></div>
-                    <div class="form-group"><label for="venueAddress">Adres</label><input class="form-input" id="venueAddress" name="address" maxlength="240"></div>
-                    <div class="form-group"><label for="venueMapsUrl">Google Maps Bağlantısı</label><input class="form-input" id="venueMapsUrl" name="mapsUrl" type="url"></div>
-                    <div class="form-group"><label for="venuePhotoUrl">Fotoğraf URL'si</label><input class="form-input" id="venuePhotoUrl" name="photoURL" type="url"></div>
+                    <h2>Google Maps'ten Mekan Ekle</h2>
+                    <p class="modal-description">Google Maps'te mekanı aç, Paylaş seçeneğinden bağlantıyı kopyala ve buraya yapıştır.</p>
+                    <div class="form-group">
+                        <label for="venueMapsUrl">Google Maps Bağlantısı</label>
+                        <input
+                            class="form-input"
+                            id="venueMapsUrl"
+                            name="mapsUrl"
+                            type="url"
+                            inputmode="url"
+                            placeholder="https://maps.app.goo.gl/..."
+                            required
+                        >
+                    </div>
                     <button class="primary-btn" type="submit"><i class="fa-solid fa-location-dot"></i> Mekanı Ekle</button>
                 </form>
             ` : "";
@@ -5866,8 +5981,8 @@
                                 <article class="directory-card">
                                     ${safeImageURL(venue.photoURL) ? `<img class="directory-card-image" src="${escapeHTML(safeImageURL(venue.photoURL))}" alt="${escapeHTML(venue.name || "Mekan")}">` : '<div class="directory-card-image"></div>'}
                                     <div class="directory-card-body">
-                                        <h3>${escapeHTML(venue.name || "Adsız mekan")}</h3>
-                                        <p>${escapeHTML(venue.address || "Adres belirtilmedi")}</p>
+                                        <h3>${escapeHTML(venue.name || "Google Maps Mekanı")}</h3>
+                                        <p>${escapeHTML(venue.address || "Adres için Google Maps bağlantısını aç.")}</p>
                                         <div class="owner-actions">
                                             ${safeImageURL(venue.mapsUrl) ? `<a class="primary-btn" href="${escapeHTML(safeImageURL(venue.mapsUrl))}" target="_blank" rel="noopener">Google Maps</a>` : ""}
                                             ${isCurrentUserAdmin ? `<button class="danger-btn" type="button" data-delete-venue="${escapeHTML(venue.id)}">Sil</button>` : ""}
@@ -5894,21 +6009,125 @@
                 } }
             );
 
-            if (!response.ok) throw new Error("Google Places bilgisi alınamadı.");
+            if (!response.ok) return null;
 
-            const place = await response.json();
+            return normalizeGooglePlace(await response.json());
+        }
+
+
+        function normalizeGooglePlace(place) {
+
             const photoName = place.photos?.[0]?.name || "";
             const city = place.addressComponents?.find(component =>
-                component.types?.includes("administrative_area_level_1") || component.types?.includes("locality")
+                component.types?.includes("locality") || component.types?.includes("administrative_area_level_1")
             )?.longText || "";
 
             return {
+                placeId: place.id || "",
                 name: place.displayName?.text || "",
                 city,
                 address: place.formattedAddress || "",
                 mapsUrl: place.googleMapsUri || "",
                 photoURL: photoName ? `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=900&key=${encodeURIComponent(GOOGLE_MAPS_PLACES_API_KEY)}` : ""
             };
+        }
+
+
+        function parseGoogleMapsLink(value) {
+
+            const mapsUrl = safeImageURL(value);
+            if (!mapsUrl) throw new Error("Geçerli bir HTTPS Google Maps bağlantısı yapıştır.");
+
+            const url = new URL(mapsUrl);
+            const host = url.hostname.toLocaleLowerCase("tr-TR");
+            const isGoogleMapsHost =
+                host === "maps.app.goo.gl" ||
+                host === "goo.gl" ||
+                host === "google.com" ||
+                host.endsWith(".google.com") ||
+                host === "google.com.tr" ||
+                host.endsWith(".google.com.tr");
+
+            if (!isGoogleMapsHost) {
+                throw new Error("Yalnızca Google Maps bağlantısı kullanabilirsin.");
+            }
+
+            const decodedUrl = decodeURIComponent(mapsUrl);
+            const placeMatch = decodeURIComponent(url.pathname).match(/\/place\/([^/]+)/i);
+            const queryText =
+                url.searchParams.get("query") ||
+                url.searchParams.get("q") ||
+                placeMatch?.[1] ||
+                "";
+            const cleanName = queryText
+                .replace(/\+/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+            const coordinateMatch = decodedUrl.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+
+            return {
+                mapsUrl,
+                placeId: url.searchParams.get("query_place_id") || "",
+                searchText: cleanName,
+                latitude: coordinateMatch ? Number(coordinateMatch[1]) : null,
+                longitude: coordinateMatch ? Number(coordinateMatch[2]) : null
+            };
+        }
+
+
+        async function fetchGooglePlaceFromMapsLink(linkData) {
+
+            if (!GOOGLE_MAPS_PLACES_API_KEY) return null;
+
+            if (linkData.placeId) {
+                return fetchGooglePlaceDetails(linkData.placeId);
+            }
+
+            if (!linkData.searchText) return null;
+
+            const requestBody = {
+                textQuery: linkData.searchText,
+                languageCode: "tr",
+                regionCode: "TR",
+                maxResultCount: 1
+            };
+
+            if (Number.isFinite(linkData.latitude) && Number.isFinite(linkData.longitude)) {
+                requestBody.locationBias = {
+                    circle: {
+                        center: {
+                            latitude: linkData.latitude,
+                            longitude: linkData.longitude
+                        },
+                        radius: 1200
+                    }
+                };
+            }
+
+            const response = await fetch(
+                "https://places.googleapis.com/v1/places:searchText",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Goog-Api-Key": GOOGLE_MAPS_PLACES_API_KEY,
+                        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.addressComponents,places.googleMapsUri,places.photos"
+                    },
+                    body: JSON.stringify(requestBody)
+                }
+            );
+
+            if (!response.ok) return null;
+
+            const result = await response.json();
+            return result.places?.[0] ? normalizeGooglePlace(result.places[0]) : null;
+        }
+
+
+        function getPublishedReviews() {
+            return Object.entries(cachedReviews).filter(([, review]) =>
+                review && review.deleted !== true
+            );
         }
 
 
@@ -5966,10 +6185,15 @@
                     `).join("") || '<div class="empty-state">Henüz çekiliş yok.</div>'}
 
                     <h2>İncelemeler</h2>
-                    <div class="admin-row">
-                        <div><strong>${escapeHTML(cachedReviews["dune-imperium"].title)}</strong><small>Yayınlanmış inceleme</small></div>
-                        <button class="vote-btn" type="button" data-edit-review="dune-imperium"><i class="fa-solid fa-pen"></i> Düzenle</button>
-                    </div>
+                    ${getPublishedReviews().map(([reviewId, review]) => `
+                        <div class="admin-row">
+                            <div><strong>${escapeHTML(review.title || "Başlıksız inceleme")}</strong><small>Yayınlanmış inceleme</small></div>
+                            <div class="owner-actions">
+                                <button class="vote-btn" type="button" data-edit-review="${escapeHTML(reviewId)}"><i class="fa-solid fa-pen"></i> Düzenle</button>
+                                <button class="danger-btn" type="button" data-delete-review="${escapeHTML(reviewId)}"><i class="fa-solid fa-trash"></i> Sil</button>
+                            </div>
+                        </div>
+                    `).join("") || '<div class="empty-state">Yayınlanmış inceleme yok.</div>'}
 
                     <h2>BKFK Onayları</h2>
                     ${cachedCommunities.filter(community => community.type === "bkfk" && community.status === "pending").map(community => `
@@ -5998,6 +6222,16 @@
         function renderRoute() {
 
             const rawHash = decodeURIComponent(window.location.hash.slice(1));
+
+            const showRouteNewTopic =
+                rawHash === "categories" ||
+                rawHash.startsWith("category=") ||
+                rawHash === "popular" ||
+                rawHash === "reviews" ||
+                rawHash.startsWith("review=") ||
+                rawHash === "events";
+
+            routeNewTopicBtn.hidden = !showRouteNewTopic;
 
             document.querySelectorAll("nav a[data-action]").forEach(link => {
                 link.classList.remove("active");
@@ -6060,6 +6294,22 @@
                 routeContent.innerHTML = topicCardsMarkup(filtered);
                 document.querySelector('nav a[data-action="categories"]')?.classList.add("active");
 
+            } else if (rawHash.startsWith("tag=")) {
+                const requestedTag = rawHash.slice("tag=".length).replace(/^#/, "");
+                const normalizedTag = requestedTag.toLocaleLowerCase("tr-TR");
+                const filtered = cachedTopics.filter(topic => {
+                    const topicTags = Array.isArray(topic.tags) ? topic.tags : [];
+                    return topicTags.some(tag =>
+                        String(tag).replace(/^#/, "").toLocaleLowerCase("tr-TR") === normalizedTag
+                    );
+                });
+                setRouteHeader(
+                    "Etiket",
+                    `#${requestedTag}`,
+                    `${filtered.length} başlık bu etiketi kullanıyor.`
+                );
+                routeContent.innerHTML = topicCardsMarkup(filtered);
+
             } else if (rawHash.startsWith("search=")) {
                 const searchText = rawHash.slice("search=".length).trim();
                 const normalized = searchText.toLocaleLowerCase("tr-TR");
@@ -6101,6 +6351,13 @@
                                 <span class="topic-category">${escapeHTML(topic.category || "Genel")}</span>
                             </div>
                             <div class="topic-detail-body">${escapeHTML(topic.content || "")}</div>
+                            ${Array.isArray(topic.tags) && topic.tags.length ? `
+                                <div class="topic-tags">
+                                    ${topic.tags.map(tag => `
+                                        <button class="topic-tag" type="button" data-tag-route="${escapeHTML(tag)}">#${escapeHTML(tag)}</button>
+                                    `).join("")}
+                                </div>
+                            ` : ""}
                             ${safeImageURL(topic.imageURL) ? `<img class="topic-detail-image" src="${escapeHTML(safeImageURL(topic.imageURL))}" alt="${escapeHTML(topic.title || "Gönderi görseli")}">` : ""}
                             ${canDeleteTopic ? `
                                 <div class="owner-actions">
@@ -6130,6 +6387,7 @@
                 routeContent.innerHTML = publicProfileMarkup(userId);
 
             } else if (rawHash === "reviews") {
+                const publishedReviews = getPublishedReviews();
                 setRouteHeader(
                     "Oyun Kütüphanesi",
                     "İncelemeler",
@@ -6137,24 +6395,35 @@
                 );
                 routeContent.innerHTML = `
                     <div class="info-grid">
-                        <article class="info-card">
-                            <i class="fa-solid fa-chess-rook"></i>
-                            <h3>Dune: Imperium</h3>
-                            <p>İşçi yerleştirme, deste oluşturma ve politik entrikaları aynı masada buluşturan yoğun bir strateji deneyimi.</p>
-                            <a class="primary-btn" href="#review=dune-imperium">
-                                İncelemeyi Aç
-                            </a>
-                        </article>
-                        <div class="empty-state">
-                            <i class="fa-regular fa-pen-to-square"></i>
-                            Yeni topluluk incelemeleri burada yayınlanacak.
-                        </div>
+                        ${publishedReviews.map(([reviewId, review]) => `
+                            <article class="info-card">
+                                <i class="fa-solid fa-chess-rook"></i>
+                                <h3>${escapeHTML(review.title || "Başlıksız inceleme")}</h3>
+                                <p>${escapeHTML(String(review.content || "").slice(0, 170))}${String(review.content || "").length > 170 ? "…" : ""}</p>
+                                <a class="primary-btn" href="#review=${encodeURIComponent(reviewId)}">İncelemeyi Aç</a>
+                            </article>
+                        `).join("") || `
+                            <div class="empty-state">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                                Henüz yayınlanmış bir inceleme yok.
+                            </div>
+                        `}
                     </div>
                 `;
                 document.querySelector('nav a[data-action="reviews"]')?.classList.add("active");
 
-            } else if (rawHash === "review=dune-imperium") {
-                const review = cachedReviews["dune-imperium"];
+            } else if (rawHash.startsWith("review=")) {
+                const reviewId = rawHash.slice("review=".length);
+                const review = cachedReviews[reviewId];
+
+                if (!review || review.deleted === true) {
+                    setRouteHeader("İncelemeler", "İnceleme bulunamadı", "Bu inceleme kaldırılmış olabilir.");
+                    routeContent.innerHTML = '<div class="empty-state"><i class="fa-regular fa-pen-to-square"></i>İnceleme bulunamadı.</div>';
+                    document.querySelector('nav a[data-action="reviews"]')?.classList.add("active");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    return;
+                }
+
                 setRouteHeader(
                     "Oyun İncelemesi",
                     review.title,
@@ -6168,9 +6437,14 @@
                             <span>Strateji</span>
                         </div>
                         <div class="topic-detail-body">${escapeHTML(review.content)}</div>
-                        ${isCurrentUserAdmin ? `<div class="owner-actions"><button class="vote-btn" type="button" data-edit-review="dune-imperium"><i class="fa-solid fa-pen"></i> İncelemeyi Düzenle</button></div>` : ""}
+                        ${isCurrentUserAdmin ? `
+                            <div class="owner-actions">
+                                <button class="vote-btn" type="button" data-edit-review="${escapeHTML(reviewId)}"><i class="fa-solid fa-pen"></i> İncelemeyi Düzenle</button>
+                                <button class="danger-btn" type="button" data-delete-review="${escapeHTML(reviewId)}"><i class="fa-solid fa-trash"></i> İncelemeyi Sil</button>
+                            </div>
+                        ` : ""}
                     </article>
-                    ${engagementMarkup("review", "dune-imperium")}
+                    ${engagementMarkup("review", reviewId)}
                 `;
                 document.querySelector('nav a[data-action="reviews"]')?.classList.add("active");
 
@@ -6285,6 +6559,7 @@
             const profileLink = event.target.closest("[data-profile-open]");
             const giveawayButton = event.target.closest("[data-giveaway-open]");
             const communityButton = event.target.closest("[data-community-open]");
+            const tagButton = event.target.closest("[data-tag-route]");
 
             if (topicButton) {
                 window.location.hash =
@@ -6310,6 +6585,11 @@
             if (communityButton) {
                 window.location.hash =
                     "community=" + encodeURIComponent(communityButton.dataset.communityOpen);
+            }
+
+            if (tagButton) {
+                window.location.hash =
+                    "tag=" + encodeURIComponent(tagButton.dataset.tagRoute);
             }
         });
 
@@ -7133,6 +7413,12 @@
                 const title = document.getElementById("topicTitle").value.trim();
                 const category = document.getElementById("topicCategory").value;
                 const content = document.getElementById("topicContent").value.trim();
+                const tags = [...new Set(
+                    document.getElementById("topicTags").value
+                        .split(",")
+                        .map(tag => tag.trim().replace(/^#/, "").replace(/\s+/g, ""))
+                        .filter(Boolean)
+                )].slice(0, 5);
                 const topicImageFile = document.getElementById("topicImage").files?.[0] || null;
 
                 setFormMessage(topicMessage);
@@ -7187,6 +7473,7 @@
                             profile.displayName || getDefaultDisplayName(user),
                         authorPhotoURL:
                             profile.photoURL || user.photoURL || "",
+                        tags,
                         imageURL,
                         replies: 0,
                         createdAt: serverTimestamp(),
@@ -7327,26 +7614,28 @@
                     setButtonBusy(button, true, "Bilgiler alınıyor...", '<i class="fa-solid fa-location-dot"></i> Mekanı Ekle');
 
                     try {
-                        const placeId = venueForm.elements.placeId.value.trim();
-                        const googleData = await fetchGooglePlaceDetails(placeId);
+                        const linkData = parseGoogleMapsLink(
+                            venueForm.elements.mapsUrl.value.trim()
+                        );
+                        const googleData = await fetchGooglePlaceFromMapsLink(linkData);
                         const venueData = {
-                            placeId,
-                            name: googleData?.name || venueForm.elements.name.value.trim(),
-                            city: googleData?.city || venueForm.elements.city.value.trim(),
-                            address: googleData?.address || venueForm.elements.address.value.trim(),
-                            mapsUrl: googleData?.mapsUrl || venueForm.elements.mapsUrl.value.trim(),
-                            photoURL: googleData?.photoURL || venueForm.elements.photoURL.value.trim(),
+                            placeId: googleData?.placeId || linkData.placeId,
+                            name: googleData?.name || linkData.searchText || "Google Maps Mekanı",
+                            city: googleData?.city || "Diğer Mekanlar",
+                            address: googleData?.address || "Adres için Google Maps bağlantısını aç.",
+                            mapsUrl: googleData?.mapsUrl || linkData.mapsUrl,
+                            photoURL: googleData?.photoURL || "",
                             createdBy: auth.currentUser.uid,
                             createdAt: serverTimestamp()
                         };
 
-                        if (!venueData.name || !venueData.city) {
-                            throw new Error("Mekan adı ve şehir gereklidir.");
-                        }
-
                         await addDoc(collection(db, "venues"), venueData);
                         venueForm.reset();
-                        showToast("Mekan eklendi.");
+                        showToast(
+                            googleData
+                                ? "Mekan bilgileri Google Maps'ten alınarak eklendi."
+                                : "Mekan bağlantısı eklendi. Bilgiler bağlantı üzerinden görüntülenebilir."
+                        );
                     } catch (error) {
                         console.error("Mekan eklenemedi:", error);
                         showToast(error.message || "Mekan eklenemedi.", "error");
@@ -7552,6 +7841,7 @@
                 const deleteChatButton = event.target.closest("[data-delete-chat]");
                 const editTopicButton = event.target.closest("[data-edit-topic]");
                 const editReviewButton = event.target.closest("[data-edit-review]");
+                const deleteReviewButton = event.target.closest("[data-delete-review]");
                 const requestMembershipButton = event.target.closest("[data-request-membership]");
                 const approveMembershipButton = event.target.closest("[data-approve-membership]");
                 const approveCommunityButton = event.target.closest("[data-approve-community]");
@@ -7680,6 +7970,18 @@
                     if (nextTitle === null) return;
                     const nextContent = window.prompt("Gönderi içeriği", topic.content || "");
                     if (nextContent === null) return;
+                    const nextTagsText = window.prompt(
+                        "Etiketler (virgülle ayır, en fazla 5)",
+                        Array.isArray(topic.tags) ? topic.tags.join(", ") : ""
+                    );
+                    if (nextTagsText === null) return;
+
+                    const nextTags = [...new Set(
+                        nextTagsText
+                            .split(",")
+                            .map(tag => tag.trim().replace(/^#/, "").replace(/\s+/g, ""))
+                            .filter(Boolean)
+                    )].slice(0, 5);
 
                     if (!nextTitle.trim() || !nextContent.trim()) {
                         showToast("Başlık ve içerik boş bırakılamaz.", "error");
@@ -7690,6 +7992,7 @@
                         await setDoc(doc(db, "topics", topicId), {
                             title: nextTitle.trim().slice(0, 120),
                             content: nextContent.trim().slice(0, 5000),
+                            tags: nextTags,
                             updatedAt: serverTimestamp()
                         }, { merge: true });
                         showToast("Gönderi güncellendi.");
@@ -7722,6 +8025,7 @@
                         await setDoc(doc(db, "reviews", reviewId), {
                             title: nextTitle.trim().slice(0, 140),
                             content: nextContent.trim().slice(0, 10000),
+                            deleted: false,
                             updatedAt: serverTimestamp(),
                             updatedBy: auth.currentUser.uid
                         }, { merge: true });
@@ -7729,6 +8033,46 @@
                     } catch (error) {
                         console.error("İnceleme güncellenemedi:", error);
                         showToast(getDataErrorMessage(error, "İnceleme güncellenemedi."), "error");
+                    }
+                    return;
+                }
+
+                if (deleteReviewButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("İncelemeleri yalnızca admin silebilir.", "error");
+                        return;
+                    }
+
+                    const reviewId = deleteReviewButton.dataset.deleteReview;
+                    if (!window.confirm("Bu incelemeyi ve bağlı yorumları silmek istediğine emin misin?")) return;
+
+                    try {
+                        const relatedComments = cachedComments.filter(comment =>
+                            comment.targetType === "review" && comment.targetId === reviewId
+                        );
+                        const relatedVotes = cachedVotes.filter(vote =>
+                            vote.targetType === "review" && vote.targetId === reviewId
+                        );
+
+                        await Promise.all([
+                            setDoc(doc(db, "reviews", reviewId), {
+                                deleted: true,
+                                deletedAt: serverTimestamp(),
+                                deletedBy: auth.currentUser.uid
+                            }, { merge: true }),
+                            ...relatedComments.map(comment =>
+                                deleteDoc(doc(db, "comments", comment.id))
+                            ),
+                            ...relatedVotes.map(vote =>
+                                deleteDoc(doc(db, "votes", vote.id))
+                            )
+                        ]);
+
+                        showToast("İnceleme silindi.");
+                        window.location.hash = "reviews";
+                    } catch (error) {
+                        console.error("İnceleme silinemedi:", error);
+                        showToast(getDataErrorMessage(error, "İnceleme silinemedi."), "error");
                     }
                     return;
                 }
@@ -8054,14 +8398,14 @@
 
 
             onSnapshot(
-                doc(db, "reviews", "dune-imperium"),
+                collection(db, "reviews"),
                 reviewSnapshot => {
-                    if (reviewSnapshot.exists()) {
-                        cachedReviews["dune-imperium"] = {
-                            ...cachedReviews["dune-imperium"],
-                            ...reviewSnapshot.data()
+                    reviewSnapshot.docs.forEach(reviewDocument => {
+                        cachedReviews[reviewDocument.id] = {
+                            ...(cachedReviews[reviewDocument.id] || {}),
+                            ...reviewDocument.data()
                         };
-                    }
+                    });
                     renderRoute();
                 },
                 error => {
@@ -8078,8 +8422,11 @@
 
 
             function renderOnlineCount(count) {
+                const safeCount = Number.isFinite(Number(count))
+                    ? Math.max(0, Number(count))
+                    : 0;
                 onlineCount.innerHTML =
-                    `<span class="online-dot"></span>${Number(count).toLocaleString("tr-TR")}`;
+                    `<span class="online-dot"></span>${safeCount.toLocaleString("tr-TR")}`;
             }
 
 
@@ -8155,7 +8502,8 @@
                     },
                     error => {
                         console.error("Çevrimiçi sayısı alınamadı:", error);
-                        onlineCount.innerHTML = '<span class="online-dot"></span>—';
+                        renderOnlineCount(0);
+                        onlineCount.title = "Canlı sayı okunamadı. Realtime Database kurallarını kontrol et.";
                     }
                 );
 
@@ -8188,6 +8536,7 @@
                 );
 
             } else {
+                renderOnlineCount(0);
                 onlineCount.title =
                     "Canlı sayı için firebaseConfig.databaseURL alanını doldur.";
             }
@@ -8319,4 +8668,4 @@
     </script>
 
 </body>
-</html>
+    </html>
