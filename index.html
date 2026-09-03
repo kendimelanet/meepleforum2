@@ -4529,6 +4529,71 @@
 
 
     <!-- =========================================================
+         ETKİNLİK OLUŞTUR MODALI
+    ========================================================== -->
+
+    <div class="modal-overlay" id="eventModal" aria-hidden="true">
+
+        <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
+
+            <button class="modal-close" type="button" data-close-modal aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="modal-icon">
+                <i class="fa-regular fa-calendar-plus"></i>
+            </div>
+
+            <h2 id="eventModalTitle">Etkinlik Oluştur</h2>
+
+            <p class="modal-description">
+                Oyun gecesi, turnuva veya topluluk buluşmasının bilgilerini paylaş.
+            </p>
+
+            <form id="eventForm">
+
+                <div class="form-group">
+                    <label for="eventName">Etkinlik Adı</label>
+                    <input class="form-input" id="eventName" type="text" maxlength="120" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventPlace">Yer</label>
+                    <input class="form-input" id="eventPlace" type="text" maxlength="180" placeholder="Mekan ve şehir" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDateTime">Tarih ve Saat</label>
+                    <input class="form-input" id="eventDateTime" type="datetime-local" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventPurpose">Etkinlik Amacı</label>
+                    <textarea class="form-textarea" id="eventPurpose" maxlength="1600" placeholder="Etkinliğin içeriğini ve kimlerin katılabileceğini anlat..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventImage">Etkinlik Fotoğrafı <span style="color:var(--text-muted)">(isteğe bağlı)</span></label>
+                    <input class="form-input" id="eventImage" type="file" accept="image/jpeg,image/png,image/webp">
+                    <small style="color:var(--text-muted)">JPG, PNG veya WebP · otomatik küçültülür</small>
+                </div>
+
+                <button class="modal-submit" type="submit" id="eventSubmit">
+                    <i class="fa-regular fa-calendar-plus"></i>
+                    Etkinliği Yayınla
+                </button>
+
+            </form>
+
+            <p class="form-message" id="eventMessage" aria-live="polite"></p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
          TOAST
     ========================================================== -->
 
@@ -4756,7 +4821,7 @@
 
         document
             .querySelectorAll(
-                "#loginForm, #registerForm, #profileForm, #newTopicForm"
+                "#loginForm, #registerForm, #profileForm, #newTopicForm, #eventForm"
             )
             .forEach(form => {
                 form.addEventListener("submit", event => {
@@ -4784,9 +4849,26 @@
         }
 
         document
-            .querySelectorAll("#newTopicBtn, #routeNewTopicBtn")
-            .forEach(button => {
-                button.addEventListener("click", requestNewTopic);
+            .getElementById("newTopicBtn")
+            .addEventListener("click", requestNewTopic);
+
+        document
+            .getElementById("routeNewTopicBtn")
+            .addEventListener("click", () => {
+                const currentRoute = decodeURIComponent(window.location.hash.slice(1));
+
+                if (currentRoute === "events") {
+                    if (!window.meepleForumAuthUser) {
+                        showToast("Etkinlik oluşturmak için önce giriş yapmalısın.", "error");
+                        openModal("loginModal");
+                        return;
+                    }
+
+                    openModal("eventModal");
+                    return;
+                }
+
+                requestNewTopic();
             });
 
 
@@ -5155,7 +5237,7 @@
         import {
             getStorage,
             ref as storageRef,
-            uploadBytes,
+            uploadBytesResumable,
             getDownloadURL
         } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js";
 
@@ -5252,6 +5334,11 @@
         const topicSubmit = document.getElementById("topicSubmit");
         const topicMessage = document.getElementById("topicMessage");
 
+        const eventModal = document.getElementById("eventModal");
+        const eventForm = document.getElementById("eventForm");
+        const eventSubmit = document.getElementById("eventSubmit");
+        const eventMessage = document.getElementById("eventMessage");
+
         const homeView = document.getElementById("homeView");
         const routeView = document.getElementById("routeView");
         const routeEyebrow = document.getElementById("routeEyebrow");
@@ -5300,6 +5387,7 @@
         let cachedCommunities = [];
         let cachedMemberships = [];
         let cachedVenues = [];
+        let cachedEvents = [];
         let cachedReviews = {
             "dune-imperium": {
                 title: "Dune: Imperium",
@@ -5946,6 +6034,60 @@
         }
 
 
+        function formatEventDate(value) {
+            const date = new Date(String(value || ""));
+
+            if (Number.isNaN(date.getTime())) return "Tarih belirtilmedi";
+
+            return date.toLocaleString("tr-TR", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
+
+
+        function eventsMarkup() {
+
+            if (!cachedEvents.length) {
+                return `
+                    <div class="empty-state">
+                        <i class="fa-regular fa-calendar"></i>
+                        Henüz yayınlanmış bir etkinlik yok.
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="directory-grid">
+                    ${cachedEvents.map(eventItem => `
+                        <article class="directory-card">
+                            ${safeImageURL(eventItem.imageURL) ? `
+                                <img
+                                    class="directory-card-image"
+                                    src="${escapeHTML(safeImageURL(eventItem.imageURL))}"
+                                    alt="${escapeHTML(eventItem.name || "Etkinlik")}" loading="lazy"
+                                >
+                            ` : '<div class="directory-card-image"></div>'}
+                            <div class="directory-card-body">
+                                <span class="status-chip"><i class="fa-regular fa-calendar"></i> ${escapeHTML(formatEventDate(eventItem.startAt))}</span>
+                                <h3>${escapeHTML(eventItem.name || "Adsız etkinlik")}</h3>
+                                <p><i class="fa-solid fa-location-dot"></i> ${escapeHTML(eventItem.place || "Yer belirtilmedi")}</p>
+                                <p>${escapeHTML(eventItem.purpose || "")}</p>
+                                <p class="profile-clubs">
+                                    <strong>Oluşturan:</strong>
+                                    ${profileLinkMarkup(eventItem.organizerId, eventItem.organizerName || "Meeple Oyuncusu")}
+                                </p>
+                            </div>
+                        </article>
+                    `).join("")}
+                </div>
+            `;
+        }
+
+
         function venuesMarkup() {
 
             const cities = [...new Set(cachedVenues.map(venue => venue.city).filter(Boolean))]
@@ -6232,6 +6374,9 @@
                 rawHash === "events";
 
             routeNewTopicBtn.hidden = !showRouteNewTopic;
+            routeNewTopicBtn.innerHTML = rawHash === "events"
+                ? '<i class="fa-regular fa-calendar-plus"></i> Etkinlik Oluştur'
+                : '<i class="fa-solid fa-plus"></i> Yeni Konu';
 
             document.querySelectorAll("nav a[data-action]").forEach(link => {
                 link.classList.remove("active");
@@ -6454,12 +6599,7 @@
                     "Etkinlikler",
                     "Oyun geceleri, turnuvalar ve topluluk buluşmaları."
                 );
-                routeContent.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fa-regular fa-calendar"></i>
-                        Henüz yayınlanmış bir etkinlik yok.
-                    </div>
-                `;
+                routeContent.innerHTML = eventsMarkup();
                 document.querySelector('nav a[data-action="events"]')?.classList.add("active");
 
             } else if (rawHash === "chat") {
@@ -6685,12 +6825,72 @@
             if (
                 code.includes("unavailable") ||
                 code === "storage/retry-limit-exceeded" ||
-                code === "storage/server-file-wrong-size"
+                code === "storage/server-file-wrong-size" ||
+                code === "storage/canceled" ||
+                code === "storage/upload-timeout" ||
+                code === "operation/timeout"
             ) {
-                return "Firebase bağlantısı zaman aşımına uğradı. İnternetini ve Firebase bölgesini kontrol et.";
+                return "Fotoğraf yükleme zaman aşımına uğradı. Storage'ın etkin olduğunu, kuralların yayınlandığını ve internet bağlantını kontrol et.";
             }
 
             return fallback;
+        }
+
+
+        function withTimeout(promise, timeoutMs, code = "operation/timeout") {
+            let timer;
+
+            const timeoutPromise = new Promise((resolve, reject) => {
+                timer = window.setTimeout(() => {
+                    reject(Object.assign(
+                        new Error("İşlem zaman aşımına uğradı."),
+                        { code }
+                    ));
+                }, timeoutMs);
+            });
+
+            return Promise.race([promise, timeoutPromise])
+                .finally(() => window.clearTimeout(timer));
+        }
+
+
+        function uploadImageWithTimeout(imageRef, file, timeoutMs = 30000) {
+            return new Promise((resolve, reject) => {
+                const uploadTask = uploadBytesResumable(
+                    imageRef,
+                    file,
+                    { contentType: file.type || "image/webp" }
+                );
+                const timer = window.setTimeout(() => {
+                    uploadTask.cancel();
+                    reject(Object.assign(
+                        new Error("Fotoğraf yüklemesi zaman aşımına uğradı."),
+                        { code: "storage/upload-timeout" }
+                    ));
+                }, timeoutMs);
+
+                uploadTask.on(
+                    "state_changed",
+                    null,
+                    error => {
+                        window.clearTimeout(timer);
+                        reject(error);
+                    },
+                    () => {
+                        window.clearTimeout(timer);
+                        resolve(uploadTask.snapshot);
+                    }
+                );
+            });
+        }
+
+
+        async function getUploadedImageURL(uploadSnapshot) {
+            return withTimeout(
+                getDownloadURL(uploadSnapshot.ref),
+                10000,
+                "storage/upload-timeout"
+            );
         }
 
 
@@ -7217,7 +7417,11 @@
                     return;
                 }
 
-                pendingPhotoPromise = optimizeProfileImage(file)
+                pendingPhotoPromise = withTimeout(
+                    optimizeProfileImage(file),
+                    10000,
+                    "operation/timeout"
+                )
                     .catch(error => {
                         console.warn("Profil resmi optimize edilemedi:", error);
                         return file;
@@ -7308,13 +7512,12 @@
                             `profile-images/${user.uid}/avatar`
                         );
 
-                        const uploadSnapshot = await uploadBytes(
+                        const uploadSnapshot = await uploadImageWithTimeout(
                             avatarRef,
-                            pendingPhotoFile,
-                            { contentType: pendingPhotoFile.type }
+                            pendingPhotoFile
                         );
 
-                        photoURL = await getDownloadURL(uploadSnapshot.ref);
+                        photoURL = await getUploadedImageURL(uploadSnapshot);
                     }
 
                     const profileData = {
@@ -7348,13 +7551,16 @@
                         { merge: true }
                     );
 
-                    await Promise.all([
-                        updateProfile(user, {
-                            displayName,
-                            photoURL
-                        }),
-                        profileBatch.commit()
-                    ]);
+                    await withTimeout(
+                        Promise.all([
+                            updateProfile(user, {
+                                displayName,
+                                photoURL
+                            }),
+                            profileBatch.commit()
+                        ]),
+                        20000
+                    );
 
                     cachedProfile = {
                         ...(cachedProfile || {}),
@@ -7456,12 +7662,11 @@
                     if (topicImageFile) {
                         const optimizedImage = await optimizeTopicImage(topicImageFile).catch(() => topicImageFile);
                         const imageRef = storageRef(storage, `topic-images/${user.uid}/${Date.now()}-topic`);
-                        const uploadSnapshot = await uploadBytes(
+                        const uploadSnapshot = await uploadImageWithTimeout(
                             imageRef,
-                            optimizedImage,
-                            { contentType: optimizedImage.type }
+                            optimizedImage
                         );
-                        imageURL = await getDownloadURL(uploadSnapshot.ref);
+                        imageURL = await getUploadedImageURL(uploadSnapshot);
                     }
 
                     const topicData = {
@@ -7480,9 +7685,9 @@
                         updatedAt: serverTimestamp()
                     };
 
-                    const createdTopic = await addDoc(
-                        collection(db, "topics"),
-                        topicData
+                    const createdTopic = await withTimeout(
+                        addDoc(collection(db, "topics"), topicData),
+                        20000
                     );
 
                     cachedTopics.unshift({
@@ -7517,6 +7722,107 @@
                         false,
                         "",
                         '<i class="fa-solid fa-paper-plane"></i> Konuyu Yayınla'
+                    );
+                }
+            });
+
+
+            eventForm.addEventListener("submit", async event => {
+
+                event.preventDefault();
+
+                const user = auth.currentUser;
+
+                if (!user) {
+                    closeModal(eventModal);
+                    openModal("loginModal");
+                    return;
+                }
+
+                const name = document.getElementById("eventName").value.trim();
+                const place = document.getElementById("eventPlace").value.trim();
+                const dateTimeValue = document.getElementById("eventDateTime").value;
+                const purpose = document.getElementById("eventPurpose").value.trim();
+                const imageFile = document.getElementById("eventImage").files?.[0] || null;
+                const eventDate = new Date(dateTimeValue);
+
+                setFormMessage(eventMessage);
+
+                if (!name || !place || !purpose || Number.isNaN(eventDate.getTime())) {
+                    setFormMessage(eventMessage, "Lütfen etkinliğin adını, yerini, tarihini ve amacını doldur.");
+                    return;
+                }
+
+                if (
+                    imageFile &&
+                    (!['image/jpeg', 'image/png', 'image/webp'].includes(imageFile.type) ||
+                    imageFile.size > 10 * 1024 * 1024)
+                ) {
+                    setFormMessage(eventMessage, "Etkinlik fotoğrafı JPG, PNG veya WebP olmalı ve 10 MB'ı geçmemeli.");
+                    return;
+                }
+
+                setButtonBusy(
+                    eventSubmit,
+                    true,
+                    "Yayınlanıyor...",
+                    '<i class="fa-regular fa-calendar-plus"></i> Etkinliği Yayınla'
+                );
+
+                try {
+                    let imageURL = "";
+
+                    if (imageFile) {
+                        const optimizedImage = await withTimeout(
+                            optimizeTopicImage(imageFile).catch(() => imageFile),
+                            10000
+                        );
+                        const imageRef = storageRef(
+                            storage,
+                            `event-images/${user.uid}/${Date.now()}-event`
+                        );
+                        const uploadSnapshot = await uploadImageWithTimeout(
+                            imageRef,
+                            optimizedImage
+                        );
+                        imageURL = await getUploadedImageURL(uploadSnapshot);
+                    }
+
+                    const eventData = {
+                        name,
+                        place,
+                        startAt: eventDate.toISOString(),
+                        purpose,
+                        imageURL,
+                        organizerId: user.uid,
+                        organizerName: cachedProfile?.displayName || getDefaultDisplayName(user),
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    };
+
+                    await withTimeout(
+                        addDoc(collection(db, "events"), eventData),
+                        20000
+                    );
+
+                    eventForm.reset();
+                    closeModal(eventModal);
+                    showToast("Etkinlik başarıyla yayınlandı.");
+                } catch (error) {
+                    console.error("Etkinlik yayınlanamadı:", error);
+                    setFormMessage(
+                        eventMessage,
+                        getDataErrorMessage(
+                            error,
+                            "Etkinlik yayınlanamadı. Firestore ve Storage ayarlarını kontrol et."
+                        )
+                    );
+                } finally {
+                    setButtonBusy(
+                        eventSubmit,
+                        false,
+                        "",
+                        '<i class="fa-regular fa-calendar-plus"></i> Etkinliği Yayınla'
                     );
                 }
             });
@@ -8341,6 +8647,27 @@
                 },
                 error => {
                     console.error("Çekilişler alınamadı:", error);
+                }
+            );
+
+
+            onSnapshot(
+                collection(db, "events"),
+                snapshot => {
+                    cachedEvents = snapshot.docs
+                        .map(eventDocument => ({
+                            id: eventDocument.id,
+                            ...eventDocument.data()
+                        }))
+                        .sort((a, b) => {
+                            const aTime = new Date(a.startAt || 0).getTime();
+                            const bTime = new Date(b.startAt || 0).getTime();
+                            return aTime - bTime;
+                        });
+                    renderRoute();
+                },
+                error => {
+                    console.error("Etkinlikler alınamadı:", error);
                 }
             );
 
