@@ -6238,7 +6238,13 @@
                             <article class="directory-card">
                                 <div class="directory-card-body">
                                     <span class="status-chip ${community.status === "pending" ? "pending" : ""}">
-                                        ${community.status === "pending" ? "Admin onayı bekliyor" : community.type === "bkfk" ? "Üniversite BKFK" : "Topluluk"}
+                                        ${community.status === "pending"
+                                            ? "Admin onayı bekliyor"
+                                            : community.status === "rejected"
+                                                ? "Başvuru reddedildi"
+                                                : community.type === "bkfk"
+                                                    ? "Üniversite BKFK"
+                                                    : "Topluluk"}
                                     </span>
                                     <h3>${escapeHTML(community.name || "Adsız topluluk")}</h3>
                                     <p>${escapeHTML(community.city || "Şehir belirtilmedi")}${community.university ? ` · ${escapeHTML(community.university)}` : ""}</p>
@@ -6302,7 +6308,14 @@
                         ${pendingMembers.map(membership => `
                             <div class="member-row">
                                 ${profileLinkMarkup(membership.userId, membership.userName || "Kullanıcı")}
-                                <button class="primary-btn" type="button" data-approve-membership="${escapeHTML(membership.id)}">Onayla</button>
+                                <div class="owner-actions">
+                                    <button class="primary-btn" type="button" data-approve-membership="${escapeHTML(membership.id)}">
+                                        <i class="fa-solid fa-check"></i> Onayla
+                                    </button>
+                                    <button class="danger-btn" type="button" data-reject-membership="${escapeHTML(membership.id)}">
+                                        <i class="fa-solid fa-xmark"></i> Reddet
+                                    </button>
+                                </div>
                             </div>
                         `).join("")}
                     </div>
@@ -6514,8 +6527,34 @@
                 `;
             }
 
+            const pendingBkfkCommunities = cachedCommunities.filter(community =>
+                community.type === "bkfk" && community.status === "pending"
+            );
+
             return `
                 <div class="admin-list">
+                    <h2>BKFK Onayları (${pendingBkfkCommunities.length})</h2>
+                    ${pendingBkfkCommunities.map(community => `
+                        <div class="admin-row">
+                            <div>
+                                <strong>${escapeHTML(community.name || "Adsız BKFK kulübü")}</strong>
+                                <small>
+                                    ${escapeHTML(community.university || "Üniversite belirtilmedi")}
+                                    · ${escapeHTML(community.city || "Şehir belirtilmedi")}
+                                    · Kurucu: ${escapeHTML(community.ownerName || "Bilinmeyen kullanıcı")}
+                                </small>
+                            </div>
+                            <div class="owner-actions">
+                                <button class="primary-btn" type="button" data-approve-community="${escapeHTML(community.id)}">
+                                    <i class="fa-solid fa-check"></i> Kulübü Onayla
+                                </button>
+                                <button class="danger-btn" type="button" data-reject-community="${escapeHTML(community.id)}">
+                                    <i class="fa-solid fa-xmark"></i> Reddet
+                                </button>
+                            </div>
+                        </div>
+                    `).join("") || '<div class="empty-state">Bekleyen BKFK kulübü yok.</div>'}
+
                     <h2>Açılan Başlıklar (${cachedTopics.length})</h2>
                     ${cachedTopics.map(topic => `
                         <div class="admin-row">
@@ -6577,13 +6616,6 @@
                         <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Haftanın Oyununu Kaydet</button>
                     </form>
 
-                    <h2>BKFK Onayları</h2>
-                    ${cachedCommunities.filter(community => community.type === "bkfk" && community.status === "pending").map(community => `
-                        <div class="admin-row">
-                            <div><strong>${escapeHTML(community.name)}</strong><small>${escapeHTML(community.university || "Üniversite belirtilmedi")} · ${escapeHTML(community.city || "")}</small></div>
-                            <button class="primary-btn" type="button" data-approve-community="${escapeHTML(community.id)}">Kulübü Onayla</button>
-                        </div>
-                    `).join("") || '<div class="empty-state">Bekleyen BKFK kulübü yok.</div>'}
                 </div>
             `;
         }
@@ -6672,7 +6704,11 @@
                 return `<article class="challenge-card"><div class="challenge-card-top"><span class="status-chip">${playerCount} yarışmacı</span><i class="fa-solid ${game.icon}"></i></div><h3>${escapeHTML(game.title)}</h3><div class="challenge-record">${leader ? `Rekor: <strong>${Number(leader.score || 0).toLocaleString("tr-TR")}</strong> · ${profileLinkMarkup(leader.userId,leader.displayName || "Oyuncu")}` : "Henüz rekor yok — ilk sırayı sen kap!"}</div><a class="secondary-btn" href="#game=${encodeURIComponent(id)}"><i class="fa-solid fa-play"></i> Meydan Oku</a></article>`;
             }).join("");
 
-            const memberCountFor = communityId => cachedMemberships.filter(item => item.communityId === communityId && item.status === "approved").length;
+            const memberCountFor = communityId => new Set(
+                cachedMemberships
+                    .filter(item => item.communityId === communityId && item.status === "approved" && item.userId)
+                    .map(item => item.userId)
+            ).size;
             const rankingMarkup = type => {
                 const ranked = cachedCommunities.filter(item => item.type === type && item.status === "active")
                     .map(item => ({...item, memberCount: memberCountFor(item.id)}))
@@ -8752,12 +8788,15 @@
                             ownerId: user.uid,
                             ownerName: cachedProfile?.displayName || getDefaultDisplayName(user),
                             status: type === "bkfk" ? "pending" : "active",
+                            approvalStatus: type === "bkfk" ? "pending" : "approved",
+                            approvalRequestedAt: type === "bkfk" ? serverTimestamp() : null,
                             createdAt: serverTimestamp(),
                             updatedAt: serverTimestamp()
                         });
                         batch.set(membershipRef, {
                             communityId: communityRef.id,
                             userId: user.uid,
+                            ownerId: user.uid,
                             userName: cachedProfile?.displayName || getDefaultDisplayName(user),
                             role: "owner",
                             status: "approved",
@@ -9024,7 +9063,9 @@
                 const deleteReviewButton = event.target.closest("[data-delete-review]");
                 const requestMembershipButton = event.target.closest("[data-request-membership]");
                 const approveMembershipButton = event.target.closest("[data-approve-membership]");
+                const rejectMembershipButton = event.target.closest("[data-reject-membership]");
                 const approveCommunityButton = event.target.closest("[data-approve-community]");
+                const rejectCommunityButton = event.target.closest("[data-reject-community]");
                 const deleteVenueButton = event.target.closest("[data-delete-venue]");
                 const refreshVenueButton = event.target.closest("[data-refresh-venue]");
 
@@ -9077,6 +9118,7 @@
                             {
                                 communityId,
                                 userId: user.uid,
+                                ownerId: community.ownerId,
                                 userName: cachedProfile?.displayName || getDefaultDisplayName(user),
                                 role: "member",
                                 status: "pending",
@@ -9095,27 +9137,74 @@
                 if (approveMembershipButton) {
                     const user = auth.currentUser;
                     const membershipId = approveMembershipButton.dataset.approveMembership;
-                    const membership = cachedMemberships.find(item => item.id === membershipId);
-                    const community = cachedCommunities.find(item => item.id === membership?.communityId);
-
-                    if (!user || !membership || (!isCurrentUserAdmin && community?.ownerId !== user.uid)) {
-                        showToast("Bu üyelik isteğini onaylama yetkin yok.", "error");
-                        return;
-                    }
+                    if (!user) return openModal("loginModal");
 
                     approveMembershipButton.disabled = true;
 
                     try {
-                        await setDoc(doc(db, "communityMemberships", membershipId), {
-                            status: "approved",
-                            approvedAt: serverTimestamp(),
-                            approvedBy: user.uid
-                        }, { merge: true });
+                        await runTransaction(db, async transaction => {
+                            const membershipRef = doc(db, "communityMemberships", membershipId);
+                            const membershipSnapshot = await transaction.get(membershipRef);
+
+                            if (!membershipSnapshot.exists()) throw new Error("Üyelik isteği bulunamadı.");
+
+                            const membership = membershipSnapshot.data();
+                            const communityRef = doc(db, "communities", membership.communityId);
+                            const communitySnapshot = await transaction.get(communityRef);
+
+                            if (!communitySnapshot.exists()) throw new Error("Topluluk bulunamadı.");
+                            if (!isCurrentUserAdmin && communitySnapshot.data().ownerId !== user.uid) {
+                                throw new Error("Bu üyelik isteğini onaylama yetkin yok.");
+                            }
+                            if (membership.status !== "pending") {
+                                throw new Error("Bu üyelik isteği daha önce işleme alınmış.");
+                            }
+
+                            transaction.set(membershipRef, {
+                                status: "approved",
+                                approvedAt: serverTimestamp(),
+                                approvedBy: user.uid
+                            }, { merge: true });
+                        });
                         showToast("Üyelik isteği onaylandı.");
                     } catch (error) {
                         console.error("Üyelik onaylanamadı:", error);
-                        showToast(getDataErrorMessage(error, "Üyelik onaylanamadı."), "error");
+                        showToast(getDataErrorMessage(error, error.message || "Üyelik onaylanamadı."), "error");
                         approveMembershipButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (rejectMembershipButton) {
+                    const user = auth.currentUser;
+                    const membershipId = rejectMembershipButton.dataset.rejectMembership;
+                    if (!user) return openModal("loginModal");
+
+                    rejectMembershipButton.disabled = true;
+
+                    try {
+                        await runTransaction(db, async transaction => {
+                            const membershipRef = doc(db, "communityMemberships", membershipId);
+                            const membershipSnapshot = await transaction.get(membershipRef);
+
+                            if (!membershipSnapshot.exists()) throw new Error("Üyelik isteği bulunamadı.");
+
+                            const membership = membershipSnapshot.data();
+                            const communityRef = doc(db, "communities", membership.communityId);
+                            const communitySnapshot = await transaction.get(communityRef);
+
+                            if (!communitySnapshot.exists()) throw new Error("Topluluk bulunamadı.");
+                            if (!isCurrentUserAdmin && communitySnapshot.data().ownerId !== user.uid) {
+                                throw new Error("Bu üyelik isteğini reddetme yetkin yok.");
+                            }
+
+                            transaction.delete(membershipRef);
+                        });
+                        showToast("Üyelik isteği reddedildi.");
+                    } catch (error) {
+                        console.error("Üyelik isteği reddedilemedi:", error);
+                        showToast(getDataErrorMessage(error, error.message || "Üyelik isteği reddedilemedi."), "error");
+                        rejectMembershipButton.disabled = false;
                     }
                     return;
                 }
@@ -9130,17 +9219,66 @@
                     approveCommunityButton.disabled = true;
 
                     try {
-                        await setDoc(doc(db, "communities", communityId), {
-                            status: "active",
-                            approvedAt: serverTimestamp(),
-                            approvedBy: auth.currentUser.uid,
-                            updatedAt: serverTimestamp()
-                        }, { merge: true });
+                        await runTransaction(db, async transaction => {
+                            const communityRef = doc(db, "communities", communityId);
+                            const communitySnapshot = await transaction.get(communityRef);
+
+                            if (!communitySnapshot.exists()) throw new Error("BKFK kulübü bulunamadı.");
+                            const community = communitySnapshot.data();
+                            if (community.type !== "bkfk" || community.status !== "pending") {
+                                throw new Error("Bu BKFK başvurusu daha önce işleme alınmış.");
+                            }
+
+                            transaction.set(communityRef, {
+                                status: "active",
+                                approvalStatus: "approved",
+                                approvedAt: serverTimestamp(),
+                                approvedBy: auth.currentUser.uid,
+                                updatedAt: serverTimestamp()
+                            }, { merge: true });
+                        });
                         showToast("BKFK kulübü onaylandı.");
                     } catch (error) {
                         console.error("Kulüp onaylanamadı:", error);
-                        showToast(getDataErrorMessage(error, "Kulüp onaylanamadı."), "error");
+                        showToast(getDataErrorMessage(error, error.message || "Kulüp onaylanamadı."), "error");
                         approveCommunityButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (rejectCommunityButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("BKFK kulüplerini yalnızca admin reddedebilir.", "error");
+                        return;
+                    }
+
+                    const communityId = rejectCommunityButton.dataset.rejectCommunity;
+                    rejectCommunityButton.disabled = true;
+
+                    try {
+                        await runTransaction(db, async transaction => {
+                            const communityRef = doc(db, "communities", communityId);
+                            const communitySnapshot = await transaction.get(communityRef);
+
+                            if (!communitySnapshot.exists()) throw new Error("BKFK kulübü bulunamadı.");
+                            const community = communitySnapshot.data();
+                            if (community.type !== "bkfk" || community.status !== "pending") {
+                                throw new Error("Bu BKFK başvurusu daha önce işleme alınmış.");
+                            }
+
+                            transaction.set(communityRef, {
+                                status: "rejected",
+                                approvalStatus: "rejected",
+                                rejectedAt: serverTimestamp(),
+                                rejectedBy: auth.currentUser.uid,
+                                updatedAt: serverTimestamp()
+                            }, { merge: true });
+                        });
+                        showToast("BKFK başvurusu reddedildi.");
+                    } catch (error) {
+                        console.error("Kulüp reddedilemedi:", error);
+                        showToast(getDataErrorMessage(error, error.message || "Kulüp reddedilemedi."), "error");
+                        rejectCommunityButton.disabled = false;
                     }
                     return;
                 }
@@ -9873,7 +10011,7 @@
                     );
 
                     startPresence(user);
-                    refreshAdminStatus(user);
+                    await refreshAdminStatus(user);
                     renderCurrentUserUpvotes();
                     renderRoute();
 
