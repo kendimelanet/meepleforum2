@@ -5550,6 +5550,19 @@
         let activeGameSession = null;
         let activeScoreObserver = null;
         let activeScoreSaveTimer = null;
+        /*
+         * Firebase servisleri modül kapsamındadır. Oyun, profil, gönderi ve
+         * sohbet yardımcıları try bloğunun dışında tanımlandığı için bu
+         * değişkenlerin de aynı kapsamda bulunması gerekir.
+         */
+        let app = null;
+        let auth = null;
+        let db = null;
+        let storage = null;
+        let realtimeDb = null;
+        let cachedProfile = null;
+        let cachedProfileUid = null;
+        let isRegistering = false;
         let cachedWeeklyGame = {
             title: "Dune: Imperium",
             description: "Güçlü deste oluşturma mekanikleri, işçi yerleştirme ve entrikalarla dolu rekabetçi bir strateji deneyimi.",
@@ -5566,6 +5579,13 @@
         let isCurrentUserAdmin = false;
         let pendingPhotoFile = null;
         let pendingPhotoPromise = null;
+
+
+        function getDefaultDisplayName(user) {
+            if (user?.displayName) return user.displayName;
+            if (user?.email) return user.email.split("@")[0];
+            return "Meeple Oyuncusu";
+        }
 
 
         function escapeHTML(value) {
@@ -7569,14 +7589,10 @@
 
         try {
 
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
-            const storage = getStorage(app);
-
-            let cachedProfile = null;
-            let cachedProfileUid = null;
-            let isRegistering = false;
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            storage = getStorage(app);
 
             auth.useDeviceLanguage();
 
@@ -7585,20 +7601,6 @@
             googleProvider.setCustomParameters({
                 prompt: "select_account"
             });
-
-
-            function getDefaultDisplayName(user) {
-
-                if (user.displayName) {
-                    return user.displayName;
-                }
-
-                if (user.email) {
-                    return user.email.split("@")[0];
-                }
-
-                return "Meeple Oyuncusu";
-            }
 
 
             function renderProfile(user, profile = {}) {
@@ -9454,7 +9456,6 @@
             );
 
 
-            let realtimeDb = null;
             let presenceStatusUnsubscribe = null;
             let onlineCountUnsubscribe = null;
             let chatMessagesUnsubscribe = null;
