@@ -2947,6 +2947,8 @@
         .game-stage { text-align: center; }
         .game-hud { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 18px; }
         .game-hud strong { font-size: 18px; color: var(--gold-light); }
+        .game-hud-actions { display: flex; align-items: center; gap: 9px; }
+        .game-hud-actions .primary-btn, .game-hud-actions .secondary-btn { min-height: 42px; }
         .space-game { display: block; width: min(100%, 360px); height: auto; margin: auto; border: 1px solid var(--border-strong); border-radius: 14px; background: #090b16; touch-action: none; }
         .space-game.wide-game { width: min(100%, 640px); }
         .space-game.blocks-game { width: min(100%, 300px); image-rendering: pixelated; }
@@ -2965,16 +2967,44 @@
         .score-row { display: flex; justify-content: space-between; gap: 12px; padding: 11px 8px; border-bottom: 1px solid var(--border); }
         .score-row.is-me { background: rgba(210,167,92,.09); color: var(--gold-light); border-radius: 8px; }
         .score-row .profile-link { display: inline; }
+        .score-player { display: flex; align-items: center; gap: 8px; min-width: 0; }
+        .score-player .profile-link { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .home-showcase { margin: 54px 0 0; padding: 28px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: linear-gradient(135deg,rgba(113,52,56,.14),rgba(62,101,79,.09)),var(--bg-secondary); box-shadow: var(--shadow); }
+        .showcase-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 22px; }
+        .showcase-heading h2 { font-family: "Playfair Display",serif; font-size: clamp(25px,3vw,36px); margin: 4px 0 6px; }
+        .showcase-heading p { color: var(--text-secondary); max-width: 720px; }
+        .home-competition-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+        .challenge-card { padding: 18px; border: 1px solid var(--border); border-radius: 15px; background: rgba(17,16,15,.72); }
+        .challenge-card-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .challenge-card-top > i { color: var(--gold-light); font-size: 22px; }
+        .challenge-card h3 { margin: 13px 0 5px; }
+        .challenge-record { color: var(--text-secondary); font-size: 13px; min-height: 42px; }
+        .challenge-record strong { color: var(--gold-light); }
+        .challenge-card .secondary-btn { width: 100%; margin-top: 14px; }
+        .community-versus-grid { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); gap: 18px; align-items: center; }
+        .community-versus-grid h3 { margin-bottom: 12px; }
+        .community-versus-grid h3 i { color: var(--gold); margin-right: 8px; }
+        .versus-mark { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: var(--gold); color: #171513; font-weight: 900; }
+        .ranking-item { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 13px; margin-bottom: 9px; border-radius: 12px; background: rgba(17,16,15,.72); border: 1px solid var(--border); }
+        .ranking-place { color: var(--gold-light); font-size: 18px; font-weight: 900; }
+        .ranking-item a { min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ranking-item small { color: var(--text-secondary); white-space: nowrap; }
 
         @media (max-width: 900px) {
             .game-grid { grid-template-columns: 1fr; }
             .game-layout { grid-template-columns: 1fr; }
+            .home-competition-grid { grid-template-columns: 1fr; }
+            .community-versus-grid { grid-template-columns: 1fr; }
+            .versus-mark { margin: -4px auto; }
         }
 
         @media (max-width: 500px) {
             .game-card, .game-stage, .game-leaderboard { padding: 16px; }
             .game-hud { align-items: stretch; flex-direction: column; }
+            .game-hud-actions { display: grid; grid-template-columns: 1fr 1fr; }
             .reaction-board { min-height: 240px; }
+            .home-showcase { padding: 18px; margin-top: 30px; }
+            .showcase-heading { align-items: stretch; flex-direction: column; }
         }
 
     </style>
@@ -3824,6 +3854,26 @@
                 </aside>
 
             </div>
+
+            <section class="home-showcase" aria-labelledby="arcadeChallengeTitle">
+                <div class="showcase-heading">
+                    <div><span class="route-eyebrow">Meeple Arcade</span><h2 id="arcadeChallengeTitle">Rekor için masaya otur!</h2><p>Mini oyunlarda topluluğa meydan oku, kendi rekorunu geliştir ve zirveye adını yazdır.</p></div>
+                    <a class="primary-btn" href="#games"><i class="fa-solid fa-gamepad"></i> Oyunlara Git</a>
+                </div>
+                <div class="home-competition-grid" id="homeGamesShowcase"></div>
+            </section>
+
+            <section class="home-showcase" aria-labelledby="communityChallengeTitle">
+                <div class="showcase-heading">
+                    <div><span class="route-eyebrow">Topluluk Arenası</span><h2 id="communityChallengeTitle">Türkiye'nin en büyük oyun toplulukları</h2><p>BKFK kulüpleri ve oyuncuların kurduğu topluluklar üye sayısıyla sıralanıyor.</p></div>
+                    <a class="secondary-btn" href="#communities"><i class="fa-solid fa-users"></i> Tüm Topluluklar</a>
+                </div>
+                <div class="community-versus-grid">
+                    <div><h3><i class="fa-solid fa-graduation-cap"></i> En Büyük 3 BKFK</h3><div class="ranking-list" id="homeBkfkRanking"></div></div>
+                    <div class="versus-mark">VS</div>
+                    <div><h3><i class="fa-solid fa-people-group"></i> En Büyük 3 Topluluk</h3><div class="ranking-list" id="homeCommunityRanking"></div></div>
+                </div>
+            </section>
 
         </div>
 
@@ -5439,6 +5489,9 @@
         const routeContent = document.getElementById("routeContent");
         const routeBackBtn = document.getElementById("routeBackBtn");
         const homeTopics = document.getElementById("homeTopics");
+        const homeGamesShowcase = document.getElementById("homeGamesShowcase");
+        const homeBkfkRanking = document.getElementById("homeBkfkRanking");
+        const homeCommunityRanking = document.getElementById("homeCommunityRanking");
 
         const memberCount = document.getElementById("memberCount");
         const topicCount = document.getElementById("topicCount");
@@ -6446,14 +6499,42 @@
 
         function gameLeaderboardMarkup(gameId) {
             const rows = cachedGameScores.filter(item => item.gameId === gameId)
-                .sort((a, b) => Number(b.score || 0) - Number(a.score || 0)).slice(0, 10);
-            return `<aside class="game-leaderboard"><h3><i class="fa-solid fa-trophy"></i> En İyi Skorlar</h3>
-                ${rows.map((row, index) => `<div class="score-row ${row.userId === window.meepleForumAuthUser?.uid ? "is-me" : ""}"><span><b>${index + 1}.</b> ${profileLinkMarkup(row.userId, row.displayName || "Oyuncu")}</span><strong>${Number(row.score || 0).toLocaleString("tr-TR")}</strong></div>`).join("") || '<div class="empty-state">İlk rekoru sen kır!</div>'}</aside>`;
+                .sort((a, b) => Number(b.score || 0) - Number(a.score || 0)).slice(0, 3);
+            return `<aside class="game-leaderboard"><h3><i class="fa-solid fa-trophy"></i> İlk 3 Oyuncu</h3>
+                ${rows.map((row, index) => {
+                    const profile = cachedPublicProfiles.find(item => (item.uid || item.id) === row.userId);
+                    const playerName = profile?.displayName || row.displayName || "Meeple Oyuncusu";
+                    return `<div class="score-row ${row.userId === window.meepleForumAuthUser?.uid ? "is-me" : ""}"><span class="score-player"><b>${index + 1}.</b>${profileLinkMarkup(row.userId, playerName)}</span><strong>${Number(row.score || 0).toLocaleString("tr-TR")} puan</strong></div>`;
+                }).join("") || '<div class="empty-state">İlk rekoru sen kır!</div>'}</aside>`;
         }
 
 
         function gamesMarkup() {
             return `<div class="game-grid">${Object.entries(miniGames).map(([id, game]) => `<article class="game-card"><i class="fa-solid ${game.icon}"></i><h3>${game.title}</h3><p>${game.description}</p><div class="personal-best"><span>En iyi skorun</span><strong>${gameBestScore(id).toLocaleString("tr-TR")}</strong></div><a class="primary-btn" href="#game=${id}"><i class="fa-solid fa-play"></i> Oyna</a></article>`).join("")}</div>`;
+        }
+
+
+        function renderHomeChallenges() {
+            const gameEntries = Object.entries(miniGames).map(([id, game]) => {
+                const scores = cachedGameScores.filter(item => item.gameId === id)
+                    .sort((a,b) => Number(b.score || 0) - Number(a.score || 0));
+                return {id, game, scores, playerCount: scores.length};
+            }).sort((a,b) => b.playerCount - a.playerCount || Number(b.scores[0]?.score || 0) - Number(a.scores[0]?.score || 0));
+
+            homeGamesShowcase.innerHTML = gameEntries.slice(0,3).map(({id,game,scores,playerCount}) => {
+                const leader = scores[0];
+                return `<article class="challenge-card"><div class="challenge-card-top"><span class="status-chip">${playerCount} yarışmacı</span><i class="fa-solid ${game.icon}"></i></div><h3>${escapeHTML(game.title)}</h3><div class="challenge-record">${leader ? `Rekor: <strong>${Number(leader.score || 0).toLocaleString("tr-TR")}</strong> · ${profileLinkMarkup(leader.userId,leader.displayName || "Oyuncu")}` : "Henüz rekor yok — ilk sırayı sen kap!"}</div><a class="secondary-btn" href="#game=${encodeURIComponent(id)}"><i class="fa-solid fa-play"></i> Meydan Oku</a></article>`;
+            }).join("");
+
+            const memberCountFor = communityId => cachedMemberships.filter(item => item.communityId === communityId && item.status === "approved").length;
+            const rankingMarkup = type => {
+                const ranked = cachedCommunities.filter(item => item.type === type && item.status === "active")
+                    .map(item => ({...item, memberCount: memberCountFor(item.id)}))
+                    .sort((a,b) => b.memberCount - a.memberCount || String(a.name || "").localeCompare(String(b.name || ""),"tr")).slice(0,3);
+                return ranked.map((community,index) => `<div class="ranking-item"><span class="ranking-place">${index+1}</span><a href="#community=${encodeURIComponent(community.id)}">${escapeHTML(community.name || "Adsız topluluk")}</a><small>${community.memberCount} üye</small></div>`).join("") || '<div class="empty-state">Henüz sıralamaya giren topluluk yok.</div>';
+            };
+            homeBkfkRanking.innerHTML = rankingMarkup("bkfk");
+            homeCommunityRanking.innerHTML = rankingMarkup("community");
         }
 
 
@@ -6468,7 +6549,7 @@
             if (gameId === "reaction") board = `<button id="reactionBoard" class="reaction-board" type="button">Başlamak için dokun veya tıkla</button>`;
             if (gameId === "memory") board = `<div id="memoryStatus" class="memory-status">Başlamak için düğmeye bas</div><div class="memory-pads">${[1,2,3,4].map((n, i) => `<button type="button" data-memory-pad="${n}"><i class="fa-solid fa-dice-${["one","two","three","four"][i]}"></i></button>`).join("")}</div>`;
             const controls = gameId === "contra" ? "Bilgisayar: ← → hareket, ↑ zıpla, Boşluk ateş · Telefon: ekrandaki tuşlar." : gameId === "blocks" ? "Bilgisayar: ← → hareket, ↑ döndür, ↓ indir, Boşluk hızlı bırak · Telefon: ekrandaki tuşlar." : (gameId === "space" || gameId === "galaga") ? "Bilgisayar: ← → ve Boşluk · Telefon: alttaki dokunmatik tuşlar." : game.description;
-            return `<div class="game-layout"><section class="game-stage"><div class="game-hud"><strong id="liveGameScore">Skor: 0</strong><button class="primary-btn" id="startMiniGame" type="button"><i class="fa-solid fa-play"></i> Oyunu Başlat</button></div>${board}<p class="game-help">${controls}</p></section>${gameLeaderboardMarkup(gameId)}</div>`;
+            return `<div class="game-layout"><section class="game-stage"><div class="game-hud"><strong id="liveGameScore">Skor: 0</strong><div class="game-hud-actions"><button class="secondary-btn" id="saveMiniGameScore" type="button"><i class="fa-solid fa-floppy-disk"></i> Skoru Kaydet</button><button class="primary-btn" id="startMiniGame" type="button"><i class="fa-solid fa-play"></i> Oyunu Başlat</button></div></div>${board}<p class="game-help">${controls}</p></section>${gameLeaderboardMarkup(gameId)}</div>`;
         }
 
 
@@ -6478,12 +6559,19 @@
             if (!user) return showToast(`Skorun ${score}. Sıralamaya girmek için giriş yap.`, "error");
             const scoreRef = doc(db, "gameScores", `${gameId}_${user.uid}`);
             try {
+                let isNewRecord = false;
+                let savedBest = score;
                 await runTransaction(db, async transaction => {
                     const current = await transaction.get(scoreRef);
-                    if (current.exists() && Number(current.data().score || 0) >= score) return;
-                    transaction.set(scoreRef, { gameId, score, userId: user.uid, displayName: cachedProfile?.displayName || getDefaultDisplayName(user), updatedAt: serverTimestamp() });
+                    const previousBest = current.exists() ? Number(current.data().score || 0) : -1;
+                    savedBest = Math.max(previousBest, score);
+                    isNewRecord = score > previousBest;
+                    transaction.set(scoreRef, { gameId, score: savedBest, userId: user.uid, displayName: cachedProfile?.displayName || getDefaultDisplayName(user), updatedAt: serverTimestamp() });
                 });
-                showToast(`Skorun: ${score.toLocaleString("tr-TR")}`);
+                showToast(isNewRecord
+                    ? `Yeni rekor: ${savedBest.toLocaleString("tr-TR")} puan!`
+                    : `Skor kaydedildi. Rekorun: ${savedBest.toLocaleString("tr-TR")} puan.`
+                );
             } catch (error) {
                 console.error("Oyun skoru kaydedilemedi:", error);
                 showToast(getDataErrorMessage(error, "Skor kaydedilemedi. Firestore kurallarını kontrol et."), "error");
@@ -6605,7 +6693,23 @@
             if (activeGameCleanup) activeGameCleanup();
             const startButton = document.getElementById("startMiniGame");
             const scoreLabel = document.getElementById("liveGameScore");
+            const saveScoreButton = document.getElementById("saveMiniGameScore");
             if (!startButton || !scoreLabel) return;
+
+            const currentVisibleScore = () => {
+                const match = scoreLabel.textContent.match(/Skor:\s*([\d.]+)/);
+                return match ? Number(match[1].replace(/\./g, "")) : 0;
+            };
+            let gameHasStarted = false;
+            startButton.addEventListener("click", () => {
+                if (gameHasStarted && currentVisibleScore() > 0) {
+                    saveGameScore(gameId, currentVisibleScore());
+                }
+                gameHasStarted = true;
+            }, { capture: true });
+            saveScoreButton?.addEventListener("click", () => {
+                saveGameScore(gameId, currentVisibleScore());
+            });
 
             if (gameId === "galaga") {
                 activeGameCleanup = initializeGalagaGame(startButton, scoreLabel);
@@ -7141,6 +7245,7 @@
         `;
 
         renderWeeklyGame();
+        renderHomeChallenges();
         renderRoute();
 
 
@@ -9126,6 +9231,7 @@
                             ...communityDocument.data()
                         }))
                         .sort((a, b) => (a.name || "").localeCompare(b.name || "", "tr"));
+                    renderHomeChallenges();
                     renderRoute();
                 },
                 error => {
@@ -9141,6 +9247,7 @@
                         id: membershipDocument.id,
                         ...membershipDocument.data()
                     }));
+                    renderHomeChallenges();
                     renderRoute();
                 },
                 error => {
@@ -9202,6 +9309,7 @@
                         id: scoreDocument.id,
                         ...scoreDocument.data()
                     }));
+                    renderHomeChallenges();
                     const route = decodeURIComponent(window.location.hash.slice(1));
                     if (route === "games" || route.startsWith("game=")) renderRoute();
                 },
