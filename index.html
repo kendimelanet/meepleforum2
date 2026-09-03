@@ -1144,6 +1144,21 @@
                 );
         }
 
+        .game-cover.has-image {
+            background-position: center;
+            background-size: cover;
+        }
+
+        .game-cover.has-image .game-art {
+            justify-content: flex-end;
+            padding: 18px;
+            background: linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,.05) 70%);
+        }
+
+        .game-cover.has-image .game-art i {
+            display: none;
+        }
+
         .game-art {
             position: absolute;
             inset: 0;
@@ -2368,6 +2383,25 @@
             background: linear-gradient(145deg, rgba(113,52,56,.25), rgba(62,101,79,.2));
         }
 
+        .venue-map {
+            width: 100%;
+            height: 180px;
+            border: 0;
+            border-top: 1px solid var(--border);
+            background: #171513;
+        }
+
+        .venue-hours {
+            margin: 10px 0;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(255,255,255,.025);
+            color: var(--text-secondary);
+            font-size: 10px;
+            line-height: 1.65;
+        }
+
         .directory-card-body {
             padding: 17px;
         }
@@ -3571,13 +3605,13 @@
                         </div>
 
 
-                        <div class="game-cover">
+                        <div class="game-cover" id="weeklyGameCover">
 
-                            <div class="game-art">
+                            <div class="game-art" id="weeklyGameArt">
 
                                 <i class="fa-solid fa-chess-rook"></i>
 
-                                <span>
+                                <span id="weeklyGameArtTitle">
                                     DUNE
                                 </span>
 
@@ -3596,15 +3630,17 @@
 
                         <div class="game-content">
 
-                            <h4>
+                            <h4 id="weeklyGameTitle">
                                 Dune: Imperium
                             </h4>
 
-                            <p>
+                            <p id="weeklyGameDescription">
                                 Güçlü deste oluşturma mekanikleri,
                                 işçi yerleştirme ve entrikalarla dolu
                                 rekabetçi bir strateji deneyimi.
                             </p>
+
+                            <div class="topic-tags" id="weeklyGameTags"></div>
 
                             <a
                                 href="#"
@@ -4472,6 +4508,7 @@
                         <option value="Miniatür & Boyama">Miniatür & Boyama</option>
                         <option value="İkinci El / Takas">İkinci El / Takas</option>
                         <option value="FRP / Rol Yapma Oyunları">FRP / Rol Yapma Oyunları</option>
+                        <option value="İncelemeler">İnceleme</option>
                     </select>
                 </div>
 
@@ -4910,7 +4947,9 @@
                 event.preventDefault();
             }
 
-            window.location.hash = "reviews";
+            window.location.hash = window.meepleWeeklyGameReviewId
+                ? "review=" + encodeURIComponent(window.meepleWeeklyGameReviewId)
+                : "reviews";
 
         });
 
@@ -4923,7 +4962,9 @@
 
                 event.preventDefault();
 
-                window.location.hash = "reviews";
+                window.location.hash = window.meepleWeeklyGameReviewId
+                    ? "review=" + encodeURIComponent(window.meepleWeeklyGameReviewId)
+                    : "reviews";
 
             }
 
@@ -5266,9 +5307,10 @@
             measurementId: "G-RSP81XMB1V"
         };
 
-        // Google Cloud Console'da Places API (New) anahtarı oluşturduğunda
-        // buraya yaz. Firebase apiKey bu alan için kullanılmaz.
-        const GOOGLE_MAPS_PLACES_API_KEY = "AIzaSyBLVVFkswbHYbRz6T11h1syYg2LeIRBAoQ";
+        // Kısa Google Maps bağlantıları bu Cloud Function üzerinden güvenli şekilde çözülür.
+        // Places API anahtarını HTML'e değil, Function secret'ına ekle.
+        const GOOGLE_PLACES_PROXY_URL =
+            "https://europe-west1-meepleforum.cloudfunctions.net/resolveGoogleMapsPlace";
 
 
         const {
@@ -5351,6 +5393,11 @@
         const memberCount = document.getElementById("memberCount");
         const topicCount = document.getElementById("topicCount");
         const onlineCount = document.getElementById("onlineCount");
+        const weeklyGameCover = document.getElementById("weeklyGameCover");
+        const weeklyGameArtTitle = document.getElementById("weeklyGameArtTitle");
+        const weeklyGameTitle = document.getElementById("weeklyGameTitle");
+        const weeklyGameDescription = document.getElementById("weeklyGameDescription");
+        const weeklyGameTags = document.getElementById("weeklyGameTags");
 
 
         function setButtonBusy(button, isBusy, busyText, normalText) {
@@ -5388,6 +5435,13 @@
         let cachedMemberships = [];
         let cachedVenues = [];
         let cachedEvents = [];
+        let cachedWeeklyGame = {
+            title: "Dune: Imperium",
+            description: "Güçlü deste oluşturma mekanikleri, işçi yerleştirme ve entrikalarla dolu rekabetçi bir strateji deneyimi.",
+            tags: ["Strateji"],
+            imageURL: "",
+            reviewId: "dune-imperium"
+        };
         let cachedReviews = {
             "dune-imperium": {
                 title: "Dune: Imperium",
@@ -6122,11 +6176,27 @@
                             ${cachedVenues.filter(venue => venue.city === city).map(venue => `
                                 <article class="directory-card">
                                     ${safeImageURL(venue.photoURL) ? `<img class="directory-card-image" src="${escapeHTML(safeImageURL(venue.photoURL))}" alt="${escapeHTML(venue.name || "Mekan")}">` : '<div class="directory-card-image"></div>'}
+                                    ${Number.isFinite(Number(venue.latitude)) && Number.isFinite(Number(venue.longitude)) ? `
+                                        <iframe
+                                            class="venue-map"
+                                            title="${escapeHTML(venue.name || "Mekan")} konumu"
+                                            loading="lazy"
+                                            referrerpolicy="no-referrer-when-downgrade"
+                                            src="https://www.google.com/maps?q=${encodeURIComponent(`${venue.latitude},${venue.longitude}`)}&z=15&output=embed"
+                                        ></iframe>
+                                    ` : ""}
                                     <div class="directory-card-body">
                                         <h3>${escapeHTML(venue.name || "Google Maps Mekanı")}</h3>
                                         <p>${escapeHTML(venue.address || "Adres için Google Maps bağlantısını aç.")}</p>
+                                        ${Array.isArray(venue.openingHours) && venue.openingHours.length ? `
+                                            <div class="venue-hours">
+                                                <strong><i class="fa-regular fa-clock"></i> Çalışma Saatleri</strong><br>
+                                                ${venue.openingHours.map(item => escapeHTML(item)).join("<br>")}
+                                            </div>
+                                        ` : ""}
                                         <div class="owner-actions">
                                             ${safeImageURL(venue.mapsUrl) ? `<a class="primary-btn" href="${escapeHTML(safeImageURL(venue.mapsUrl))}" target="_blank" rel="noopener">Google Maps</a>` : ""}
+                                            ${isCurrentUserAdmin ? `<button class="vote-btn" type="button" data-refresh-venue="${escapeHTML(venue.id)}"><i class="fa-solid fa-rotate"></i> Yenile</button>` : ""}
                                             ${isCurrentUserAdmin ? `<button class="danger-btn" type="button" data-delete-venue="${escapeHTML(venue.id)}">Sil</button>` : ""}
                                         </div>
                                     </div>
@@ -6136,42 +6206,6 @@
                     </section>
                 `).join("") : '<div class="empty-state"><i class="fa-solid fa-location-dot"></i>Henüz mekan eklenmemiş.</div>'}
             `;
-        }
-
-
-        async function fetchGooglePlaceDetails(placeId) {
-
-            if (!placeId || !GOOGLE_MAPS_PLACES_API_KEY) return null;
-
-            const response = await fetch(
-                `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`,
-                { headers: {
-                    "X-Goog-Api-Key": GOOGLE_MAPS_PLACES_API_KEY,
-                    "X-Goog-FieldMask": "id,displayName,formattedAddress,addressComponents,googleMapsUri,photos"
-                } }
-            );
-
-            if (!response.ok) return null;
-
-            return normalizeGooglePlace(await response.json());
-        }
-
-
-        function normalizeGooglePlace(place) {
-
-            const photoName = place.photos?.[0]?.name || "";
-            const city = place.addressComponents?.find(component =>
-                component.types?.includes("locality") || component.types?.includes("administrative_area_level_1")
-            )?.longText || "";
-
-            return {
-                placeId: place.id || "",
-                name: place.displayName?.text || "",
-                city,
-                address: place.formattedAddress || "",
-                mapsUrl: place.googleMapsUri || "",
-                photoURL: photoName ? `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=900&key=${encodeURIComponent(GOOGLE_MAPS_PLACES_API_KEY)}` : ""
-            };
         }
 
 
@@ -6194,75 +6228,27 @@
                 throw new Error("Yalnızca Google Maps bağlantısı kullanabilirsin.");
             }
 
-            const decodedUrl = decodeURIComponent(mapsUrl);
-            const placeMatch = decodeURIComponent(url.pathname).match(/\/place\/([^/]+)/i);
-            const queryText =
-                url.searchParams.get("query") ||
-                url.searchParams.get("q") ||
-                placeMatch?.[1] ||
-                "";
-            const cleanName = queryText
-                .replace(/\+/g, " ")
-                .replace(/\s+/g, " ")
-                .trim();
-            const coordinateMatch = decodedUrl.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
-
-            return {
-                mapsUrl,
-                placeId: url.searchParams.get("query_place_id") || "",
-                searchText: cleanName,
-                latitude: coordinateMatch ? Number(coordinateMatch[1]) : null,
-                longitude: coordinateMatch ? Number(coordinateMatch[2]) : null
-            };
+            return { mapsUrl };
         }
 
 
         async function fetchGooglePlaceFromMapsLink(linkData) {
-
-            if (!GOOGLE_MAPS_PLACES_API_KEY) return null;
-
-            if (linkData.placeId) {
-                return fetchGooglePlaceDetails(linkData.placeId);
-            }
-
-            if (!linkData.searchText) return null;
-
-            const requestBody = {
-                textQuery: linkData.searchText,
-                languageCode: "tr",
-                regionCode: "TR",
-                maxResultCount: 1
-            };
-
-            if (Number.isFinite(linkData.latitude) && Number.isFinite(linkData.longitude)) {
-                requestBody.locationBias = {
-                    circle: {
-                        center: {
-                            latitude: linkData.latitude,
-                            longitude: linkData.longitude
-                        },
-                        radius: 1200
-                    }
-                };
-            }
-
-            const response = await fetch(
-                "https://places.googleapis.com/v1/places:searchText",
-                {
+            const response = await withTimeout(
+                fetch(GOOGLE_PLACES_PROXY_URL, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Goog-Api-Key": GOOGLE_MAPS_PLACES_API_KEY,
-                        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.addressComponents,places.googleMapsUri,places.photos"
-                    },
-                    body: JSON.stringify(requestBody)
-                }
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ mapsUrl: linkData.mapsUrl })
+                }),
+                25000
             );
 
-            if (!response.ok) return null;
+            const result = await response.json().catch(() => ({}));
 
-            const result = await response.json();
-            return result.places?.[0] ? normalizeGooglePlace(result.places[0]) : null;
+            if (!response.ok) {
+                throw new Error(result.error || "Google Maps bilgileri alınamadı.");
+            }
+
+            return result;
         }
 
 
@@ -6337,6 +6323,16 @@
                         </div>
                     `).join("") || '<div class="empty-state">Yayınlanmış inceleme yok.</div>'}
 
+                    <h2>Haftanın Oyunu</h2>
+                    <form class="section-form weekly-game-form">
+                        <div class="form-group"><label>Oyun Adı</label><input class="form-input" name="title" value="${escapeHTML(cachedWeeklyGame.title || "")}" maxlength="100" required></div>
+                        <div class="form-group"><label>Tanıtım Yazısı</label><textarea class="form-textarea" name="description" maxlength="1200" required>${escapeHTML(cachedWeeklyGame.description || "")}</textarea></div>
+                        <div class="form-group"><label>Etiketler</label><input class="form-input" name="tags" value="${escapeHTML((cachedWeeklyGame.tags || []).join(", "))}" placeholder="Strateji, Deck Building, 1–4 Oyuncu"></div>
+                        <div class="form-group"><label>Bağlı İnceleme</label><select class="form-select" name="reviewId"><option value="">İncelemeler sayfasını aç</option>${getPublishedReviews().map(([reviewId, review]) => `<option value="${escapeHTML(reviewId)}" ${cachedWeeklyGame.reviewId === reviewId ? "selected" : ""}>${escapeHTML(review.title || reviewId)}</option>`).join("")}</select></div>
+                        <div class="form-group"><label>Kapak Fotoğrafı (isteğe bağlı)</label><input class="form-input" name="image" type="file" accept="image/jpeg,image/png,image/webp"></div>
+                        <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Haftanın Oyununu Kaydet</button>
+                    </form>
+
                     <h2>BKFK Onayları</h2>
                     ${cachedCommunities.filter(community => community.type === "bkfk" && community.status === "pending").map(community => `
                         <div class="admin-row">
@@ -6351,6 +6347,23 @@
 
         function renderHomeTopics() {
             homeTopics.innerHTML = topicCardsMarkup(cachedTopics.slice(0, 4));
+        }
+
+
+        function renderWeeklyGame() {
+            const title = cachedWeeklyGame.title || "Haftanın Oyunu";
+            const imageURL = safeImageURL(cachedWeeklyGame.imageURL);
+            const tags = Array.isArray(cachedWeeklyGame.tags) ? cachedWeeklyGame.tags : [];
+
+            weeklyGameTitle.textContent = title;
+            weeklyGameArtTitle.textContent = title.toLocaleUpperCase("tr-TR");
+            weeklyGameDescription.textContent = cachedWeeklyGame.description || "";
+            weeklyGameTags.innerHTML = tags.map(tag =>
+                `<span class="topic-tag">#${escapeHTML(tag)}</span>`
+            ).join("");
+            weeklyGameCover.classList.toggle("has-image", Boolean(imageURL));
+            weeklyGameCover.style.backgroundImage = imageURL ? `url("${imageURL}")` : "";
+            window.meepleWeeklyGameReviewId = cachedWeeklyGame.reviewId || "";
         }
 
 
@@ -6560,6 +6573,10 @@
             } else if (rawHash.startsWith("review=")) {
                 const reviewId = rawHash.slice("review=".length);
                 const review = cachedReviews[reviewId];
+                const currentUser = window.meepleForumAuthUser;
+                const canManageReview = Boolean(
+                    currentUser && (isCurrentUserAdmin || review?.authorId === currentUser.uid)
+                );
 
                 if (!review || review.deleted === true) {
                     setRouteHeader("İncelemeler", "İnceleme bulunamadı", "Bu inceleme kaldırılmış olabilir.");
@@ -6577,15 +6594,23 @@
                 routeContent.innerHTML = `
                     <article class="topic-detail">
                         <div class="topic-detail-meta">
-                            <span>MeepleForum Editörleri</span>
+                            ${review.authorId
+                                ? profileLinkMarkup(review.authorId, review.authorName || "MeepleForum Üyesi")
+                                : "<span>MeepleForum Editörleri</span>"}
                             <span>•</span>
-                            <span>Strateji</span>
+                            <span>${escapeHTML(formatTopicDate(review.createdAt))}</span>
                         </div>
                         <div class="topic-detail-body">${escapeHTML(review.content)}</div>
-                        ${isCurrentUserAdmin ? `
+                        ${Array.isArray(review.tags) && review.tags.length ? `
+                            <div class="topic-tags">
+                                ${review.tags.map(tag => `<span class="topic-tag">#${escapeHTML(tag)}</span>`).join("")}
+                            </div>
+                        ` : ""}
+                        ${safeImageURL(review.imageURL) ? `<img class="topic-detail-image" src="${escapeHTML(safeImageURL(review.imageURL))}" alt="${escapeHTML(review.title || "İnceleme görseli")}">` : ""}
+                        ${canManageReview ? `
                             <div class="owner-actions">
                                 <button class="vote-btn" type="button" data-edit-review="${escapeHTML(reviewId)}"><i class="fa-solid fa-pen"></i> İncelemeyi Düzenle</button>
-                                <button class="danger-btn" type="button" data-delete-review="${escapeHTML(reviewId)}"><i class="fa-solid fa-trash"></i> İncelemeyi Sil</button>
+                                ${isCurrentUserAdmin ? `<button class="danger-btn" type="button" data-delete-review="${escapeHTML(reviewId)}"><i class="fa-solid fa-trash"></i> İncelemeyi Sil</button>` : ""}
                             </div>
                         ` : ""}
                     </article>
@@ -6763,6 +6788,7 @@
             </div>
         `;
 
+        renderWeeklyGame();
         renderRoute();
 
 
@@ -7618,6 +7644,7 @@
 
                 const title = document.getElementById("topicTitle").value.trim();
                 const category = document.getElementById("topicCategory").value;
+                const isReview = category === "İncelemeler";
                 const content = document.getElementById("topicContent").value.trim();
                 const tags = [...new Set(
                     document.getElementById("topicTags").value
@@ -7680,28 +7707,31 @@
                             profile.photoURL || user.photoURL || "",
                         tags,
                         imageURL,
+                        deleted: false,
                         replies: 0,
                         createdAt: serverTimestamp(),
                         updatedAt: serverTimestamp()
                     };
 
                     const createdTopic = await withTimeout(
-                        addDoc(collection(db, "topics"), topicData),
+                        addDoc(collection(db, isReview ? "reviews" : "topics"), topicData),
                         20000
                     );
 
-                    cachedTopics.unshift({
-                        id: createdTopic.id,
-                        ...topicData,
-                        createdAt: null
-                    });
+                    if (!isReview) {
+                        cachedTopics.unshift({
+                            id: createdTopic.id,
+                            ...topicData,
+                            createdAt: null
+                        });
+                    }
 
                     newTopicForm.reset();
                     closeModal(document.getElementById("newTopicModal"));
-                    showToast("Konun başarıyla yayınlandı.");
+                    showToast(isReview ? "İncelemen başarıyla yayınlandı." : "Konun başarıyla yayınlandı.");
 
                     window.location.hash =
-                        "topic=" + encodeURIComponent(createdTopic.id);
+                        (isReview ? "review=" : "topic=") + encodeURIComponent(createdTopic.id);
 
                 } catch (error) {
 
@@ -7853,6 +7883,40 @@
 
             routeContent.addEventListener("submit", async event => {
 
+                const weeklyGameForm = event.target.closest(".weekly-game-form");
+                if (weeklyGameForm) {
+                    event.preventDefault();
+                    const user = auth.currentUser;
+                    if (!user || !isCurrentUserAdmin) return showToast("Haftanın oyununu yalnızca admin değiştirebilir.", "error");
+                    const button = weeklyGameForm.querySelector('button[type="submit"]');
+                    setButtonBusy(button, true, "Kaydediliyor...", '<i class="fa-solid fa-floppy-disk"></i> Haftanın Oyununu Kaydet');
+                    try {
+                        let imageURL = cachedWeeklyGame.imageURL || "";
+                        const imageFile = weeklyGameForm.elements.image.files[0];
+                        if (imageFile) {
+                            if (!/^image\/(jpeg|png|webp)$/.test(imageFile.type) || imageFile.size > 10 * 1024 * 1024) throw new Error("Fotoğraf JPG, PNG veya WEBP olmalı ve 10 MB'ı geçmemeli.");
+                            const optimizedImage = await optimizeTopicImage(imageFile);
+                            const uploadSnapshot = await uploadImageWithTimeout(
+                                storageRef(storage, `weekly-game-images/${user.uid}/${Date.now()}-weekly`),
+                                optimizedImage
+                            );
+                            imageURL = await getUploadedImageURL(uploadSnapshot);
+                        }
+                        const tags = weeklyGameForm.elements.tags.value.split(",").map(tag => tag.trim().replace(/^#/, "")).filter(Boolean).slice(0, 8);
+                        await withTimeout(setDoc(doc(db, "siteSettings", "weeklyGame"), {
+                            title: weeklyGameForm.elements.title.value.trim(), description: weeklyGameForm.elements.description.value.trim(), tags, imageURL,
+                            reviewId: weeklyGameForm.elements.reviewId.value, updatedAt: serverTimestamp(), updatedBy: user.uid
+                        }, { merge: true }), 20000);
+                        showToast("Haftanın oyunu güncellendi.");
+                    } catch (error) {
+                        console.error("Haftanın oyunu güncellenemedi:", error);
+                        showToast(getDataErrorMessage(error, error.message || "Haftanın oyunu güncellenemedi."), "error");
+                    } finally {
+                        setButtonBusy(button, false, "", '<i class="fa-solid fa-floppy-disk"></i> Haftanın Oyununu Kaydet');
+                    }
+                    return;
+                }
+
                 const communityForm = event.target.closest(".community-form");
 
                 if (communityForm) {
@@ -7926,11 +7990,14 @@
                         const googleData = await fetchGooglePlaceFromMapsLink(linkData);
                         const venueData = {
                             placeId: googleData?.placeId || linkData.placeId,
-                            name: googleData?.name || linkData.searchText || "Google Maps Mekanı",
+                            name: googleData?.name || "Google Maps Mekanı",
                             city: googleData?.city || "Diğer Mekanlar",
                             address: googleData?.address || "Adres için Google Maps bağlantısını aç.",
                             mapsUrl: googleData?.mapsUrl || linkData.mapsUrl,
                             photoURL: googleData?.photoURL || "",
+                            openingHours: Array.isArray(googleData?.openingHours) ? googleData.openingHours : [],
+                            latitude: Number.isFinite(Number(googleData?.latitude)) ? Number(googleData.latitude) : null,
+                            longitude: Number.isFinite(Number(googleData?.longitude)) ? Number(googleData.longitude) : null,
                             createdBy: auth.currentUser.uid,
                             createdAt: serverTimestamp()
                         };
@@ -8152,6 +8219,31 @@
                 const approveMembershipButton = event.target.closest("[data-approve-membership]");
                 const approveCommunityButton = event.target.closest("[data-approve-community]");
                 const deleteVenueButton = event.target.closest("[data-delete-venue]");
+                const refreshVenueButton = event.target.closest("[data-refresh-venue]");
+
+                if (refreshVenueButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) return showToast("Mekan bilgilerini yalnızca admin yenileyebilir.", "error");
+                    const venue = cachedVenues.find(item => item.id === refreshVenueButton.dataset.refreshVenue);
+                    if (!venue?.mapsUrl) return showToast("Bu mekanda yenilenecek Google Maps bağlantısı yok.", "error");
+                    refreshVenueButton.disabled = true;
+                    try {
+                        const googleData = await fetchGooglePlaceFromMapsLink(parseGoogleMapsLink(venue.mapsUrl));
+                        await setDoc(doc(db, "venues", venue.id), {
+                            placeId: googleData.placeId || venue.placeId || "", name: googleData.name, city: googleData.city,
+                            address: googleData.address, mapsUrl: googleData.mapsUrl || venue.mapsUrl, photoURL: googleData.photoURL || "",
+                            openingHours: Array.isArray(googleData.openingHours) ? googleData.openingHours : [],
+                            latitude: Number.isFinite(Number(googleData.latitude)) ? Number(googleData.latitude) : null,
+                            longitude: Number.isFinite(Number(googleData.longitude)) ? Number(googleData.longitude) : null,
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+                        showToast("Mekan bilgileri Google Maps'ten yenilendi.");
+                    } catch (error) {
+                        console.error("Mekan yenilenemedi:", error);
+                        showToast(error.message || "Mekan bilgileri yenilenemedi.", "error");
+                        refreshVenueButton.disabled = false;
+                    }
+                    return;
+                }
 
                 if (requestMembershipButton) {
                     const user = auth.currentUser;
@@ -8310,13 +8402,14 @@
                 }
 
                 if (editReviewButton) {
-                    if (!isCurrentUserAdmin || !auth.currentUser) {
-                        showToast("İncelemeleri yalnızca admin düzenleyebilir.", "error");
-                        return;
-                    }
-
                     const reviewId = editReviewButton.dataset.editReview;
                     const currentReview = cachedReviews[reviewId] || {};
+                    const user = auth.currentUser;
+
+                    if (!user || (!isCurrentUserAdmin && currentReview.authorId !== user.uid)) {
+                        showToast("Yalnızca kendi incelemeni düzenleyebilirsin.", "error");
+                        return;
+                    }
                     const nextTitle = window.prompt("İnceleme başlığı", currentReview.title || "");
                     if (nextTitle === null) return;
                     const nextContent = window.prompt("İnceleme metni", currentReview.content || "");
@@ -8738,6 +8831,16 @@
                 error => {
                     console.error("İnceleme alınamadı:", error);
                 }
+            );
+
+            onSnapshot(
+                doc(db, "siteSettings", "weeklyGame"),
+                settingsSnapshot => {
+                    if (settingsSnapshot.exists()) cachedWeeklyGame = { ...cachedWeeklyGame, ...settingsSnapshot.data() };
+                    renderWeeklyGame();
+                    if (window.location.hash === "#admin") renderRoute();
+                },
+                error => console.error("Haftanın oyunu alınamadı:", error)
             );
 
 
