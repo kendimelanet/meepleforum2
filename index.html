@@ -2564,6 +2564,67 @@
             resize: vertical;
         }
 
+        .chat-hub {
+            display: grid;
+            gap: 18px;
+            width: 100%;
+        }
+
+        .conversation-panel {
+            width: 100%;
+            max-width: 900px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+        }
+
+        .conversation-panel h3 {
+            margin-bottom: 6px;
+        }
+
+        .conversation-panel > p {
+            margin-bottom: 14px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .conversation-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .conversation-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .conversation-row small {
+            display: block;
+            margin-top: 3px;
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        .community-room-callout {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-top: 16px;
+            padding: 14px;
+            border: 1px solid rgba(210,167,92,.22);
+            border-radius: 11px;
+            background: rgba(210,167,92,.055);
+        }
+
         .modal-footer {
             margin-top: 17px;
 
@@ -2860,6 +2921,18 @@
             }
 
             .chat-form .primary-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .conversation-row,
+            .community-room-callout {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .conversation-row .primary-btn,
+            .community-room-callout .primary-btn {
                 width: 100%;
                 justify-content: center;
             }
@@ -5386,10 +5459,14 @@
             addDoc,
             doc,
             getDoc,
+            getDocs,
             setDoc,
             deleteDoc,
             writeBatch,
             runTransaction,
+            query,
+            where,
+            orderBy,
             onSnapshot,
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
@@ -5555,6 +5632,8 @@
         let cachedChatMessages = [];
         let cachedCommunities = [];
         let cachedMemberships = [];
+        let cachedDirectConversations = [];
+        let cachedActiveChatMessages = [];
         let cachedVenues = [];
         let cachedEvents = [];
         let cachedGameScores = [];
@@ -5562,6 +5641,10 @@
         let activeGameSession = null;
         let activeScoreObserver = null;
         let activeScoreSaveTimer = null;
+        let directConversationsUnsubscribe = null;
+        let activeFirestoreChatUnsubscribe = null;
+        let activeFirestoreChatKey = "";
+        let activeFirestoreChatError = "";
         /*
          * Firebase servisleri modül kapsamındadır. Oyun, profil, gönderi ve
          * sohbet yardımcıları try bloğunun dışında tanımlandığı için bu
@@ -5989,7 +6072,7 @@
             const memberships = getApprovedCommunityMemberships(userId);
             const joinedCommunities = memberships
                 .map(membership => cachedCommunities.find(community => community.id === membership.communityId))
-                .filter(Boolean);
+                .filter(community => community?.status === "active");
 
             return `
                 <article class="profile-page">
@@ -6006,12 +6089,24 @@
                         <p class="profile-page-bio">
                             ${escapeHTML(profile?.bio || "Bu kullanıcı henüz kendisi hakkında bir bilgi eklememiş.")}
                         </p>
-                        ${window.meepleForumAuthUser?.uid === userId ? `
-                            <button class="primary-btn" type="button" data-edit-own-profile>
-                                <i class="fa-solid fa-user-pen"></i>
-                                Profili Düzenle
-                            </button>
-                        ` : ""}
+                        <div class="owner-actions">
+                            ${window.meepleForumAuthUser?.uid === userId ? `
+                                <button class="primary-btn" type="button" data-edit-own-profile>
+                                    <i class="fa-solid fa-user-pen"></i>
+                                    Profili Düzenle
+                                </button>
+                            ` : window.meepleForumAuthUser ? `
+                                <button class="primary-btn" type="button" data-direct-chat-open="${escapeHTML(userId)}">
+                                    <i class="fa-solid fa-lock"></i>
+                                    Özel Mesaj Gönder
+                                </button>
+                            ` : `
+                                <button class="primary-btn" type="button" data-login-for-chat>
+                                    <i class="fa-solid fa-right-to-bracket"></i>
+                                    Mesaj göndermek için giriş yap
+                                </button>
+                            `}
+                        </div>
                         <div class="profile-stats">
                             <div class="profile-stat">
                                 <strong>${userTopics.length}</strong>
@@ -6034,7 +6129,7 @@
                             <div class="profile-clubs">
                                 <strong>Katıldığı topluluklar:</strong>
                                 ${joinedCommunities.map(community => `
-                                    <button class="author-link" type="button" data-community-open="${escapeHTML(community.id)}">${escapeHTML(community.name)}</button>
+                                    <a class="author-link" href="#community=${encodeURIComponent(community.id)}">${escapeHTML(community.name)}</a>
                                 `).join(" · ")}
                             </div>
                         ` : ""}
@@ -6119,6 +6214,8 @@
             const currentUser = window.meepleForumAuthUser;
 
             return `
+                <div class="chat-hub">
+                ${directConversationsMarkup()}
                 <section class="chat-shell">
                     <div class="chat-messages" id="chatMessages">
                         ${cachedChatMessages.length ? cachedChatMessages.map(message => {
@@ -6178,7 +6275,342 @@
                         </div>
                     `}
                 </section>
+                </div>
             `;
+        }
+
+
+        function getPublicProfile(userId) {
+            return cachedPublicProfiles.find(item => (item.uid || item.id) === userId) || null;
+        }
+
+
+        function getDirectConversationId(firstUserId, secondUserId) {
+            return [String(firstUserId || ""), String(secondUserId || "")]
+                .sort((a, b) => a < b ? -1 : a > b ? 1 : 0)
+                .join("_");
+        }
+
+
+        function getConversationPartner(conversation, currentUserId) {
+            const participants = Array.isArray(conversation?.participantIds)
+                ? conversation.participantIds
+                : [];
+            const partnerId = participants.find(userId => userId !== currentUserId) || "";
+            const partnerIndex = participants.indexOf(partnerId);
+            const storedNames = Array.isArray(conversation?.participantNames)
+                ? conversation.participantNames
+                : [];
+            const profile = getPublicProfile(partnerId);
+
+            return {
+                userId: partnerId,
+                displayName:
+                    profile?.displayName ||
+                    storedNames[partnerIndex] ||
+                    "Meeple Oyuncusu"
+            };
+        }
+
+
+        function directConversationsMarkup() {
+            const currentUser = window.meepleForumAuthUser;
+
+            if (!currentUser) {
+                return `
+                    <section class="conversation-panel">
+                        <h3><i class="fa-solid fa-lock"></i> Özel Sohbetler</h3>
+                        <p>Bire bir gizli konuşmalarını görmek için giriş yap.</p>
+                        <button class="primary-btn" type="button" data-login-for-chat>Giriş Yap</button>
+                    </section>
+                `;
+            }
+
+            return `
+                <section class="conversation-panel">
+                    <h3><i class="fa-solid fa-lock"></i> Özel Sohbetler</h3>
+                    <p>Yeni bir konuşma başlatmak için kullanıcının profilindeki “Özel Mesaj Gönder” düğmesini kullan.</p>
+                    <div class="conversation-list">
+                        ${cachedDirectConversations.length ? cachedDirectConversations.map(conversation => {
+                            const partner = getConversationPartner(conversation, currentUser.uid);
+                            if (!partner.userId) return "";
+                            return `
+                                <div class="conversation-row">
+                                    <div>
+                                        ${profileLinkMarkup(partner.userId, partner.displayName)}
+                                        <small>${escapeHTML(conversation.lastMessage || "Henüz mesaj yok.")}</small>
+                                    </div>
+                                    <button class="primary-btn" type="button" data-direct-chat-open="${escapeHTML(partner.userId)}">
+                                        <i class="fa-solid fa-message"></i> Sohbeti Aç
+                                    </button>
+                                </div>
+                            `;
+                        }).join("") : '<div class="empty-state">Henüz özel konuşman yok.</div>'}
+                    </div>
+                </section>
+            `;
+        }
+
+
+        function canAccessCommunityRoom(community, user = window.meepleForumAuthUser) {
+            if (!community || !user || community.status !== "active") return false;
+            if (isCurrentUserAdmin || community.ownerId === user.uid) return true;
+            return cachedMemberships.some(membership =>
+                membership.communityId === community.id &&
+                membership.userId === user.uid &&
+                membership.status === "approved"
+            );
+        }
+
+
+        function firestoreChatMessagesMarkup(kind, context) {
+            const currentUser = window.meepleForumAuthUser;
+
+            if (activeFirestoreChatError) {
+                return `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>${escapeHTML(activeFirestoreChatError)}</div>`;
+            }
+
+            if (!cachedActiveChatMessages.length) {
+                return '<div class="empty-state"><i class="fa-regular fa-comments"></i>İlk mesajı sen gönderebilirsin.</div>';
+            }
+
+            return cachedActiveChatMessages.map(message => {
+                const own = currentUser?.uid === message.senderId;
+                const canDelete = kind === "direct"
+                    ? own
+                    : Boolean(own || isCurrentUserAdmin || context?.ownerId === currentUser?.uid);
+                const deleteAttribute = kind === "direct"
+                    ? `data-delete-direct-message="${escapeHTML(message.id)}"`
+                    : `data-delete-community-message="${escapeHTML(message.id)}"`;
+
+                return `
+                    <article class="chat-message ${own ? "own" : ""}">
+                        <div class="chat-message-head">
+                            <span>
+                                ${profileLinkMarkup(message.senderId, message.senderName || "Meeple Oyuncusu")}
+                                · ${escapeHTML(formatTopicDate(message.createdAt))}
+                            </span>
+                            ${canDelete ? `<button class="danger-btn" type="button" ${deleteAttribute} aria-label="Mesajı sil"><i class="fa-solid fa-trash"></i></button>` : ""}
+                        </div>
+                        <p>${escapeHTML(message.text || "")}</p>
+                    </article>
+                `;
+            }).join("");
+        }
+
+
+        function directChatMarkup(otherUserId) {
+            const currentUser = window.meepleForumAuthUser;
+            if (!currentUser) return '<button class="primary-btn" type="button" data-login-for-chat>Özel sohbet için giriş yap</button>';
+            if (!otherUserId || otherUserId === currentUser.uid) return '<div class="empty-state">Kendinle özel sohbet başlatamazsın.</div>';
+
+            return `
+                <section class="chat-shell">
+                    <div class="chat-messages" id="privateChatMessages">
+                        ${firestoreChatMessagesMarkup("direct", null)}
+                    </div>
+                    <form class="chat-form direct-message-form" data-other-user-id="${escapeHTML(otherUserId)}">
+                        <textarea class="form-textarea" name="message" maxlength="1000" rows="3" dir="ltr" lang="tr" placeholder="Özel mesajını yaz..." required></textarea>
+                        <button class="primary-btn" type="submit"><i class="fa-solid fa-paper-plane"></i> Gönder</button>
+                    </form>
+                </section>
+            `;
+        }
+
+
+        function communityChatMarkup(community) {
+            const currentUser = window.meepleForumAuthUser;
+            if (!currentUser) return '<button class="primary-btn" type="button" data-login-for-chat>Sohbet odasına girmek için giriş yap</button>';
+            if (!canAccessCommunityRoom(community, currentUser)) {
+                return '<div class="empty-state"><i class="fa-solid fa-lock"></i>Bu sohbet odasına yalnızca onaylı topluluk üyeleri girebilir.</div>';
+            }
+
+            return `
+                <section class="chat-shell">
+                    <div class="chat-messages" id="communityChatMessages">
+                        ${firestoreChatMessagesMarkup("community", community)}
+                    </div>
+                    <form class="chat-form community-message-form" data-community-id="${escapeHTML(community.id)}">
+                        <textarea class="form-textarea" name="message" maxlength="1000" rows="3" dir="ltr" lang="tr" placeholder="Topluluk odasına mesaj yaz..." required></textarea>
+                        <button class="primary-btn" type="submit"><i class="fa-solid fa-paper-plane"></i> Gönder</button>
+                    </form>
+                </section>
+            `;
+        }
+
+
+        function stopActiveFirestoreChat() {
+            if (activeFirestoreChatUnsubscribe) {
+                activeFirestoreChatUnsubscribe();
+                activeFirestoreChatUnsubscribe = null;
+            }
+            activeFirestoreChatKey = "";
+            activeFirestoreChatError = "";
+            cachedActiveChatMessages = [];
+        }
+
+
+        function startActiveFirestoreChat(kind, chatId) {
+            const user = auth?.currentUser;
+            if (!user || !db || !chatId) return;
+
+            const listenerKey = `${kind}:${chatId}`;
+            if (activeFirestoreChatKey === listenerKey && activeFirestoreChatUnsubscribe) return;
+
+            stopActiveFirestoreChat();
+            activeFirestoreChatKey = listenerKey;
+
+            const messagesReference = kind === "direct"
+                ? collection(db, "directConversations", chatId, "messages")
+                : collection(db, "communityRooms", chatId, "messages");
+
+            activeFirestoreChatUnsubscribe = onSnapshot(
+                query(messagesReference, orderBy("createdAt", "asc")),
+                snapshot => {
+                    cachedActiveChatMessages = snapshot.docs.map(messageDocument => ({
+                        id: messageDocument.id,
+                        ...messageDocument.data()
+                    }));
+                    activeFirestoreChatError = "";
+                    renderRoute();
+                },
+                error => {
+                    console.error("Sohbet odası okunamadı:", error);
+                    activeFirestoreChatError = getDataErrorMessage(
+                        error,
+                        "Bu sohbet odası okunamadı. Üyeliğini ve Firestore kurallarını kontrol et."
+                    );
+                    renderRoute();
+                }
+            );
+        }
+
+
+        function stopDirectConversationsListener() {
+            if (directConversationsUnsubscribe) {
+                directConversationsUnsubscribe();
+                directConversationsUnsubscribe = null;
+            }
+            cachedDirectConversations = [];
+        }
+
+
+        function startDirectConversationsListener(user) {
+            stopDirectConversationsListener();
+            if (!user || !db) return;
+
+            const conversationsQuery = query(
+                collection(db, "directConversations"),
+                where("participantIds", "array-contains", user.uid)
+            );
+
+            directConversationsUnsubscribe = onSnapshot(
+                conversationsQuery,
+                snapshot => {
+                    cachedDirectConversations = snapshot.docs
+                        .map(conversationDocument => ({
+                            id: conversationDocument.id,
+                            ...conversationDocument.data()
+                        }))
+                        .sort((a, b) => {
+                            const aTime = a.updatedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
+                            const bTime = b.updatedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
+                            return bTime - aTime;
+                        });
+
+                    if (decodeURIComponent(window.location.hash.slice(1)) === "chat") {
+                        renderRoute();
+                    }
+                },
+                error => console.error("Özel sohbetler alınamadı:", error)
+            );
+        }
+
+
+        async function ensureDirectConversation(otherUserId) {
+            const user = auth.currentUser;
+            if (!user) throw new Error("Özel mesaj göndermek için giriş yapmalısın.");
+            if (!otherUserId || otherUserId === user.uid) throw new Error("Bu kullanıcıyla özel sohbet başlatılamadı.");
+
+            const participantIds = [user.uid, otherUserId]
+                .sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+            const currentName = cachedProfile?.displayName || getDefaultDisplayName(user);
+            const otherProfile = getPublicProfile(otherUserId);
+            const participantNames = participantIds.map(userId =>
+                userId === user.uid
+                    ? currentName
+                    : otherProfile?.displayName || "Meeple Oyuncusu"
+            );
+            const conversationId = getDirectConversationId(user.uid, otherUserId);
+            const conversationRef = doc(db, "directConversations", conversationId);
+
+            await runTransaction(db, async transaction => {
+                const conversationSnapshot = await transaction.get(conversationRef);
+
+                if (conversationSnapshot.exists()) {
+                    const participants = conversationSnapshot.data().participantIds || [];
+                    if (!participants.includes(user.uid) || !participants.includes(otherUserId)) {
+                        throw new Error("Bu özel konuşmaya erişim iznin yok.");
+                    }
+                    return;
+                }
+
+                transaction.set(conversationRef, {
+                    participantIds,
+                    participantNames,
+                    createdBy: user.uid,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp(),
+                    lastMessage: ""
+                });
+            });
+
+            return conversationId;
+        }
+
+
+        async function openDirectConversation(otherUserId) {
+            if (!auth.currentUser) {
+                openModal("loginModal");
+                return;
+            }
+
+            try {
+                await ensureDirectConversation(otherUserId);
+                window.location.hash = "dm=" + encodeURIComponent(otherUserId);
+            } catch (error) {
+                console.error("Özel konuşma açılamadı:", error);
+                showToast(getDataErrorMessage(error, error.message || "Özel konuşma açılamadı."), "error");
+            }
+        }
+
+
+        async function deleteCommunityWithRelatedData(communityId) {
+            const community = cachedCommunities.find(item => item.id === communityId);
+            const user = auth.currentUser;
+            if (!community || !user || (!isCurrentUserAdmin && community.ownerId !== user.uid)) {
+                throw new Error("Bu topluluğu silme yetkin yok.");
+            }
+
+            const [roomSnapshot, membershipSnapshot] = await Promise.all([
+                getDocs(collection(db, "communityRooms", communityId, "messages")),
+                getDocs(query(
+                    collection(db, "communityMemberships"),
+                    where("communityId", "==", communityId)
+                ))
+            ]);
+            const relatedReferences = [
+                ...roomSnapshot.docs.map(messageDocument => messageDocument.ref),
+                ...membershipSnapshot.docs.map(membershipDocument => membershipDocument.ref)
+            ];
+
+            for (let index = 0; index < relatedReferences.length; index += 400) {
+                const batch = writeBatch(db);
+                relatedReferences.slice(index, index + 400).forEach(reference => batch.delete(reference));
+                await batch.commit();
+            }
+
+            await deleteDoc(doc(db, "communities", communityId));
         }
 
 
@@ -6291,7 +6723,25 @@
                     <div class="topic-detail-body">${escapeHTML(community.description || "")}</div>
                     ${community.university ? `<p class="profile-clubs"><strong>Üniversite:</strong> ${escapeHTML(community.university)}</p>` : ""}
                     <p class="profile-clubs"><strong>Kurucu:</strong> ${profileLinkMarkup(community.ownerId, community.ownerName || "Topluluk sahibi")}</p>
-                    <div class="owner-actions">${joinAction}</div>
+                    <div class="owner-actions">
+                        ${joinAction}
+                        ${canManage ? `
+                            <button class="danger-btn" type="button" data-delete-community="${escapeHTML(community.id)}">
+                                <i class="fa-solid fa-trash"></i> Topluluğu Sil
+                            </button>
+                        ` : ""}
+                    </div>
+                    ${canAccessCommunityRoom(community, currentUser) ? `
+                        <div class="community-room-callout">
+                            <div>
+                                <strong><i class="fa-solid fa-comments"></i> Üye Sohbet Odası</strong>
+                                <p>Yalnızca bu topluluğun onaylı üyeleri konuşmaları görebilir.</p>
+                            </div>
+                            <button class="primary-btn" type="button" data-community-chat-open="${escapeHTML(community.id)}">
+                                Sohbet Odasına Gir
+                            </button>
+                        </div>
+                    ` : ""}
                 </article>
                 <div class="member-list">
                     <h2 class="comments-title">Üyeler (${approvedMembers.length})</h2>
@@ -6341,6 +6791,8 @@
 
         function eventsMarkup() {
 
+            const currentUser = window.meepleForumAuthUser;
+
             if (!cachedEvents.length) {
                 return `
                     <div class="empty-state">
@@ -6370,6 +6822,13 @@
                                     <strong>Oluşturan:</strong>
                                     ${profileLinkMarkup(eventItem.organizerId, eventItem.organizerName || "Meeple Oyuncusu")}
                                 </p>
+                                ${currentUser && (isCurrentUserAdmin || eventItem.organizerId === currentUser.uid) ? `
+                                    <div class="owner-actions">
+                                        <button class="danger-btn" type="button" data-delete-event="${escapeHTML(eventItem.id)}">
+                                            <i class="fa-solid fa-trash"></i> Etkinliği Sil
+                                        </button>
+                                    </div>
+                                ` : ""}
                             </div>
                         </article>
                     `).join("")}
@@ -6554,6 +7013,44 @@
                             </div>
                         </div>
                     `).join("") || '<div class="empty-state">Bekleyen BKFK kulübü yok.</div>'}
+
+                    <h2>Tüm Topluluklar (${cachedCommunities.length})</h2>
+                    ${cachedCommunities.map(community => `
+                        <div class="admin-row">
+                            <div>
+                                <strong>${escapeHTML(community.name || "Adsız topluluk")}</strong>
+                                <small>
+                                    ${community.type === "bkfk" ? "BKFK" : "Topluluk"}
+                                    · ${community.status === "active" ? "Aktif" : community.status === "pending" ? "Onay bekliyor" : "Reddedildi"}
+                                    · ${escapeHTML(community.ownerName || "Bilinmeyen kurucu")}
+                                </small>
+                            </div>
+                            <div class="owner-actions">
+                                <button class="vote-btn" type="button" data-community-open="${escapeHTML(community.id)}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Aç
+                                </button>
+                                <button class="danger-btn" type="button" data-delete-community="${escapeHTML(community.id)}">
+                                    <i class="fa-solid fa-trash"></i> Sil
+                                </button>
+                            </div>
+                        </div>
+                    `).join("") || '<div class="empty-state">Henüz topluluk yok.</div>'}
+
+                    <h2>Etkinlikler (${cachedEvents.length})</h2>
+                    ${cachedEvents.map(eventItem => `
+                        <div class="admin-row">
+                            <div>
+                                <strong>${escapeHTML(eventItem.name || "Adsız etkinlik")}</strong>
+                                <small>
+                                    ${escapeHTML(eventItem.organizerName || "Bilinmeyen kullanıcı")}
+                                    · ${escapeHTML(formatEventDate(eventItem.startAt))}
+                                </small>
+                            </div>
+                            <button class="danger-btn" type="button" data-delete-event="${escapeHTML(eventItem.id)}">
+                                <i class="fa-solid fa-trash"></i> Etkinliği Sil
+                            </button>
+                        </div>
+                    `).join("") || '<div class="empty-state">Henüz etkinlik yok.</div>'}
 
                     <h2>Açılan Başlıklar (${cachedTopics.length})</h2>
                     ${cachedTopics.map(topic => `
@@ -7075,6 +7572,10 @@
 
             const rawHash = decodeURIComponent(window.location.hash.slice(1));
 
+            if (!rawHash.startsWith("dm=") && !rawHash.startsWith("community-chat=")) {
+                stopActiveFirestoreChat();
+            }
+
             if (
                 activeGameSession &&
                 rawHash === `game=${activeGameSession.gameId}` &&
@@ -7382,6 +7883,35 @@
                     if (messages) messages.scrollTop = messages.scrollHeight;
                 });
 
+            } else if (rawHash.startsWith("dm=")) {
+                const otherUserId = rawHash.slice("dm=".length);
+                const currentUser = window.meepleForumAuthUser;
+                const otherProfile = getPublicProfile(otherUserId);
+                const displayName = otherProfile?.displayName || "Meeple Oyuncusu";
+
+                setRouteHeader(
+                    "Gizli Konuşma",
+                    displayName,
+                    "Bu konuşmayı yalnızca sen ve karşıdaki kullanıcı görebilir."
+                );
+
+                if (!currentUser || otherUserId === currentUser.uid) {
+                    stopActiveFirestoreChat();
+                } else {
+                    startActiveFirestoreChat(
+                        "direct",
+                        getDirectConversationId(currentUser.uid, otherUserId)
+                    );
+                }
+
+                routeContent.innerHTML = directChatMarkup(otherUserId);
+                document.querySelector('nav a[data-action="chat"]')?.classList.add("active");
+
+                requestAnimationFrame(() => {
+                    const messages = document.getElementById("privateChatMessages");
+                    if (messages) messages.scrollTop = messages.scrollHeight;
+                });
+
             } else if (rawHash === "giveaways") {
                 setRouteHeader(
                     "Topluluk Ödülleri",
@@ -7436,6 +7966,36 @@
                 }
                 document.querySelector('nav a[data-action="communities"]')?.classList.add("active");
 
+            } else if (rawHash.startsWith("community-chat=")) {
+                const communityId = rawHash.slice("community-chat=".length);
+                const community = cachedCommunities.find(item => item.id === communityId);
+
+                if (!community) {
+                    stopActiveFirestoreChat();
+                    setRouteHeader("Topluluk Sohbeti", "Topluluk bulunamadı", "Bu topluluk kaldırılmış olabilir.");
+                    routeContent.innerHTML = '<div class="empty-state">Topluluk bulunamadı.</div>';
+                } else {
+                    setRouteHeader(
+                        community.type === "bkfk" ? "BKFK Üye Sohbeti" : "Topluluk Üye Sohbeti",
+                        community.name,
+                        "Bu oda yalnızca topluluğun onaylı üyelerine açıktır."
+                    );
+
+                    if (canAccessCommunityRoom(community)) {
+                        startActiveFirestoreChat("community", community.id);
+                    } else {
+                        stopActiveFirestoreChat();
+                    }
+                    routeContent.innerHTML = communityChatMarkup(community);
+                }
+
+                document.querySelector('nav a[data-action="communities"]')?.classList.add("active");
+
+                requestAnimationFrame(() => {
+                    const messages = document.getElementById("communityChatMessages");
+                    if (messages) messages.scrollTop = messages.scrollHeight;
+                });
+
             } else if (rawHash === "venues") {
                 setRouteHeader("Şehir Rehberi", "Mekanlar", "Masaüstü oyun oynanabilecek mekanları şehir şehir keşfet.");
                 routeContent.innerHTML = venuesMarkup();
@@ -7485,6 +8045,8 @@
             const profileLink = event.target.closest("[data-profile-open]");
             const giveawayButton = event.target.closest("[data-giveaway-open]");
             const communityButton = event.target.closest("[data-community-open]");
+            const directChatButton = event.target.closest("[data-direct-chat-open]");
+            const communityChatButton = event.target.closest("[data-community-chat-open]");
             const tagButton = event.target.closest("[data-tag-route]");
 
             if (topicButton) {
@@ -7511,6 +8073,17 @@
             if (communityButton) {
                 window.location.hash =
                     "community=" + encodeURIComponent(communityButton.dataset.communityOpen);
+            }
+
+            if (directChatButton) {
+                event.preventDefault();
+                openDirectConversation(directChatButton.dataset.directChatOpen);
+            }
+
+            if (communityChatButton) {
+                event.preventDefault();
+                window.location.hash =
+                    "community-chat=" + encodeURIComponent(communityChatButton.dataset.communityChatOpen);
             }
 
             if (tagButton) {
@@ -8917,9 +9490,95 @@
                     return;
                 }
 
-                const chatForm = event.target.closest(".chat-form");
+                const directMessageForm = event.target.closest(".direct-message-form");
 
-                if (chatForm && chatForm.matches("form")) {
+                if (directMessageForm) {
+                    event.preventDefault();
+                    const user = auth.currentUser;
+                    if (!user) return openModal("loginModal");
+
+                    const otherUserId = directMessageForm.dataset.otherUserId;
+                    const input = directMessageForm.elements.message;
+                    const messageText = input.value.trim();
+                    const submitButton = directMessageForm.querySelector('button[type="submit"]');
+                    if (!messageText) return;
+
+                    setButtonBusy(submitButton, true, "Gönderiliyor...", '<i class="fa-solid fa-paper-plane"></i> Gönder');
+
+                    try {
+                        const conversationId = await ensureDirectConversation(otherUserId);
+                        const conversationRef = doc(db, "directConversations", conversationId);
+                        const messageRef = doc(collection(db, "directConversations", conversationId, "messages"));
+                        const senderName = cachedProfile?.displayName || getDefaultDisplayName(user);
+                        const batch = writeBatch(db);
+
+                        batch.set(messageRef, {
+                            text: messageText,
+                            senderId: user.uid,
+                            senderName,
+                            createdAt: serverTimestamp()
+                        });
+                        batch.set(conversationRef, {
+                            lastMessage: messageText.slice(0, 120),
+                            lastSenderId: user.uid,
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+
+                        await withTimeout(batch.commit(), 20000);
+                        input.value = "";
+                    } catch (error) {
+                        console.error("Özel mesaj gönderilemedi:", error);
+                        showToast(getDataErrorMessage(error, error.message || "Özel mesaj gönderilemedi."), "error");
+                    } finally {
+                        setButtonBusy(submitButton, false, "", '<i class="fa-solid fa-paper-plane"></i> Gönder');
+                    }
+                    return;
+                }
+
+                const communityMessageForm = event.target.closest(".community-message-form");
+
+                if (communityMessageForm) {
+                    event.preventDefault();
+                    const user = auth.currentUser;
+                    if (!user) return openModal("loginModal");
+
+                    const communityId = communityMessageForm.dataset.communityId;
+                    const community = cachedCommunities.find(item => item.id === communityId);
+                    if (!canAccessCommunityRoom(community, user)) {
+                        showToast("Bu sohbet odasına yalnızca onaylı üyeler mesaj yazabilir.", "error");
+                        return;
+                    }
+
+                    const input = communityMessageForm.elements.message;
+                    const messageText = input.value.trim();
+                    const submitButton = communityMessageForm.querySelector('button[type="submit"]');
+                    if (!messageText) return;
+
+                    setButtonBusy(submitButton, true, "Gönderiliyor...", '<i class="fa-solid fa-paper-plane"></i> Gönder');
+
+                    try {
+                        await withTimeout(addDoc(
+                            collection(db, "communityRooms", communityId, "messages"),
+                            {
+                                text: messageText,
+                                senderId: user.uid,
+                                senderName: cachedProfile?.displayName || getDefaultDisplayName(user),
+                                createdAt: serverTimestamp()
+                            }
+                        ), 20000);
+                        input.value = "";
+                    } catch (error) {
+                        console.error("Topluluk mesajı gönderilemedi:", error);
+                        showToast(getDataErrorMessage(error, "Topluluk mesajı gönderilemedi."), "error");
+                    } finally {
+                        setButtonBusy(submitButton, false, "", '<i class="fa-solid fa-paper-plane"></i> Gönder');
+                    }
+                    return;
+                }
+
+                const chatForm = event.target.closest("#chatForm");
+
+                if (chatForm) {
                     event.preventDefault();
 
                     const user = auth.currentUser;
@@ -9058,6 +9717,10 @@
                 const deleteTopicButton = event.target.closest("[data-delete-topic]");
                 const deleteGiveawayButton = event.target.closest("[data-delete-giveaway]");
                 const deleteChatButton = event.target.closest("[data-delete-chat]");
+                const deleteDirectMessageButton = event.target.closest("[data-delete-direct-message]");
+                const deleteCommunityMessageButton = event.target.closest("[data-delete-community-message]");
+                const deleteCommunityButton = event.target.closest("[data-delete-community]");
+                const deleteEventButton = event.target.closest("[data-delete-event]");
                 const editTopicButton = event.target.closest("[data-edit-topic]");
                 const editReviewButton = event.target.closest("[data-edit-review]");
                 const deleteReviewButton = event.target.closest("[data-delete-review]");
@@ -9068,6 +9731,106 @@
                 const rejectCommunityButton = event.target.closest("[data-reject-community]");
                 const deleteVenueButton = event.target.closest("[data-delete-venue]");
                 const refreshVenueButton = event.target.closest("[data-refresh-venue]");
+
+                if (deleteEventButton) {
+                    const eventId = deleteEventButton.dataset.deleteEvent;
+                    const eventItem = cachedEvents.find(item => item.id === eventId);
+                    const user = auth.currentUser;
+
+                    if (!eventItem || !user || (!isCurrentUserAdmin && eventItem.organizerId !== user.uid)) {
+                        showToast("Yalnızca admin veya etkinliği oluşturan kullanıcı bu etkinliği silebilir.", "error");
+                        return;
+                    }
+
+                    if (!window.confirm(`“${eventItem.name || "Bu etkinlik"}” kalıcı olarak silinsin mi?`)) return;
+
+                    deleteEventButton.disabled = true;
+                    try {
+                        await deleteDoc(doc(db, "events", eventId));
+                        showToast("Etkinlik silindi.");
+                    } catch (error) {
+                        console.error("Etkinlik silinemedi:", error);
+                        showToast(getDataErrorMessage(error, "Etkinlik silinemedi."), "error");
+                        deleteEventButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (deleteCommunityButton) {
+                    const communityId = deleteCommunityButton.dataset.deleteCommunity;
+                    const community = cachedCommunities.find(item => item.id === communityId);
+                    const user = auth.currentUser;
+
+                    if (!community || !user || (!isCurrentUserAdmin && community.ownerId !== user.uid)) {
+                        showToast("Yalnızca admin veya topluluğun kurucusu bu topluluğu silebilir.", "error");
+                        return;
+                    }
+
+                    if (!window.confirm(`“${community.name || "Bu topluluk"}” kalıcı olarak silinsin mi? Üyelikler ve sohbet odası mesajları da silinecek.`)) return;
+
+                    deleteCommunityButton.disabled = true;
+                    try {
+                        await deleteCommunityWithRelatedData(communityId);
+                        showToast("Topluluk, üyelikleri ve sohbet odası silindi.");
+                        window.location.hash = "communities";
+                    } catch (error) {
+                        console.error("Topluluk silinemedi:", error);
+                        showToast(getDataErrorMessage(error, error.message || "Topluluk silinemedi."), "error");
+                        deleteCommunityButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (deleteDirectMessageButton) {
+                    const user = auth.currentUser;
+                    const rawRoute = decodeURIComponent(window.location.hash.slice(1));
+                    const otherUserId = rawRoute.startsWith("dm=") ? rawRoute.slice(3) : "";
+                    const message = cachedActiveChatMessages.find(item => item.id === deleteDirectMessageButton.dataset.deleteDirectMessage);
+
+                    if (!user || !otherUserId || message?.senderId !== user.uid) {
+                        showToast("Yalnızca kendi özel mesajını silebilirsin.", "error");
+                        return;
+                    }
+
+                    try {
+                        const conversationId = getDirectConversationId(user.uid, otherUserId);
+                        await deleteDoc(doc(db, "directConversations", conversationId, "messages", message.id));
+                    } catch (error) {
+                        console.error("Özel mesaj silinemedi:", error);
+                        showToast(getDataErrorMessage(error, "Özel mesaj silinemedi."), "error");
+                    }
+                    return;
+                }
+
+                if (deleteCommunityMessageButton) {
+                    const user = auth.currentUser;
+                    const rawRoute = decodeURIComponent(window.location.hash.slice(1));
+                    const communityId = rawRoute.startsWith("community-chat=")
+                        ? rawRoute.slice("community-chat=".length)
+                        : "";
+                    const community = cachedCommunities.find(item => item.id === communityId);
+                    const message = cachedActiveChatMessages.find(item => item.id === deleteCommunityMessageButton.dataset.deleteCommunityMessage);
+                    const canDelete = Boolean(
+                        user && message && (
+                            message.senderId === user.uid ||
+                            isCurrentUserAdmin ||
+                            community?.ownerId === user.uid
+                        )
+                    );
+
+                    if (!canDelete) {
+                        showToast("Bu topluluk mesajını silme yetkin yok.", "error");
+                        return;
+                    }
+
+                    try {
+                        await deleteDoc(doc(db, "communityRooms", communityId, "messages", message.id));
+                    } catch (error) {
+                        console.error("Topluluk mesajı silinemedi:", error);
+                        showToast(getDataErrorMessage(error, "Topluluk mesajı silinemedi."), "error");
+                    }
+                    return;
+                }
 
                 if (refreshVenueButton) {
                     if (!isCurrentUserAdmin || !auth.currentUser) return showToast("Mekan bilgilerini yalnızca admin yenileyebilir.", "error");
@@ -10012,6 +10775,7 @@
 
                     startPresence(user);
                     await refreshAdminStatus(user);
+                    startDirectConversationsListener(user);
                     renderCurrentUserUpvotes();
                     renderRoute();
 
@@ -10040,6 +10804,8 @@
                     cachedProfile = null;
                     cachedProfileUid = null;
                     isCurrentUserAdmin = false;
+                    stopDirectConversationsListener();
+                    stopActiveFirestoreChat();
                     adminBtn.style.display = "none";
 
                     stopPresence();
@@ -10070,4 +10836,4 @@
     </script>
 
 </body>
-</html>
+    </html>
