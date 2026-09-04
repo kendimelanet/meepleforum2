@@ -2027,6 +2027,16 @@
             max-width: 900px;
         }
 
+        .pagination-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+        }
+
+        .pagination-actions .secondary-btn {
+            min-width: 210px;
+        }
+
         .empty-state,
         .loading-state {
             padding: 46px 24px;
@@ -2324,10 +2334,20 @@
         }
 
         .giveaway-card {
+            overflow: hidden;
             padding: 20px;
             border: 1px solid rgba(210,167,92,.22);
             border-radius: var(--radius-md);
             background: linear-gradient(145deg, rgba(113,52,56,.18), var(--bg-card));
+        }
+
+        .giveaway-card-image {
+            width: calc(100% + 40px);
+            height: 210px;
+            margin: -20px -20px 18px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(145deg, rgba(113,52,56,.25), rgba(62,101,79,.2));
         }
 
         .giveaway-label {
@@ -2361,6 +2381,14 @@
             border: 1px solid rgba(210,167,92,.25);
             border-radius: var(--radius-md);
             background: var(--bg-card);
+        }
+
+        .form-hint {
+            display: block;
+            margin-top: 7px;
+            color: var(--text-muted);
+            font-size: 11px;
+            line-height: 1.5;
         }
 
         .directory-grid {
@@ -3081,12 +3109,23 @@
         .ranking-place { color: var(--gold-light); font-size: 18px; font-weight: 900; }
         .ranking-item a { min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .ranking-item small { color: var(--text-secondary); white-space: nowrap; }
+        .home-giveaway-link { display: grid; grid-template-columns: minmax(260px,.8fr) minmax(0,1.2fr); overflow: hidden; color: inherit; border: 1px solid rgba(210,167,92,.3); border-radius: 18px; background: rgba(17,16,15,.76); transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+        .home-giveaway-link:hover { transform: translateY(-3px); border-color: rgba(210,167,92,.58); box-shadow: 0 18px 45px rgba(0,0,0,.25); }
+        .home-giveaway-visual { min-height: 260px; position: relative; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 30% 25%,rgba(210,167,92,.22),transparent 38%),linear-gradient(145deg,rgba(113,52,56,.42),rgba(62,101,79,.25)); }
+        .home-giveaway-visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; }
+        .home-giveaway-visual > i { color: var(--gold-light); font-size: 64px; }
+        .home-giveaway-content { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(24px,4vw,46px); }
+        .home-giveaway-content h2 { margin: 10px 0 10px; font-family: "Playfair Display",serif; font-size: clamp(26px,3vw,40px); }
+        .home-giveaway-content p { max-width: 680px; color: var(--text-secondary); line-height: 1.7; }
+        .home-giveaway-content .primary-btn { margin-top: 20px; pointer-events: none; }
 
         @media (max-width: 900px) {
             .game-grid { grid-template-columns: 1fr; }
             .game-layout { grid-template-columns: 1fr; }
             .home-competition-grid { grid-template-columns: 1fr; }
             .community-versus-grid { grid-template-columns: 1fr; }
+            .home-giveaway-link { grid-template-columns: 1fr; }
+            .home-giveaway-visual { min-height: 230px; }
             .versus-mark { margin: -4px auto; }
         }
 
@@ -3946,6 +3985,13 @@
                 </aside>
 
             </div>
+
+            <section
+                class="home-showcase"
+                id="homeGiveawayShowcase"
+                aria-label="Güncel çekiliş"
+                hidden
+            ></section>
 
             <section class="home-showcase" aria-labelledby="arcadeChallengeTitle">
                 <div class="showcase-heading">
@@ -5460,6 +5506,7 @@
             doc,
             getDoc,
             getDocs,
+            getCountFromServer,
             setDoc,
             deleteDoc,
             writeBatch,
@@ -5467,6 +5514,8 @@
             query,
             where,
             orderBy,
+            limit,
+            startAfter,
             onSnapshot,
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
@@ -5585,6 +5634,7 @@
         const routeContent = document.getElementById("routeContent");
         const routeBackBtn = document.getElementById("routeBackBtn");
         const homeTopics = document.getElementById("homeTopics");
+        const homeGiveawayShowcase = document.getElementById("homeGiveawayShowcase");
         const homeGamesShowcase = document.getElementById("homeGamesShowcase");
         const homeBkfkRanking = document.getElementById("homeBkfkRanking");
         const homeCommunityRanking = document.getElementById("homeCommunityRanking");
@@ -5637,6 +5687,37 @@
         let cachedVenues = [];
         let cachedEvents = [];
         let cachedGameScores = [];
+        const TOPICS_PAGE_SIZE = 30;
+        const COLLECTION_LIMITS = Object.freeze({
+            comments: 300,
+            votes: 500,
+            giveaways: 30,
+            events: 60,
+            communities: 150,
+            memberships: 600,
+            venues: 150,
+            reviews: 120,
+            gameScores: 600
+        });
+        let lastTopicDocument = null;
+        let liveTopicIds = new Set();
+        let hasMoreTopics = true;
+        let isLoadingMoreTopics = false;
+        const pendingTopicRequests = new Set();
+        const pendingUserTopicRequests = new Set();
+        const loadedUserTopicProfiles = new Set();
+        const pendingProfileRequests = new Set();
+        let activeProfileSearchTerm = "";
+        let profileSearchLoading = false;
+        let activeEngagementKey = "";
+        let activeEngagementTarget = null;
+        let engagementUnsubscribers = [];
+        let topicActivitySignature = "";
+        let topicActivityUnsubscribers = [];
+        let adminDataLoaded = false;
+        let adminDataLoading = false;
+        let startRealtimeChatListener = () => {};
+        let stopRealtimeChatListener = () => {};
         let activeGameCleanup = null;
         let activeGameSession = null;
         let activeScoreObserver = null;
@@ -5723,6 +5804,462 @@
                 month: "short",
                 year: "numeric"
             });
+        }
+
+
+        function mergeRowsById(currentRows, incomingRows) {
+            const rows = new Map(currentRows.map(row => [row.id, row]));
+            incomingRows.forEach(row => rows.set(row.id, row));
+            return [...rows.values()];
+        }
+
+
+        function normalizedSearchText(value) {
+            return String(value || "")
+                .trim()
+                .toLocaleLowerCase("tr-TR");
+        }
+
+
+        function topicsPaginationMarkup() {
+            if (!hasMoreTopics) return "";
+
+            return `
+                <div class="pagination-actions">
+                    <button
+                        class="secondary-btn"
+                        type="button"
+                        data-load-more-topics
+                        ${isLoadingMoreTopics ? "disabled" : ""}
+                    >
+                        <i class="fa-solid ${isLoadingMoreTopics ? "fa-spinner fa-spin" : "fa-chevron-down"}"></i>
+                        ${isLoadingMoreTopics ? "Yükleniyor..." : "Daha Fazla Başlık"}
+                    </button>
+                </div>
+            `;
+        }
+
+
+        async function refreshPublicCounts() {
+            if (!db) return;
+
+            try {
+                const [memberSnapshot, topicSnapshot] = await Promise.all([
+                    getCountFromServer(collection(db, "publicProfiles")),
+                    getCountFromServer(collection(db, "topics"))
+                ]);
+
+                memberCount.textContent =
+                    memberSnapshot.data().count.toLocaleString("tr-TR");
+                topicCount.textContent =
+                    topicSnapshot.data().count.toLocaleString("tr-TR");
+            } catch (error) {
+                console.warn("İstatistikler alınamadı:", error);
+                memberCount.textContent = memberCount.textContent || "—";
+                topicCount.textContent = topicCount.textContent || "—";
+            }
+        }
+
+
+        async function loadMoreTopics() {
+            if (!db || !hasMoreTopics || !lastTopicDocument || isLoadingMoreTopics) return;
+
+            isLoadingMoreTopics = true;
+            renderRoute();
+
+            try {
+                const nextPage = await getDocs(
+                    query(
+                        collection(db, "topics"),
+                        orderBy("createdAt", "desc"),
+                        startAfter(lastTopicDocument),
+                        limit(TOPICS_PAGE_SIZE)
+                    )
+                );
+
+                const rows = nextPage.docs.map(topicDocument => ({
+                    id: topicDocument.id,
+                    ...topicDocument.data()
+                }));
+
+                cachedTopics = mergeRowsById(cachedTopics, rows)
+                    .sort((a, b) => {
+                        const aTime = a.createdAt?.toMillis?.() || 0;
+                        const bTime = b.createdAt?.toMillis?.() || 0;
+                        return bTime - aTime;
+                    });
+
+                if (nextPage.docs.length) {
+                    lastTopicDocument = nextPage.docs[nextPage.docs.length - 1];
+                }
+                hasMoreTopics = nextPage.size === TOPICS_PAGE_SIZE;
+                startTopicActivityListeners();
+            } catch (error) {
+                console.error("Eski başlıklar yüklenemedi:", error);
+                showToast("Daha fazla başlık yüklenemedi. Tekrar deneyebilirsin.", "error");
+            } finally {
+                isLoadingMoreTopics = false;
+                renderHomeTopics();
+                renderRoute();
+            }
+        }
+
+
+        async function ensureTopicLoaded(topicId) {
+            if (!db || !topicId || cachedTopics.some(topic => topic.id === topicId)) return;
+            if (pendingTopicRequests.has(topicId)) return;
+
+            pendingTopicRequests.add(topicId);
+            try {
+                const topicSnapshot = await getDoc(doc(db, "topics", topicId));
+                if (topicSnapshot.exists()) {
+                    cachedTopics = mergeRowsById(cachedTopics, [{
+                        id: topicSnapshot.id,
+                        ...topicSnapshot.data()
+                    }]);
+                    startTopicActivityListeners();
+                }
+            } catch (error) {
+                console.error("Konu ayrıntısı yüklenemedi:", error);
+            } finally {
+                pendingTopicRequests.delete(topicId);
+                if (decodeURIComponent(window.location.hash.slice(1)) === `topic=${topicId}`) {
+                    renderRoute();
+                }
+            }
+        }
+
+
+        async function ensurePublicProfileLoaded(userId) {
+            if (!db || !userId) return;
+            if (cachedPublicProfiles.some(profile => (profile.uid || profile.id) === userId)) return;
+            if (pendingProfileRequests.has(userId)) return;
+
+            pendingProfileRequests.add(userId);
+            try {
+                const profileSnapshot = await getDoc(doc(db, "publicProfiles", userId));
+                if (profileSnapshot.exists()) {
+                    cachedPublicProfiles = mergeRowsById(cachedPublicProfiles, [{
+                        id: profileSnapshot.id,
+                        ...profileSnapshot.data()
+                    }]);
+                }
+            } catch (error) {
+                console.error("Kullanıcı profili yüklenemedi:", error);
+            } finally {
+                pendingProfileRequests.delete(userId);
+                const currentRoute = decodeURIComponent(window.location.hash.slice(1));
+                if (currentRoute === `profile=${userId}` || currentRoute === `dm=${userId}`) {
+                    renderRoute();
+                }
+            }
+        }
+
+
+        async function ensureUserTopicsLoaded(userId) {
+            if (!db || !userId || pendingUserTopicRequests.has(userId)) return;
+            if (loadedUserTopicProfiles.has(userId)) return;
+
+            pendingUserTopicRequests.add(userId);
+            try {
+                const topicsSnapshot = await getDocs(
+                    query(
+                        collection(db, "topics"),
+                        where("authorId", "==", userId),
+                        limit(60)
+                    )
+                );
+                cachedTopics = mergeRowsById(
+                    cachedTopics,
+                    topicsSnapshot.docs.map(topicDocument => ({
+                        id: topicDocument.id,
+                        ...topicDocument.data()
+                    }))
+                ).sort((a, b) =>
+                    (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0)
+                );
+                loadedUserTopicProfiles.add(userId);
+                startTopicActivityListeners();
+            } catch (error) {
+                console.error("Kullanıcının başlıkları alınamadı:", error);
+            } finally {
+                pendingUserTopicRequests.delete(userId);
+                if (decodeURIComponent(window.location.hash.slice(1)) === `profile=${userId}`) {
+                    renderRoute();
+                }
+            }
+        }
+
+
+        async function ensureProfilesForSearch(searchText) {
+            const normalized = normalizedSearchText(searchText);
+            if (!db || normalized.length < 2) return;
+            if (profileSearchLoading || activeProfileSearchTerm === normalized) return;
+
+            activeProfileSearchTerm = normalized;
+            profileSearchLoading = true;
+
+            try {
+                // Yeni profiller searchName alanıyla sunucuda önek araması yapar;
+                // böylece üye sayısı büyüdüğünde tüm profiller indirilmez.
+                let profileSnapshot = await getDocs(
+                    query(
+                        collection(db, "publicProfiles"),
+                        where("searchName", ">=", normalized),
+                        where("searchName", "<=", `${normalized}\uf8ff`),
+                        orderBy("searchName"),
+                        limit(20)
+                    )
+                );
+
+                // searchName alanı eklenmeden önce oluşturulmuş profiller için
+                // küçük ve sınırlı bir geriye dönük uyumluluk taraması bırak.
+                if (profileSnapshot.empty) {
+                    profileSnapshot = await getDocs(
+                        query(
+                            collection(db, "publicProfiles"),
+                            orderBy("displayName"),
+                            limit(100)
+                        )
+                    );
+                }
+                cachedPublicProfiles = mergeRowsById(
+                    cachedPublicProfiles,
+                    profileSnapshot.docs.map(profileDocument => ({
+                        id: profileDocument.id,
+                        ...profileDocument.data()
+                    }))
+                );
+            } catch (error) {
+                console.error("Kullanıcı araması yüklenemedi:", error);
+            } finally {
+                profileSearchLoading = false;
+                const route = decodeURIComponent(window.location.hash.slice(1));
+                if (route === `search=${searchText}`) renderRoute();
+            }
+        }
+
+
+        function engagementTargetForRoute(rawHash) {
+            if (rawHash.startsWith("topic=")) {
+                return { type: "topic", id: rawHash.slice("topic=".length) };
+            }
+            if (rawHash.startsWith("review=")) {
+                return { type: "review", id: rawHash.slice("review=".length) };
+            }
+            if (rawHash.startsWith("giveaway=")) {
+                return { type: "giveaway", id: rawHash.slice("giveaway=".length) };
+            }
+            return null;
+        }
+
+
+        function stopEngagementListeners() {
+            engagementUnsubscribers.forEach(unsubscribe => unsubscribe());
+            engagementUnsubscribers = [];
+            activeEngagementKey = "";
+            activeEngagementTarget = null;
+        }
+
+
+        function syncEngagementListeners(rawHash) {
+            const target = engagementTargetForRoute(rawHash);
+            const nextKey = target ? `${target.type}:${target.id}` : "";
+
+            if (nextKey === activeEngagementKey) return;
+            stopEngagementListeners();
+            if (!target || !db) {
+                startTopicActivityListeners();
+                return;
+            }
+
+            activeEngagementKey = nextKey;
+            activeEngagementTarget = target;
+
+            const replaceTargetRows = (currentRows, snapshot, expectedType) => {
+                const otherRows = currentRows.filter(row => !(
+                    row.targetType === expectedType && row.targetId === target.id
+                ));
+                const targetRows = snapshot.docs
+                    .map(itemDocument => ({ id: itemDocument.id, ...itemDocument.data() }))
+                    .filter(row => row.targetType === expectedType && row.targetId === target.id);
+                return mergeRowsById(otherRows, targetRows);
+            };
+
+            engagementUnsubscribers.push(
+                onSnapshot(
+                    query(
+                        collection(db, "comments"),
+                        where("targetId", "==", target.id),
+                        limit(200)
+                    ),
+                    snapshot => {
+                        if (activeEngagementKey !== nextKey) return;
+                        cachedComments = replaceTargetRows(cachedComments, snapshot, target.type);
+                        renderRoute();
+                    },
+                    error => console.error("Yorum ayrıntıları alınamadı:", error)
+                ),
+                onSnapshot(
+                    query(
+                        collection(db, "votes"),
+                        where("targetId", "==", target.id),
+                        limit(1000)
+                    ),
+                    snapshot => {
+                        if (activeEngagementKey !== nextKey) return;
+                        cachedVotes = replaceTargetRows(cachedVotes, snapshot, target.type);
+                        renderCurrentUserUpvotes();
+                        renderRoute();
+                    },
+                    error => console.error("Oy ayrıntıları alınamadı:", error)
+                )
+            );
+
+            // Konu ayrıntısı açıksa aynı yorum/oy belgelerini hem liste hem
+            // ayrıntı dinleyicisinden iki kez okumayı önle.
+            startTopicActivityListeners();
+        }
+
+
+        function stopTopicActivityListeners() {
+            topicActivityUnsubscribers.forEach(unsubscribe => unsubscribe());
+            topicActivityUnsubscribers = [];
+            topicActivitySignature = "";
+        }
+
+
+        function startTopicActivityListeners() {
+            if (!db) return;
+
+            const excludedTopicId = activeEngagementTarget?.type === "topic"
+                ? activeEngagementTarget.id
+                : "";
+            const topicIds = [...new Set(
+                cachedTopics
+                    .map(topic => topic.id)
+                    .filter(topicId => topicId && topicId !== excludedTopicId)
+            )];
+            const signature = `${excludedTopicId}::${topicIds.slice().sort().join("|")}`;
+            if (signature === topicActivitySignature) return;
+
+            stopTopicActivityListeners();
+            topicActivitySignature = signature;
+
+            cachedComments = cachedComments.filter(comment => comment.targetType !== "topic");
+            cachedVotes = cachedVotes.filter(vote => vote.targetType !== "topic");
+
+            if (!topicIds.length) return;
+
+            for (let index = 0; index < topicIds.length; index += 30) {
+                const topicIdGroup = topicIds.slice(index, index + 30);
+
+                topicActivityUnsubscribers.push(
+                    onSnapshot(
+                        query(
+                            collection(db, "comments"),
+                            where("targetId", "in", topicIdGroup),
+                            limit(COLLECTION_LIMITS.comments)
+                        ),
+                        snapshot => {
+                            const otherComments = cachedComments.filter(comment => !(
+                                comment.targetType === "topic" &&
+                                topicIdGroup.includes(comment.targetId)
+                            ));
+                            const groupComments = snapshot.docs
+                                .map(commentDocument => ({
+                                    id: commentDocument.id,
+                                    ...commentDocument.data()
+                                }))
+                                .filter(comment =>
+                                    comment.targetType === "topic" &&
+                                    topicIdGroup.includes(comment.targetId)
+                                );
+                            cachedComments = mergeRowsById(otherComments, groupComments);
+                            renderHomeTopics();
+                            renderRoute();
+                        },
+                        error => console.error("Başlık yorumları alınamadı:", error)
+                    ),
+                    onSnapshot(
+                        query(
+                            collection(db, "votes"),
+                            where("targetId", "in", topicIdGroup),
+                            limit(COLLECTION_LIMITS.votes)
+                        ),
+                        snapshot => {
+                            const otherVotes = cachedVotes.filter(vote => !(
+                                vote.targetType === "topic" &&
+                                topicIdGroup.includes(vote.targetId)
+                            ));
+                            const groupVotes = snapshot.docs
+                                .map(voteDocument => ({
+                                    id: voteDocument.id,
+                                    ...voteDocument.data()
+                                }))
+                                .filter(vote =>
+                                    vote.targetType === "topic" &&
+                                    topicIdGroup.includes(vote.targetId)
+                                );
+                            cachedVotes = mergeRowsById(otherVotes, groupVotes);
+                            renderCurrentUserUpvotes();
+                            renderHomeTopics();
+                            renderRoute();
+                        },
+                        error => console.error("Başlık oyları alınamadı:", error)
+                    )
+                );
+            }
+        }
+
+
+        async function ensureAdminDataLoaded() {
+            if (!db || !isCurrentUserAdmin || adminDataLoaded || adminDataLoading) return;
+            adminDataLoading = true;
+
+            try {
+                const [topicsSnapshot, commentsSnapshot, votesSnapshot] = await Promise.all([
+                    getDocs(query(
+                        collection(db, "topics"),
+                        orderBy("createdAt", "desc"),
+                        limit(500)
+                    )),
+                    getDocs(query(
+                        collection(db, "comments"),
+                        orderBy("createdAt", "desc"),
+                        limit(1000)
+                    )),
+                    getDocs(query(
+                        collection(db, "votes"),
+                        orderBy("createdAt", "desc"),
+                        limit(1000)
+                    ))
+                ]);
+
+                cachedTopics = mergeRowsById(
+                    cachedTopics,
+                    topicsSnapshot.docs.map(item => ({ id: item.id, ...item.data() }))
+                ).sort((a, b) =>
+                    (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0)
+                );
+                cachedComments = mergeRowsById(
+                    cachedComments,
+                    commentsSnapshot.docs.map(item => ({ id: item.id, ...item.data() }))
+                );
+                cachedVotes = mergeRowsById(
+                    cachedVotes,
+                    votesSnapshot.docs.map(item => ({ id: item.id, ...item.data() }))
+                );
+                adminDataLoaded = true;
+            } catch (error) {
+                console.error("Admin verileri yüklenemedi:", error);
+                showToast("Admin verilerinin bir kısmı yüklenemedi.", "error");
+            } finally {
+                adminDataLoading = false;
+                if (decodeURIComponent(window.location.hash.slice(1)) === "admin") {
+                    renderRoute();
+                }
+            }
         }
 
 
@@ -6177,6 +6714,17 @@
                             required
                         ></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="giveawayImage">Çekiliş Fotoğrafı (isteğe bağlı)</label>
+                        <input
+                            class="form-input"
+                            id="giveawayImage"
+                            name="image"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                        >
+                        <small class="form-hint">JPG, PNG veya WebP · en fazla 10 MB. Yüklemeden önce otomatik küçültülür.</small>
+                    </div>
                     <button class="primary-btn" type="submit">
                         <i class="fa-solid fa-gift"></i>
                         Çekilişi Yayınla
@@ -6189,6 +6737,14 @@
                 <div class="giveaway-grid">
                     ${cachedGiveaways.length ? cachedGiveaways.map(giveaway => `
                         <article class="giveaway-card">
+                            ${safeImageURL(giveaway.imageURL) ? `
+                                <img
+                                    class="giveaway-card-image"
+                                    src="${escapeHTML(safeImageURL(giveaway.imageURL))}"
+                                    alt="${escapeHTML(giveaway.title || "Çekiliş görseli")}"
+                                    loading="lazy"
+                                >
+                            ` : ""}
                             <span class="giveaway-label">
                                 ${giveaway.period === "monthly" ? "Aylık Çekiliş" : "Haftalık Çekiliş"}
                             </span>
@@ -6465,12 +7021,21 @@
                 : collection(db, "communityRooms", chatId, "messages");
 
             activeFirestoreChatUnsubscribe = onSnapshot(
-                query(messagesReference, orderBy("createdAt", "asc")),
+                query(
+                    messagesReference,
+                    orderBy("createdAt", "desc"),
+                    limit(100)
+                ),
                 snapshot => {
-                    cachedActiveChatMessages = snapshot.docs.map(messageDocument => ({
-                        id: messageDocument.id,
-                        ...messageDocument.data()
-                    }));
+                    cachedActiveChatMessages = snapshot.docs
+                        .map(messageDocument => ({
+                            id: messageDocument.id,
+                            ...messageDocument.data()
+                        }))
+                        .sort((a, b) =>
+                            (a.createdAt?.toMillis?.() || 0) -
+                            (b.createdAt?.toMillis?.() || 0)
+                        );
                     activeFirestoreChatError = "";
                     renderRoute();
                 },
@@ -6501,7 +7066,8 @@
 
             const conversationsQuery = query(
                 collection(db, "directConversations"),
-                where("participantIds", "array-contains", user.uid)
+                where("participantIds", "array-contains", user.uid),
+                limit(50)
             );
 
             directConversationsUnsubscribe = onSnapshot(
@@ -7123,6 +7689,50 @@
         }
 
 
+        function renderHomeGiveaway() {
+            if (!homeGiveawayShowcase) return;
+
+            const giveaway = cachedGiveaways.find(item =>
+                !["closed", "ended", "inactive"].includes(item.status)
+            );
+
+            if (!giveaway) {
+                homeGiveawayShowcase.hidden = true;
+                homeGiveawayShowcase.innerHTML = "";
+                return;
+            }
+
+            const imageURL = safeImageURL(giveaway.imageURL);
+            const periodLabel = giveaway.period === "monthly"
+                ? "Aylık Çekiliş"
+                : "Haftalık Çekiliş";
+
+            homeGiveawayShowcase.hidden = false;
+            homeGiveawayShowcase.innerHTML = `
+                <a
+                    class="home-giveaway-link"
+                    href="#giveaway=${encodeURIComponent(giveaway.id)}"
+                    aria-label="${escapeHTML(giveaway.title || "Çekilişi aç")}" 
+                >
+                    <div class="home-giveaway-visual">
+                        ${imageURL
+                            ? `<img src="${escapeHTML(imageURL)}" alt="${escapeHTML(giveaway.title || "Çekiliş görseli")}" loading="lazy">`
+                            : '<i class="fa-solid fa-gift" aria-hidden="true"></i>'}
+                    </div>
+                    <div class="home-giveaway-content">
+                        <span class="giveaway-label">${periodLabel}</span>
+                        <h2>${escapeHTML(giveaway.title || "MeepleForum Çekilişi")}</h2>
+                        <p>${escapeHTML(String(giveaway.description || "").slice(0, 220))}${String(giveaway.description || "").length > 220 ? "…" : ""}</p>
+                        <span class="primary-btn">
+                            <i class="fa-solid fa-gift"></i>
+                            Çekilişe Git
+                        </span>
+                    </div>
+                </a>
+            `;
+        }
+
+
         function renderWeeklyGame() {
             const title = cachedWeeklyGame.title || "Haftanın Oyunu";
             const imageURL = safeImageURL(cachedWeeklyGame.imageURL);
@@ -7571,6 +8181,13 @@
         function renderRoute() {
 
             const rawHash = decodeURIComponent(window.location.hash.slice(1));
+            syncEngagementListeners(rawHash);
+
+            if (rawHash === "chat") {
+                startRealtimeChatListener();
+            } else {
+                stopRealtimeChatListener();
+            }
 
             if (!rawHash.startsWith("dm=") && !rawHash.startsWith("community-chat=")) {
                 stopActiveFirestoreChat();
@@ -7655,7 +8272,8 @@
                             getTargetComments("topic", b.id).length;
                         return bScore - aScore;
                     });
-                routeContent.innerHTML = topicCardsMarkup(popularTopics);
+                routeContent.innerHTML =
+                    topicCardsMarkup(popularTopics) + topicsPaginationMarkup();
                 document.querySelector('nav a[data-action="popular"]')?.classList.add("active");
 
             } else if (rawHash === "topics") {
@@ -7664,7 +8282,8 @@
                     "Tüm Başlıklar",
                     "Toplulukta yayınlanan bütün konular, en yeniden en eskiye."
                 );
-                routeContent.innerHTML = topicCardsMarkup(cachedTopics);
+                routeContent.innerHTML =
+                    topicCardsMarkup(cachedTopics) + topicsPaginationMarkup();
 
             } else if (rawHash.startsWith("category=")) {
                 const category = rawHash.slice("category=".length);
@@ -7674,7 +8293,8 @@
                     category,
                     `${category} kategorisinde yayınlanan başlıklar.`
                 );
-                routeContent.innerHTML = topicCardsMarkup(filtered);
+                routeContent.innerHTML =
+                    topicCardsMarkup(filtered) + topicsPaginationMarkup();
                 document.querySelector('nav a[data-action="categories"]')?.classList.add("active");
 
             } else if (rawHash.startsWith("tag=")) {
@@ -7691,11 +8311,13 @@
                     `#${requestedTag}`,
                     `${filtered.length} başlık bu etiketi kullanıyor.`
                 );
-                routeContent.innerHTML = topicCardsMarkup(filtered);
+                routeContent.innerHTML =
+                    topicCardsMarkup(filtered) + topicsPaginationMarkup();
 
             } else if (rawHash.startsWith("search=")) {
                 const searchText = rawHash.slice("search=".length).trim();
                 const normalized = searchText.toLocaleLowerCase("tr-TR");
+                ensureProfilesForSearch(searchText);
                 const topicResults = cachedTopics.filter(topic =>
                     `${topic.title || ""} ${topic.content || ""} ${topic.category || ""}`
                         .toLocaleLowerCase("tr-TR")
@@ -7720,7 +8342,7 @@
                     <section style="margin-top:28px">
                         <h2 class="comments-title">Konular (${topicResults.length})</h2>
                         ${topicResults.length
-                            ? topicCardsMarkup(topicResults)
+                            ? topicCardsMarkup(topicResults) + topicsPaginationMarkup()
                             : '<div class="empty-state"><i class="fa-regular fa-comments"></i>Eşleşen konu bulunamadı.</div>'}
                     </section>
                 ` : '<div class="empty-state"><i class="fa-solid fa-magnifying-glass"></i>Aramana uygun kullanıcı veya konu bulunamadı.</div>';
@@ -7730,8 +8352,11 @@
                 const topic = cachedTopics.find(item => item.id === topicId);
 
                 if (!topic) {
+                    ensureTopicLoaded(topicId);
                     setRouteHeader("Forum", "Konu bulunamadı", "Bu konu silinmiş veya henüz yüklenmemiş olabilir.");
-                    routeContent.innerHTML = '<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i>Konu bulunamadı.</div>';
+                    routeContent.innerHTML = pendingTopicRequests.has(topicId)
+                        ? '<div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i>Konu yükleniyor...</div>'
+                        : '<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i>Konu bulunamadı.</div>';
                 } else {
                     const currentUser = window.meepleForumAuthUser;
                     const canDeleteTopic = Boolean(
@@ -7775,6 +8400,8 @@
 
             } else if (rawHash.startsWith("profile=")) {
                 const userId = rawHash.slice("profile=".length);
+                ensurePublicProfileLoaded(userId);
+                ensureUserTopicsLoaded(userId);
                 const profile = cachedPublicProfiles.find(item => (item.uid || item.id) === userId);
                 const fallbackTopic = cachedTopics.find(topic => topic.authorId === userId);
                 const displayName =
@@ -7885,6 +8512,7 @@
 
             } else if (rawHash.startsWith("dm=")) {
                 const otherUserId = rawHash.slice("dm=".length);
+                ensurePublicProfileLoaded(otherUserId);
                 const currentUser = window.meepleForumAuthUser;
                 const otherProfile = getPublicProfile(otherUserId);
                 const displayName = otherProfile?.displayName || "Meeple Oyuncusu";
@@ -7942,6 +8570,13 @@
                                 <span>${escapeHTML(formatTopicDate(giveaway.createdAt))}</span>
                             </div>
                             <div class="topic-detail-body">${escapeHTML(giveaway.description || "")}</div>
+                            ${safeImageURL(giveaway.imageURL) ? `
+                                <img
+                                    class="topic-detail-image"
+                                    src="${escapeHTML(safeImageURL(giveaway.imageURL))}"
+                                    alt="${escapeHTML(giveaway.title || "Çekiliş görseli")}"
+                                >
+                            ` : ""}
                         </article>
                         ${engagementMarkup("giveaway", giveaway.id, false)}
                     `;
@@ -8022,12 +8657,21 @@
                 initializeGame(gameId);
 
             } else if (rawHash === "admin") {
+                ensureAdminDataLoaded();
                 setRouteHeader(
                     "Moderasyon",
                     "Admin Paneli",
                     "Başlıkları, incelemeleri, yorumları, çekilişleri ve BKFK onaylarını yönet."
                 );
-                routeContent.innerHTML = adminPanelMarkup();
+                routeContent.innerHTML = `
+                    ${adminDataLoading ? `
+                        <div class="loading-state" style="margin-bottom:18px">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                            Moderasyon verileri yükleniyor...
+                        </div>
+                    ` : ""}
+                    ${adminPanelMarkup()}
+                `;
 
             } else {
                 window.location.hash = "home";
@@ -8111,6 +8755,13 @@
             event.preventDefault();
             window.location.hash =
                 "profile=" + encodeURIComponent(profileLink.dataset.profileOpen);
+        });
+
+        routeContent.addEventListener("click", async event => {
+            const loadMoreButton = event.target.closest("[data-load-more-topics]");
+            if (!loadMoreButton) return;
+            event.preventDefault();
+            await loadMoreTopics();
         });
 
         routeBackBtn.addEventListener("click", () => {
@@ -8433,10 +9084,13 @@
 
             async function syncPublicProfile(user, profile, includeCreatedAt = false) {
 
+                const displayName =
+                    profile.displayName || getDefaultDisplayName(user);
+
                 const publicProfile = {
                     uid: user.uid,
-                    displayName:
-                        profile.displayName || getDefaultDisplayName(user),
+                    displayName,
+                    searchName: normalizedSearchText(displayName),
                     favoriteGame: profile.favoriteGame || "",
                     bio: profile.bio || "",
                     photoURL: profile.photoURL || user.photoURL || "",
@@ -8452,6 +9106,11 @@
                     publicProfile,
                     { merge: true }
                 );
+
+                cachedPublicProfiles = mergeRowsById(cachedPublicProfiles, [{
+                    id: user.uid,
+                    ...publicProfile
+                }]);
             }
 
 
@@ -8491,6 +9150,7 @@
 
                 cachedProfile = profile;
                 cachedProfileUid = user.uid;
+                refreshPublicCounts();
 
                 return profile;
             }
@@ -8630,9 +9290,11 @@
                     saveInitialProfile(
                         userCredential.user,
                         username
-                    ).catch(profileError => {
-                        console.error("İlk profil kaydedilemedi:", profileError);
-                    });
+                    )
+                        .then(() => refreshPublicCounts())
+                        .catch(profileError => {
+                            console.error("İlk profil kaydedilemedi:", profileError);
+                        });
 
                     window.meepleForumAuthUser = userCredential.user;
                     userName.textContent = username;
@@ -8953,6 +9615,7 @@
                     const publicProfileData = {
                         uid: user.uid,
                         displayName,
+                        searchName: normalizedSearchText(displayName),
                         favoriteGame,
                         bio,
                         photoURL,
@@ -8987,6 +9650,10 @@
                         ...profileData
                     };
                     cachedProfileUid = user.uid;
+                    cachedPublicProfiles = mergeRowsById(cachedPublicProfiles, [{
+                        id: user.uid,
+                        ...publicProfileData
+                    }]);
 
                     userName.textContent = displayName;
                     renderProfile(user, cachedProfile);
@@ -9135,6 +9802,7 @@
                             ...topicData,
                             createdAt: null
                         });
+                        refreshPublicCounts();
                     }
 
                     newTopicForm.reset();
@@ -9449,9 +10117,19 @@
                     const title = giveawayForm.elements.title.value.trim();
                     const period = giveawayForm.elements.period.value;
                     const description = giveawayForm.elements.description.value.trim();
+                    const imageFile = giveawayForm.elements.image.files?.[0] || null;
                     const submitButton = giveawayForm.querySelector('button[type="submit"]');
 
                     if (!title || !description || !["weekly", "monthly"].includes(period)) return;
+
+                    if (
+                        imageFile &&
+                        (!/^image\/(jpeg|png|webp)$/.test(imageFile.type) ||
+                        imageFile.size > 10 * 1024 * 1024)
+                    ) {
+                        showToast("Çekiliş fotoğrafı JPG, PNG veya WebP olmalı ve 10 MB'ı geçmemeli.", "error");
+                        return;
+                    }
 
                     setButtonBusy(
                         submitButton,
@@ -9461,21 +10139,54 @@
                     );
 
                     try {
-                        await addDoc(collection(db, "giveaways"), {
+                        const user = auth.currentUser;
+                        let imageURL = "";
+
+                        if (imageFile) {
+                            const optimizedImage = await withTimeout(
+                                optimizeTopicImage(imageFile).catch(() => imageFile),
+                                12000
+                            );
+
+                            if (optimizedImage.size >= 5 * 1024 * 1024) {
+                                throw Object.assign(
+                                    new Error("Çekiliş görseli yükleme sınırını aşıyor."),
+                                    { code: "storage/file-too-large" }
+                                );
+                            }
+
+                            const uploadSnapshot = await uploadImageWithTimeout(
+                                storageRef(
+                                    storage,
+                                    `giveaway-images/${user.uid}/${Date.now()}-giveaway`
+                                ),
+                                optimizedImage
+                            );
+                            imageURL = await getUploadedImageURL(uploadSnapshot);
+                        }
+
+                        await withTimeout(addDoc(collection(db, "giveaways"), {
                             title,
                             period,
                             description,
-                            createdBy: auth.currentUser.uid,
-                            authorName: getDefaultDisplayName(auth.currentUser),
+                            imageURL,
+                            createdBy: user.uid,
+                            authorName: cachedProfile?.displayName || getDefaultDisplayName(user),
                             status: "active",
-                            createdAt: serverTimestamp()
-                        });
+                            createdAt: serverTimestamp(),
+                            updatedAt: serverTimestamp()
+                        }), 20000);
                         giveawayForm.reset();
                         showToast("Çekiliş yayınlandı.");
                     } catch (error) {
                         console.error("Çekiliş yayınlanamadı:", error);
                         showToast(
-                            getDataErrorMessage(error, "Çekiliş yayınlanamadı."),
+                            getDataErrorMessage(
+                                error,
+                                error?.code === "storage/file-too-large"
+                                    ? "Fotoğraf 5 MB yükleme sınırını aşıyor. Daha küçük bir görsel seç."
+                                    : "Çekiliş yayınlanamadı. Firestore ve Storage ayarlarını kontrol et."
+                            ),
                             "error"
                         );
                     } finally {
@@ -10279,6 +10990,7 @@
                             )
                         ]);
 
+                        refreshPublicCounts();
                         showToast("Başlık ve bağlı içerikler silindi.");
                     } catch (error) {
                         console.error("Başlık silinemedi:", error);
@@ -10348,22 +11060,32 @@
 
 
             onSnapshot(
-                collection(db, "topics"),
+                query(
+                    collection(db, "topics"),
+                    orderBy("createdAt", "desc"),
+                    limit(TOPICS_PAGE_SIZE)
+                ),
                 snapshot => {
-
-                    cachedTopics = snapshot.docs
+                    const liveTopics = snapshot.docs
                         .map(topicDocument => ({
                             id: topicDocument.id,
                             ...topicDocument.data()
-                        }))
+                        }));
+                    const loadedOlderTopics = cachedTopics.filter(topic =>
+                        !liveTopicIds.has(topic.id)
+                    );
+                    liveTopicIds = new Set(liveTopics.map(topic => topic.id));
+
+                    cachedTopics = mergeRowsById(loadedOlderTopics, liveTopics)
                         .sort((a, b) => {
                             const aTime = a.createdAt?.toMillis?.() || 0;
                             const bTime = b.createdAt?.toMillis?.() || 0;
                             return bTime - aTime;
                         });
 
-                    topicCount.textContent =
-                        cachedTopics.length.toLocaleString("tr-TR");
+                    lastTopicDocument = snapshot.docs[snapshot.docs.length - 1] || null;
+                    hasMoreTopics = snapshot.size === TOPICS_PAGE_SIZE;
+                    startTopicActivityListeners();
 
                     renderCurrentUserUpvotes();
                     renderHomeTopics();
@@ -10381,60 +11103,12 @@
                 }
             );
 
-
             onSnapshot(
-                collection(db, "publicProfiles"),
-                snapshot => {
-                    cachedPublicProfiles = snapshot.docs.map(profileDocument => ({
-                        id: profileDocument.id,
-                        ...profileDocument.data()
-                    }));
-                    memberCount.textContent =
-                        snapshot.size.toLocaleString("tr-TR");
-                    renderRoute();
-                },
-                error => {
-                    console.error("Üye sayısı alınamadı:", error);
-                    memberCount.textContent = "—";
-                }
-            );
-
-
-            onSnapshot(
-                collection(db, "comments"),
-                snapshot => {
-                    cachedComments = snapshot.docs.map(commentDocument => ({
-                        id: commentDocument.id,
-                        ...commentDocument.data()
-                    }));
-                    renderHomeTopics();
-                    renderRoute();
-                },
-                error => {
-                    console.error("Yorumlar alınamadı:", error);
-                }
-            );
-
-
-            onSnapshot(
-                collection(db, "votes"),
-                snapshot => {
-                    cachedVotes = snapshot.docs.map(voteDocument => ({
-                        id: voteDocument.id,
-                        ...voteDocument.data()
-                    }));
-                    renderCurrentUserUpvotes();
-                    renderHomeTopics();
-                    renderRoute();
-                },
-                error => {
-                    console.error("Oylar alınamadı:", error);
-                }
-            );
-
-
-            onSnapshot(
-                collection(db, "giveaways"),
+                query(
+                    collection(db, "giveaways"),
+                    orderBy("createdAt", "desc"),
+                    limit(COLLECTION_LIMITS.giveaways)
+                ),
                 snapshot => {
                     cachedGiveaways = snapshot.docs
                         .map(giveawayDocument => ({
@@ -10446,6 +11120,7 @@
                             const bTime = b.createdAt?.toMillis?.() || 0;
                             return bTime - aTime;
                         });
+                    renderHomeGiveaway();
                     renderRoute();
                 },
                 error => {
@@ -10455,7 +11130,11 @@
 
 
             onSnapshot(
-                collection(db, "events"),
+                query(
+                    collection(db, "events"),
+                    orderBy("createdAt", "desc"),
+                    limit(COLLECTION_LIMITS.events)
+                ),
                 snapshot => {
                     cachedEvents = snapshot.docs
                         .map(eventDocument => ({
@@ -10476,7 +11155,10 @@
 
 
             onSnapshot(
-                collection(db, "communities"),
+                query(
+                    collection(db, "communities"),
+                    limit(COLLECTION_LIMITS.communities)
+                ),
                 snapshot => {
                     cachedCommunities = snapshot.docs
                         .map(communityDocument => ({
@@ -10494,7 +11176,10 @@
 
 
             onSnapshot(
-                collection(db, "communityMemberships"),
+                query(
+                    collection(db, "communityMemberships"),
+                    limit(COLLECTION_LIMITS.memberships)
+                ),
                 snapshot => {
                     cachedMemberships = snapshot.docs.map(membershipDocument => ({
                         id: membershipDocument.id,
@@ -10510,7 +11195,10 @@
 
 
             onSnapshot(
-                collection(db, "venues"),
+                query(
+                    collection(db, "venues"),
+                    limit(COLLECTION_LIMITS.venues)
+                ),
                 snapshot => {
                     cachedVenues = snapshot.docs
                         .map(venueDocument => ({
@@ -10530,7 +11218,10 @@
 
 
             onSnapshot(
-                collection(db, "reviews"),
+                query(
+                    collection(db, "reviews"),
+                    limit(COLLECTION_LIMITS.reviews)
+                ),
                 reviewSnapshot => {
                     reviewSnapshot.docs.forEach(reviewDocument => {
                         cachedReviews[reviewDocument.id] = {
@@ -10556,7 +11247,10 @@
             );
 
             onSnapshot(
-                collection(db, "gameScores"),
+                query(
+                    collection(db, "gameScores"),
+                    limit(COLLECTION_LIMITS.gameScores)
+                ),
                 scoreSnapshot => {
                     cachedGameScores = scoreSnapshot.docs.map(scoreDocument => ({
                         id: scoreDocument.id,
@@ -10574,6 +11268,10 @@
                 },
                 error => console.error("Oyun skorları alınamadı:", error)
             );
+
+            // Üye ve başlık toplamlarını bütün belgeleri indirmeden, Firestore'un
+            // düşük maliyetli count() sorgusuyla yalnızca bir kez al.
+            refreshPublicCounts();
 
 
             let presenceStatusUnsubscribe = null;
@@ -10672,33 +11370,49 @@
                     }
                 );
 
-                chatMessagesUnsubscribe = onValue(
-                    databaseQuery(
-                        databaseRef(realtimeDb, "chatMessages"),
-                        limitToLast(100)
-                    ),
-                    snapshot => {
-                        const messages = [];
-
-                        snapshot.forEach(messageSnapshot => {
-                            messages.push({
-                                id: messageSnapshot.key,
-                                ...messageSnapshot.val()
-                            });
-                        });
-
-                        cachedChatMessages = messages.sort(
-                            (a, b) => Number(a.createdAt || 0) - Number(b.createdAt || 0)
-                        );
-
-                        if (decodeURIComponent(window.location.hash.slice(1)) === "chat") {
-                            renderRoute();
-                        }
-                    },
-                    error => {
-                        console.error("Sohbet mesajları alınamadı:", error);
+                stopRealtimeChatListener = () => {
+                    if (chatMessagesUnsubscribe) {
+                        chatMessagesUnsubscribe();
+                        chatMessagesUnsubscribe = null;
                     }
-                );
+                    cachedChatMessages = [];
+                };
+
+                startRealtimeChatListener = () => {
+                    if (chatMessagesUnsubscribe || !realtimeDb || !auth.currentUser) return;
+
+                    chatMessagesUnsubscribe = onValue(
+                        databaseQuery(
+                            databaseRef(realtimeDb, "chatMessages"),
+                            limitToLast(100)
+                        ),
+                        snapshot => {
+                            const messages = [];
+
+                            snapshot.forEach(messageSnapshot => {
+                                messages.push({
+                                    id: messageSnapshot.key,
+                                    ...messageSnapshot.val()
+                                });
+                            });
+
+                            cachedChatMessages = messages.sort(
+                                (a, b) => Number(a.createdAt || 0) - Number(b.createdAt || 0)
+                            );
+
+                            if (decodeURIComponent(window.location.hash.slice(1)) === "chat") {
+                                renderRoute();
+                            }
+                        },
+                        error => {
+                            console.error("Sohbet mesajları alınamadı:", error);
+                        }
+                    );
+                };
+
+                if (decodeURIComponent(window.location.hash.slice(1)) === "chat") {
+                    startRealtimeChatListener();
+                }
 
             } else {
                 renderOnlineCount(0);
@@ -10806,6 +11520,7 @@
                     isCurrentUserAdmin = false;
                     stopDirectConversationsListener();
                     stopActiveFirestoreChat();
+                    stopRealtimeChatListener();
                     adminBtn.style.display = "none";
 
                     stopPresence();
