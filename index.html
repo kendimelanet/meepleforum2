@@ -417,6 +417,119 @@
             white-space: nowrap;
         }
 
+        .chat-quick-wrap {
+            position: relative;
+            flex: 0 0 auto;
+        }
+
+        .chat-quick-button {
+            width: 38px;
+            height: 38px;
+            position: relative;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: rgba(255,255,255,.04);
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: border-color .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+        }
+
+        .chat-quick-button:hover,
+        .chat-quick-button[aria-expanded="true"] {
+            border-color: rgba(210,167,92,.4);
+            background: rgba(210,167,92,.1);
+            color: var(--gold-light);
+        }
+
+        .chat-quick-button.has-unread {
+            color: var(--gold-light);
+            border-color: rgba(239,190,91,.72);
+            background: rgba(210,167,92,.16);
+            box-shadow: 0 0 0 3px rgba(210,167,92,.09), 0 0 22px rgba(239,190,91,.38);
+            animation: chatNotificationGlow 1.8s ease-in-out infinite;
+        }
+
+        @keyframes chatNotificationGlow {
+            0%,100% { box-shadow: 0 0 0 3px rgba(210,167,92,.07), 0 0 14px rgba(239,190,91,.25); }
+            50% { box-shadow: 0 0 0 5px rgba(210,167,92,.13), 0 0 28px rgba(239,190,91,.52); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .chat-quick-button.has-unread { animation: none; }
+        }
+
+        .chat-quick-badge {
+            min-width: 17px;
+            height: 17px;
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            display: none;
+            place-items: center;
+            padding: 0 4px;
+            border: 2px solid var(--bg-main);
+            border-radius: 999px;
+            background: var(--danger);
+            color: white;
+            font-size: 9px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .chat-quick-button.has-unread .chat-quick-badge {
+            display: grid;
+        }
+
+        .chat-quick-menu {
+            width: min(370px, calc(100vw - 24px));
+            max-height: min(70vh, 620px);
+            position: absolute;
+            top: calc(100% + 11px);
+            right: 0;
+            z-index: 1200;
+            display: none;
+            overflow-y: auto;
+            padding: 13px;
+            border: 1px solid rgba(210,167,92,.28);
+            border-radius: 14px;
+            background: rgba(24,21,19,.98);
+            box-shadow: 0 24px 70px rgba(0,0,0,.55);
+        }
+
+        .chat-quick-menu.open { display: block; }
+        .chat-quick-menu-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 3px 3px 11px; }
+        .chat-quick-menu-head strong { color: var(--text-primary); font-size: 14px; }
+        .chat-quick-menu-head small { color: var(--text-muted); font-size: 10px; }
+        .chat-quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 13px; }
+        .chat-quick-action,
+        .chat-quick-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            text-align: left;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255,255,255,.025);
+            color: var(--text-secondary);
+        }
+        .chat-quick-action { min-height: 46px; justify-content: center; padding: 9px; font-size: 11px; font-weight: 750; }
+        .chat-quick-row { min-height: 47px; padding: 9px 10px; }
+        .chat-quick-action:hover,
+        .chat-quick-row:hover { border-color: rgba(210,167,92,.38); background: rgba(210,167,92,.08); color: var(--gold-light); }
+        .chat-quick-row > i { width: 25px; color: var(--gold); text-align: center; }
+        .chat-quick-row-copy { min-width: 0; flex: 1; }
+        .chat-quick-row-copy strong,
+        .chat-quick-row-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .chat-quick-row-copy strong { color: var(--text-primary); font-size: 11px; }
+        .chat-quick-row-copy small { margin-top: 3px; color: var(--text-muted); font-size: 9px; }
+        .chat-quick-section-title { margin: 12px 3px 7px; color: var(--text-muted); font-size: 9px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+        .chat-quick-list { display: grid; gap: 6px; }
+        .chat-quick-unread-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: var(--gold-light); box-shadow: 0 0 10px rgba(239,190,91,.7); }
+        .chat-quick-empty { padding: 10px; border: 1px dashed var(--border); border-radius: 9px; color: var(--text-muted); font-size: 10px; line-height: 1.45; }
+
         .user-upvote-badge {
             display: inline-flex !important;
             align-items: center;
@@ -2827,6 +2940,15 @@
                 max-width: 120px;
             }
 
+            .chat-quick-menu {
+                position: fixed;
+                top: 72px;
+                right: 12px;
+                left: 12px;
+                width: auto;
+                max-height: calc(100dvh - 88px);
+            }
+
             .user-upvote-badge {
                 display: none !important;
             }
@@ -3028,6 +3150,11 @@
                 padding: 8px;
             }
 
+            .chat-quick-button {
+                width: 36px;
+                height: 36px;
+            }
+
             .user-chip span {
                 display: none;
             }
@@ -3070,9 +3197,12 @@
         .space-game { display: block; width: min(100%, 360px); height: auto; margin: auto; border: 1px solid var(--border-strong); border-radius: 14px; background: #090b16; touch-action: none; }
         .space-game.wide-game { width: min(100%, 640px); }
         .space-game.blocks-game { width: min(100%, 300px); image-rendering: pixelated; }
+        .space-game.maze-game { width: min(100%, 416px); image-rendering: pixelated; }
         .touch-controls { display: flex; justify-content: center; gap: 14px; margin-top: 14px; }
         .touch-controls.arcade-controls { flex-wrap: wrap; }
         .touch-controls button, .memory-pads button { min-width: 72px; min-height: 58px; border: 1px solid var(--border-strong); border-radius: 13px; background: var(--bg-card-hover); color: var(--gold-light); font-size: 20px; touch-action: manipulation; }
+        .maze-controls { width: min(100%, 260px); display: grid; grid-template-columns: repeat(3,1fr); margin-inline: auto; }
+        .maze-controls span { min-height: 1px; }
         .reaction-board { width: min(100%, 520px); min-height: 300px; border: 2px solid var(--border-strong); border-radius: 18px; background: #713438; color: white; font-size: 22px; font-weight: 800; padding: 24px; }
         .reaction-board.ready { background: #3e8a5d; box-shadow: 0 0 45px rgba(104,181,138,.25); }
         .memory-status { min-height: 70px; display: grid; place-items: center; margin-bottom: 18px; color: var(--text-secondary); font-weight: 700; }
@@ -3089,6 +3219,45 @@
         .score-row .profile-link { display: inline; }
         .score-player { display: flex; align-items: center; gap: 8px; min-width: 0; }
         .score-player .profile-link { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rpg-launch-card { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 22px; margin-top: 26px; padding: 24px; border: 1px solid rgba(210,167,92,.3); border-radius: var(--radius-lg); background: radial-gradient(circle at 12% 25%,rgba(210,167,92,.16),transparent 24%),linear-gradient(135deg,#171724,#201916); box-shadow: var(--shadow); }
+        .rpg-launch-icon { width: 74px; height: 74px; display: grid; place-items: center; border-radius: 20px; background: rgba(210,167,92,.13); color: var(--gold-light); font-size: 32px; }
+        .rpg-launch-card h2 { margin: 5px 0 7px; font-family: "Playfair Display",serif; font-size: 27px; }
+        .rpg-launch-card p { color: var(--text-secondary); line-height: 1.65; }
+        .space-rpg-shell { max-width: 980px; margin: 0 auto; }
+        .rpg-command-deck { overflow: hidden; border: 1px solid rgba(210,167,92,.28); border-radius: var(--radius-lg); background: radial-gradient(circle at 80% 0,rgba(77,105,173,.2),transparent 32%),linear-gradient(160deg,#111421,#1d1817); box-shadow: var(--shadow); }
+        .rpg-command-header { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 22px; border-bottom: 1px solid var(--border); }
+        .rpg-command-header h2 { margin: 5px 0 0; font-family: "Playfair Display",serif; font-size: clamp(24px,4vw,34px); }
+        .rpg-status-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; padding: 18px 22px 0; }
+        .rpg-stat { padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.035); }
+        .rpg-stat span,.rpg-stat strong { display: block; }
+        .rpg-stat span { margin-bottom: 5px; color: var(--text-muted); font-size: 11px; }
+        .rpg-stat strong { color: var(--gold-light); font-size: 19px; }
+        .rpg-story-panel { padding: 24px 22px; }
+        .rpg-turn-label { color: var(--gold); font-size: 11px; font-weight: 850; letter-spacing: .11em; text-transform: uppercase; }
+        .rpg-story-panel h3 { margin: 9px 0 12px; font-family: "Playfair Display",serif; font-size: clamp(24px,4vw,32px); }
+        .rpg-story-text { min-height: 92px; white-space: pre-wrap; color: var(--text-secondary); font-size: 14px; line-height: 1.85; }
+        .rpg-choice-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; margin-top: 20px; }
+        .rpg-choice { min-height: 66px; padding: 14px 16px; text-align: left; border: 1px solid var(--border-strong); border-radius: 12px; background: rgba(255,255,255,.035); color: var(--text-primary); font-weight: 700; line-height: 1.45; }
+        .rpg-choice:hover { border-color: rgba(210,167,92,.55); background: rgba(210,167,92,.09); color: var(--gold-light); }
+        .rpg-choice:disabled { opacity: .48; cursor: not-allowed; }
+        .rpg-transmission-log { max-height: 190px; overflow: auto; padding: 0 22px 22px; }
+        .rpg-log-entry { padding: 10px 12px; border-left: 2px solid rgba(210,167,92,.35); color: var(--text-muted); font-size: 12px; line-height: 1.55; }
+        .rpg-campaign-strip { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 16px; align-items: center; margin: 18px 22px 0; padding: 15px; border: 1px solid rgba(210,167,92,.2); border-radius: 13px; background: rgba(6,8,16,.45); }
+        .rpg-thread-label { display: block; margin-bottom: 7px; color: var(--gold); font-size: 10px; font-weight: 850; letter-spacing: .11em; text-transform: uppercase; }
+        .rpg-thread-text { color: var(--text-secondary); font-size: 13px; line-height: 1.55; }
+        .rpg-progress-wrap { min-width: 175px; }
+        .rpg-progress-meta { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 7px; color: var(--text-muted); font-size: 10px; font-weight: 750; }
+        .rpg-progress-track { height: 7px; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,.08); }
+        .rpg-progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg,var(--gold-dark),var(--gold-light)); transition: width .35s ease; }
+        .rpg-crew-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; padding: 14px 22px 0; }
+        .rpg-crew-member { min-width: 0; padding: 11px 12px; border: 1px solid var(--border); border-radius: 11px; background: rgba(255,255,255,.025); }
+        .rpg-crew-member strong,.rpg-crew-member small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rpg-crew-member strong { color: var(--text-primary); font-size: 12px; }
+        .rpg-crew-member small { margin-top: 4px; color: var(--text-muted); font-size: 10px; }
+        .rpg-crew-member.is-loyal { border-color: rgba(104,181,138,.34); background: rgba(104,181,138,.055); }
+        .rpg-crew-member.is-fractured { border-color: rgba(224,108,108,.35); background: rgba(224,108,108,.055); }
+        .rpg-consequence { margin-top: 15px; padding: 12px 14px; border-left: 3px solid var(--gold); border-radius: 0 10px 10px 0; background: rgba(210,167,92,.075); color: var(--text-secondary); font-size: 12px; line-height: 1.65; }
+        .rpg-choice small { display: block; margin-top: 5px; color: var(--text-muted); font-weight: 500; }
         .home-showcase { margin: 54px 0 0; padding: 28px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: linear-gradient(135deg,rgba(113,52,56,.14),rgba(62,101,79,.09)),var(--bg-secondary); box-shadow: var(--shadow); }
         .showcase-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 22px; }
         .showcase-heading h2 { font-family: "Playfair Display",serif; font-size: clamp(25px,3vw,36px); margin: 4px 0 6px; }
@@ -3126,6 +3295,8 @@
             .community-versus-grid { grid-template-columns: 1fr; }
             .home-giveaway-link { grid-template-columns: 1fr; }
             .home-giveaway-visual { min-height: 230px; }
+            .rpg-launch-card { grid-template-columns: auto minmax(0,1fr); }
+            .rpg-launch-card .primary-btn { grid-column: 1 / -1; width: 100%; }
             .versus-mark { margin: -4px auto; }
         }
 
@@ -3136,6 +3307,14 @@
             .reaction-board { min-height: 240px; }
             .home-showcase { padding: 18px; margin-top: 30px; }
             .showcase-heading { align-items: stretch; flex-direction: column; }
+            .rpg-launch-card { grid-template-columns: 1fr; text-align: center; }
+            .rpg-launch-icon { margin: auto; }
+            .rpg-status-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+            .rpg-command-header { align-items: stretch; flex-direction: column; }
+            .rpg-choice-grid { grid-template-columns: 1fr; }
+            .rpg-campaign-strip { grid-template-columns: 1fr; }
+            .rpg-progress-wrap { min-width: 0; }
+            .rpg-crew-grid { grid-template-columns: 1fr; }
         }
 
     </style>
@@ -3276,6 +3455,22 @@
                             <span>0</span>
                         </span>
                     </button>
+
+                    <div class="chat-quick-wrap" id="chatQuickWrap">
+                        <button
+                            class="chat-quick-button"
+                            type="button"
+                            id="chatQuickButton"
+                            aria-label="Sohbet merkezini aç"
+                            aria-expanded="false"
+                            aria-controls="chatQuickMenu"
+                            title="Sohbetler"
+                        >
+                            <i class="fa-solid fa-comments"></i>
+                            <span class="chat-quick-badge" id="chatQuickBadge" aria-hidden="true">0</span>
+                        </button>
+                        <div class="chat-quick-menu" id="chatQuickMenu" aria-label="Sohbet kısayolları"></div>
+                    </div>
 
                     <button
                         class="admin-btn"
@@ -5585,6 +5780,10 @@
         const userName = document.getElementById("userName");
         const userUpvoteBadge = document.getElementById("userUpvoteBadge");
         const profileBtn = document.getElementById("profileBtn");
+        const chatQuickWrap = document.getElementById("chatQuickWrap");
+        const chatQuickButton = document.getElementById("chatQuickButton");
+        const chatQuickBadge = document.getElementById("chatQuickBadge");
+        const chatQuickMenu = document.getElementById("chatQuickMenu");
         const adminBtn = document.getElementById("adminBtn");
         const logoutBtn = document.getElementById("logoutBtn");
 
@@ -5697,7 +5896,7 @@
             memberships: 600,
             venues: 150,
             reviews: 120,
-            gameScores: 600
+            gameScores: 1000
         });
         let lastTopicDocument = null;
         let liveTopicIds = new Set();
@@ -5720,12 +5919,18 @@
         let stopRealtimeChatListener = () => {};
         let activeGameCleanup = null;
         let activeGameSession = null;
+        let activeRpgSession = null;
         let activeScoreObserver = null;
         let activeScoreSaveTimer = null;
         let directConversationsUnsubscribe = null;
         let activeFirestoreChatUnsubscribe = null;
         let activeFirestoreChatKey = "";
         let activeFirestoreChatError = "";
+        let communityActivityUnsubscribers = [];
+        let communityActivityListenerKey = "";
+        let cachedCommunityRoomActivity = new Map();
+        let chatSeenState = null;
+        let chatSeenUserId = "";
         /*
          * Firebase servisleri modül kapsamındadır. Oyun, profil, gönderi ve
          * sohbet yardımcıları try bloğunun dışında tanımlandığı için bu
@@ -6869,6 +7074,297 @@
         }
 
 
+        function chatTimestamp(value) {
+            if (Number.isFinite(Number(value))) return Number(value);
+            if (typeof value?.toMillis === "function") return value.toMillis();
+            if (Number.isFinite(Number(value?.seconds))) return Number(value.seconds) * 1000;
+            return 0;
+        }
+
+
+        function getChatSeenState(user = auth?.currentUser) {
+            if (!user) return null;
+            if (chatSeenState && chatSeenUserId === user.uid) return chatSeenState;
+
+            const fallback = {
+                baseline: Date.now(),
+                general: Date.now(),
+                direct: {},
+                community: {}
+            };
+
+            try {
+                const stored = JSON.parse(
+                    localStorage.getItem(`meepleforum-chat-seen:${user.uid}`) || "null"
+                );
+                chatSeenState = stored && typeof stored === "object"
+                    ? {
+                        baseline: Number(stored.baseline) || Number(stored.general) || fallback.baseline,
+                        general: Number(stored.general) || fallback.general,
+                        direct: stored.direct && typeof stored.direct === "object" ? stored.direct : {},
+                        community: stored.community && typeof stored.community === "object" ? stored.community : {}
+                    }
+                    : fallback;
+            } catch (error) {
+                chatSeenState = fallback;
+            }
+
+            chatSeenUserId = user.uid;
+            return chatSeenState;
+        }
+
+
+        function saveChatSeenState() {
+            if (!chatSeenState || !chatSeenUserId) return;
+            try {
+                localStorage.setItem(
+                    `meepleforum-chat-seen:${chatSeenUserId}`,
+                    JSON.stringify(chatSeenState)
+                );
+            } catch (error) {
+                console.warn("Sohbet okundu bilgisi kaydedilemedi:", error);
+            }
+        }
+
+
+        function latestGeneralChatTimestamp() {
+            return cachedChatMessages.reduce(
+                (latest, message) => Math.max(latest, chatTimestamp(message.createdAt)),
+                0
+            );
+        }
+
+
+        function directConversationIsUnread(conversation, user, seenState) {
+            if (!conversation || !user || conversation.lastSenderId === user.uid) return false;
+            const lastSeen = seenState?.direct?.[conversation.id] ?? seenState?.baseline ?? Date.now();
+            return chatTimestamp(conversation.updatedAt) > Number(lastSeen);
+        }
+
+
+        function communityRoomIsUnread(communityId, user, seenState) {
+            const activity = cachedCommunityRoomActivity.get(communityId);
+            if (!activity || !user || activity.senderId === user.uid) return false;
+            const lastSeen = seenState?.community?.[communityId] ?? seenState?.baseline ?? Date.now();
+            return activity.timestamp > Number(lastSeen);
+        }
+
+
+        function accessibleChatCommunities(user = auth?.currentUser) {
+            if (!user) return [];
+            return cachedCommunities
+                .filter(community => canAccessCommunityRoom(community, user))
+                .sort((a, b) => (a.name || "").localeCompare(b.name || "", "tr"));
+        }
+
+
+        function getChatUnreadSummary() {
+            const user = auth?.currentUser;
+            const seenState = getChatSeenState(user);
+            if (!user || !seenState) return { total: 0, general: false, directIds: [], communityIds: [] };
+
+            const latestGeneralFromOthers = cachedChatMessages.reduce((latest, message) =>
+                message.authorId !== user.uid
+                    ? Math.max(latest, chatTimestamp(message.createdAt))
+                    : latest
+            , 0);
+            const general = latestGeneralFromOthers > Number(seenState.general || 0);
+            const directIds = cachedDirectConversations
+                .filter(conversation => directConversationIsUnread(conversation, user, seenState))
+                .map(conversation => conversation.id);
+            const communityIds = accessibleChatCommunities(user)
+                .filter(community => communityRoomIsUnread(community.id, user, seenState))
+                .map(community => community.id);
+
+            return {
+                total: (general ? 1 : 0) + directIds.length + communityIds.length,
+                general,
+                directIds,
+                communityIds
+            };
+        }
+
+
+        function renderChatQuickMenu() {
+            if (!chatQuickButton || !chatQuickBadge || !chatQuickMenu) return;
+            const user = auth?.currentUser;
+            const unread = getChatUnreadSummary();
+            const hasUnread = unread.total > 0;
+
+            chatQuickButton.classList.toggle("has-unread", hasUnread);
+            chatQuickBadge.textContent = unread.total > 99 ? "99+" : String(unread.total);
+            chatQuickButton.setAttribute(
+                "aria-label",
+                hasUnread ? `${unread.total} okunmamış sohbet var` : "Sohbet merkezini aç"
+            );
+
+            if (!user) {
+                chatQuickMenu.innerHTML = '<div class="chat-quick-empty">Sohbetlerini görmek için giriş yap.</div>';
+                return;
+            }
+
+            const directRows = cachedDirectConversations
+                .map(conversation => ({
+                    conversation,
+                    partner: getConversationPartner(conversation, user.uid)
+                }))
+                .filter(item => item.partner.userId)
+                .slice(0, 5);
+            const communityRows = accessibleChatCommunities(user).slice(0, 8);
+
+            chatQuickMenu.innerHTML = `
+                <div class="chat-quick-menu-head">
+                    <strong><i class="fa-solid fa-comments"></i> Sohbet Merkezi</strong>
+                    <small>${hasUnread ? `${unread.total} yeni` : "Güncel"}</small>
+                </div>
+                <div class="chat-quick-actions">
+                    <button class="chat-quick-action" type="button" data-chat-quick-route="chat">
+                        <i class="fa-solid fa-earth-europe"></i> Genel Sohbet
+                        ${unread.general ? '<span class="chat-quick-unread-dot" aria-label="Okunmamış mesaj"></span>' : ""}
+                    </button>
+                    <button class="chat-quick-action" type="button" data-chat-quick-route="chat">
+                        <i class="fa-solid fa-lock"></i> Özel Sohbetler
+                        ${unread.directIds.length ? '<span class="chat-quick-unread-dot" aria-label="Okunmamış mesaj"></span>' : ""}
+                    </button>
+                </div>
+
+                <div class="chat-quick-section-title">Son özel konuşmalar</div>
+                <div class="chat-quick-list">
+                    ${directRows.length ? directRows.map(({ conversation, partner }) => `
+                        <button class="chat-quick-row" type="button" data-chat-quick-dm="${escapeHTML(partner.userId)}">
+                            <i class="fa-solid fa-user-lock"></i>
+                            <span class="chat-quick-row-copy">
+                                <strong>${escapeHTML(partner.displayName)}</strong>
+                                <small>${escapeHTML(conversation.lastMessage || "Sohbeti aç")}</small>
+                            </span>
+                            ${unread.directIds.includes(conversation.id) ? '<span class="chat-quick-unread-dot" aria-label="Okunmamış mesaj"></span>' : ""}
+                        </button>
+                    `).join("") : '<div class="chat-quick-empty">Henüz özel konuşman yok. Bir kullanıcının profilinden mesaj gönderebilirsin.</div>'}
+                </div>
+
+                <div class="chat-quick-section-title">Topluluk odaların</div>
+                <div class="chat-quick-list">
+                    ${communityRows.length ? communityRows.map(community => {
+                        const activity = cachedCommunityRoomActivity.get(community.id);
+                        return `
+                            <button class="chat-quick-row" type="button" data-chat-quick-community="${escapeHTML(community.id)}">
+                                <i class="fa-solid ${community.type === "bkfk" ? "fa-graduation-cap" : "fa-users"}"></i>
+                                <span class="chat-quick-row-copy">
+                                    <strong>${escapeHTML(community.name || "Topluluk")}</strong>
+                                    <small>${escapeHTML(activity?.text || "Topluluk sohbetini aç")}</small>
+                                </span>
+                                ${unread.communityIds.includes(community.id) ? '<span class="chat-quick-unread-dot" aria-label="Okunmamış mesaj"></span>' : ""}
+                            </button>
+                        `;
+                    }).join("") : '<div class="chat-quick-empty">Onaylı üyesi olduğun bir topluluk sohbeti henüz yok.</div>'}
+                </div>
+            `;
+        }
+
+
+        function closeChatQuickMenu() {
+            chatQuickMenu?.classList.remove("open");
+            chatQuickButton?.setAttribute("aria-expanded", "false");
+        }
+
+
+        function markCurrentChatRouteSeen(route = decodeURIComponent(window.location.hash.slice(1))) {
+            const user = auth?.currentUser;
+            const seenState = getChatSeenState(user);
+            if (!user || !seenState) return;
+            let changed = false;
+
+            if (route === "chat") {
+                const latest = latestGeneralChatTimestamp();
+                if (latest > Number(seenState.general || 0)) {
+                    seenState.general = latest;
+                    changed = true;
+                }
+            } else if (route.startsWith("dm=")) {
+                const otherUserId = route.slice(3);
+                const conversationId = getDirectConversationId(user.uid, otherUserId);
+                const conversation = cachedDirectConversations.find(item => item.id === conversationId);
+                const latest = chatTimestamp(conversation?.updatedAt);
+                if (latest > Number(seenState.direct[conversationId] || 0)) {
+                    seenState.direct[conversationId] = latest;
+                    changed = true;
+                }
+            } else if (route.startsWith("community-chat=")) {
+                const communityId = route.slice("community-chat=".length);
+                const latest = cachedCommunityRoomActivity.get(communityId)?.timestamp || 0;
+                if (latest > Number(seenState.community[communityId] || 0)) {
+                    seenState.community[communityId] = latest;
+                    changed = true;
+                }
+            }
+
+            if (changed) saveChatSeenState();
+            renderChatQuickMenu();
+        }
+
+
+        function stopCommunityActivityListeners() {
+            communityActivityUnsubscribers.forEach(unsubscribe => unsubscribe());
+            communityActivityUnsubscribers = [];
+            communityActivityListenerKey = "";
+            cachedCommunityRoomActivity = new Map();
+        }
+
+
+        function refreshCommunityActivityListeners() {
+            const user = auth?.currentUser;
+            if (!user || !db) {
+                stopCommunityActivityListeners();
+                renderChatQuickMenu();
+                return;
+            }
+
+            const communities = accessibleChatCommunities(user).slice(0, 24);
+            const nextKey = `${user.uid}:${communities.map(item => item.id).sort().join("|")}`;
+            if (nextKey === communityActivityListenerKey) {
+                renderChatQuickMenu();
+                return;
+            }
+
+            stopCommunityActivityListeners();
+            communityActivityListenerKey = nextKey;
+
+            communities.forEach(community => {
+                const unsubscribe = onSnapshot(
+                    query(
+                        collection(db, "communityRooms", community.id, "messages"),
+                        orderBy("createdAt", "desc"),
+                        limit(1)
+                    ),
+                    snapshot => {
+                        const latestDocument = snapshot.docs[0];
+                        if (latestDocument) {
+                            const latest = latestDocument.data();
+                            cachedCommunityRoomActivity.set(community.id, {
+                                timestamp: chatTimestamp(latest.createdAt),
+                                senderId: latest.senderId || "",
+                                text: String(latest.text || "").slice(0, 90)
+                            });
+                        } else {
+                            cachedCommunityRoomActivity.delete(community.id);
+                        }
+
+                        const route = decodeURIComponent(window.location.hash.slice(1));
+                        if (route === `community-chat=${community.id}`) {
+                            markCurrentChatRouteSeen(route);
+                        } else {
+                            renderChatQuickMenu();
+                        }
+                    },
+                    error => console.warn(`Topluluk sohbet bildirimi alınamadı (${community.id}):`, error)
+                );
+                communityActivityUnsubscribers.push(unsubscribe);
+            });
+
+            renderChatQuickMenu();
+        }
+
+
         function directConversationsMarkup() {
             const currentUser = window.meepleForumAuthUser;
 
@@ -7084,8 +7580,13 @@
                             return bTime - aTime;
                         });
 
-                    if (decodeURIComponent(window.location.hash.slice(1)) === "chat") {
+                    const route = decodeURIComponent(window.location.hash.slice(1));
+                    if (route === "chat") {
                         renderRoute();
+                    } else if (route.startsWith("dm=")) {
+                        markCurrentChatRouteSeen(route);
+                    } else {
+                        renderChatQuickMenu();
                     }
                 },
                 error => console.error("Özel sohbetler alınamadı:", error)
@@ -7763,7 +8264,10 @@
             contra: { title: "Jungle Commando", icon: "fa-person-rifle", description: "Ormanda ilerle, engelleri aş ve ekrana gelen düşmanları etkisiz hâle getir." },
             blocks: { title: "Block Forge", icon: "fa-cubes-stacked", description: "Düşen blokları döndür, sıraları tamamla ve oyun alanı dolmadan rekor kır." },
             reaction: { title: "Hızlı Meeple", icon: "fa-bolt", description: "Alan yeşile döndüğü anda dokun ve refleksini ölç." },
-            memory: { title: "Zar Hafızası", icon: "fa-brain", description: "Gösterilen zar dizisini doğru sırayla tekrar et." }
+            memory: { title: "Zar Hafızası", icon: "fa-brain", description: "Gösterilen zar dizisini doğru sırayla tekrar et." },
+            barrel: { title: "Kule Kaçışı", icon: "fa-dungeon", description: "Yuvarlanan fıçıları aş, merdivenleri tırman ve kulenin zirvesine ulaş." },
+            maze: { title: "Nebula Labirenti", icon: "fa-ghost", description: "Enerji kürelerini topla, Hayaletlerden kaç ve labirenti temizle." },
+            fighter: { title: "Pixel Arena", icon: "fa-hand-fist", description: "Rakibini alt et, art arda raundlar kazan ve arenanın en yüksek skoruna ulaş." }
         };
 
 
@@ -7795,7 +8299,29 @@
 
 
         function gamesMarkup() {
-            return `<div class="game-grid">${Object.entries(miniGames).map(([id, game]) => `<article class="game-card"><i class="fa-solid ${game.icon}"></i><h3>${game.title}</h3><p>${game.description}</p><div class="game-card-stats"><span><i class="fa-solid fa-users"></i> ${gamePlayerCount(id)} yarışmacı</span></div><div class="personal-best"><span>En iyi skorun</span><strong>${gameBestScore(id).toLocaleString("tr-TR")}</strong></div><a class="primary-btn" href="#game=${id}"><i class="fa-solid fa-play"></i> Oyna</a></article>`).join("")}</div>`;
+            return `
+                <div class="game-grid">
+                    ${Object.entries(miniGames).map(([id, game]) => `
+                        <article class="game-card">
+                            <i class="fa-solid ${game.icon}"></i>
+                            <h3>${game.title}</h3>
+                            <p>${game.description}</p>
+                            <div class="game-card-stats"><span><i class="fa-solid fa-users"></i> ${gamePlayerCount(id)} yarışmacı</span></div>
+                            <div class="personal-best"><span>En iyi skorun</span><strong>${gameBestScore(id).toLocaleString("tr-TR")}</strong></div>
+                            <a class="primary-btn" href="#game=${id}"><i class="fa-solid fa-play"></i> Oyna</a>
+                        </article>
+                    `).join("")}
+                </div>
+                <section class="rpg-launch-card">
+                    <div class="rpg-launch-icon"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <div>
+                        <span class="route-eyebrow">Skorsuz, sonsuz hikâye</span>
+                        <h2>Yıldızların Ardında</h2>
+                        <p>Her başlangıçta değişen bir kaptan, gemi, görev ve galaktik krizle dört seçimli uzay FRP macerasına çık.</p>
+                    </div>
+                    <a class="primary-btn" href="#space-rpg"><i class="fa-solid fa-book-open"></i> Maceraya Başla</a>
+                </section>
+            `;
         }
 
 
@@ -7837,7 +8363,10 @@
             if (gameId === "blocks") board = `<canvas id="blocksGameCanvas" class="space-game blocks-game" width="300" height="600" aria-label="Block Forge oyun alanı"></canvas><div class="touch-controls arcade-controls"><button type="button" data-block-action="left" aria-label="Sola"><i class="fa-solid fa-arrow-left"></i></button><button type="button" data-block-action="rotate" aria-label="Döndür"><i class="fa-solid fa-rotate-right"></i></button><button type="button" data-block-action="down" aria-label="Aşağı"><i class="fa-solid fa-arrow-down"></i></button><button type="button" data-block-action="drop" aria-label="Hızlı bırak"><i class="fa-solid fa-angles-down"></i></button><button type="button" data-block-action="right" aria-label="Sağa"><i class="fa-solid fa-arrow-right"></i></button></div>`;
             if (gameId === "reaction") board = `<button id="reactionBoard" class="reaction-board" type="button">Başlamak için dokun veya tıkla</button>`;
             if (gameId === "memory") board = `<div id="memoryStatus" class="memory-status">Başlamak için düğmeye bas</div><div class="memory-pads">${[1,2,3,4].map((n, i) => `<button type="button" data-memory-pad="${n}"><i class="fa-solid fa-dice-${["one","two","three","four"][i]}"></i></button>`).join("")}</div>`;
-            const controls = gameId === "contra" ? "Bilgisayar: ← → hareket, ↑ zıpla, Boşluk ateş · Telefon: ekrandaki tuşlar." : gameId === "blocks" ? "Bilgisayar: ← → hareket, ↑ döndür, ↓ indir, Boşluk hızlı bırak · Telefon: ekrandaki tuşlar." : (gameId === "space" || gameId === "galaga") ? "Bilgisayar: ← → ve Boşluk · Telefon: alttaki dokunmatik tuşlar." : game.description;
+            if (gameId === "barrel") board = `<canvas id="barrelGameCanvas" class="space-game wide-game" width="600" height="420" aria-label="Kule Kaçışı oyun alanı"></canvas><div class="touch-controls arcade-controls"><button type="button" data-barrel-action="left" aria-label="Sola"><i class="fa-solid fa-arrow-left"></i></button><button type="button" data-barrel-action="climb" aria-label="Tırman"><i class="fa-solid fa-arrow-up"></i></button><button type="button" data-barrel-action="jump" aria-label="Zıpla"><i class="fa-solid fa-person-running"></i></button><button type="button" data-barrel-action="right" aria-label="Sağa"><i class="fa-solid fa-arrow-right"></i></button></div>`;
+            if (gameId === "maze") board = `<canvas id="mazeGameCanvas" class="space-game maze-game" width="416" height="416" aria-label="Nebula Labirenti oyun alanı"></canvas><div class="touch-controls maze-controls"><span></span><button type="button" data-maze-action="up" aria-label="Yukarı"><i class="fa-solid fa-arrow-up"></i></button><span></span><button type="button" data-maze-action="left" aria-label="Sola"><i class="fa-solid fa-arrow-left"></i></button><button type="button" data-maze-action="down" aria-label="Aşağı"><i class="fa-solid fa-arrow-down"></i></button><button type="button" data-maze-action="right" aria-label="Sağa"><i class="fa-solid fa-arrow-right"></i></button></div>`;
+            if (gameId === "fighter") board = `<canvas id="fighterGameCanvas" class="space-game wide-game" width="640" height="360" aria-label="Pixel Arena oyun alanı"></canvas><div class="touch-controls arcade-controls fighter-controls"><button type="button" data-fighter-action="left" aria-label="Sola"><i class="fa-solid fa-arrow-left"></i></button><button type="button" data-fighter-action="jump" aria-label="Zıpla"><i class="fa-solid fa-arrow-up"></i></button><button type="button" data-fighter-action="punch" aria-label="Yumruk"><i class="fa-solid fa-hand-fist"></i></button><button type="button" data-fighter-action="kick" aria-label="Tekme"><i class="fa-solid fa-shoe-prints"></i></button><button type="button" data-fighter-action="right" aria-label="Sağa"><i class="fa-solid fa-arrow-right"></i></button></div>`;
+            const controls = gameId === "contra" ? "Bilgisayar: ← → hareket, ↑ zıpla, Boşluk ateş · Telefon: ekrandaki tuşlar." : gameId === "blocks" ? "Bilgisayar: ← → hareket, ↑ döndür, ↓ indir, Boşluk hızlı bırak · Telefon: ekrandaki tuşlar." : gameId === "barrel" ? "Bilgisayar: ← → hareket, ↑ merdiven, Boşluk zıpla · Telefon: ekrandaki tuşlar." : gameId === "maze" ? "Bilgisayar: ok tuşları veya WASD · Telefon: yön tuşları." : gameId === "fighter" ? "Bilgisayar: A/D hareket, W zıpla, J yumruk, K tekme · Telefon: ekrandaki tuşlar." : (gameId === "space" || gameId === "galaga") ? "Bilgisayar: ← → ve Boşluk · Telefon: alttaki dokunmatik tuşlar." : game.description;
             return `<div class="game-layout"><section class="game-stage"><div class="game-hud"><strong id="liveGameScore">Skor: 0</strong><div class="game-hud-actions"><span class="auto-save-chip" id="gameSaveStatus" role="status"><i class="fa-solid fa-cloud-arrow-up"></i><span>Otomatik kayıt hazır</span></span><button class="primary-btn" id="startMiniGame" type="button"><i class="fa-solid fa-play"></i> Oyunu Başlat</button></div></div>${board}<p class="game-help">${controls}</p></section>${gameLeaderboardMarkup(gameId)}</div>`;
         }
 
@@ -8048,6 +8577,1492 @@
         }
 
 
+        function initializeBarrelGame(startButton, scoreLabel) {
+            const canvas = document.getElementById("barrelGameCanvas");
+            const context = canvas?.getContext("2d");
+            if (!context) return () => {};
+
+            const platformY = level => 390 - level * 72;
+            const ladderX = [510, 100, 500, 120];
+            let frame = 0, running = false, tick = 0, score = 0, lives = 3, round = 1;
+            let left = false, right = false, jumpOffset = 0, jumpVelocity = 0, invulnerable = 0;
+            let player = { x: 38, level: 0, w: 26, h: 34 };
+            let barrels = [];
+
+            const updateScore = () => {
+                scoreLabel.textContent = `Skor: ${score.toLocaleString("tr-TR")} · Can: ${lives} · Kat: ${player.level + 1}`;
+            };
+            const resetPlayer = () => {
+                player = { x: 38, level: 0, w: 26, h: 34 };
+                jumpOffset = 0;
+                jumpVelocity = 0;
+                invulnerable = 90;
+            };
+            const jump = () => {
+                if (running && jumpOffset <= 0) jumpVelocity = 11;
+            };
+            const climb = () => {
+                if (!running || player.level >= 4 || jumpOffset > 0) return;
+                if (Math.abs(player.x - ladderX[player.level]) < 34) {
+                    player.level++;
+                    player.x = ladderX[player.level - 1];
+                    score += 100 * player.level;
+                    updateScore();
+                }
+            };
+            const hit = () => {
+                if (invulnerable > 0) return;
+                lives--;
+                if (lives <= 0) {
+                    running = false;
+                    updateScore();
+                    draw();
+                    saveGameScore("barrel", score);
+                    return;
+                }
+                resetPlayer();
+                updateScore();
+            };
+            const draw = () => {
+                const sky = context.createLinearGradient(0, 0, 0, canvas.height);
+                sky.addColorStop(0, "#17142a");
+                sky.addColorStop(1, "#301b20");
+                context.fillStyle = sky;
+                context.fillRect(0, 0, canvas.width, canvas.height);
+
+                for (let level = 0; level < 5; level++) {
+                    const y = platformY(level);
+                    context.fillStyle = level % 2 ? "#87454d" : "#9b5547";
+                    context.fillRect(18, y, 564, 12);
+                    context.fillStyle = "rgba(255,255,255,.12)";
+                    for (let x = 24; x < 570; x += 42) context.fillRect(x, y + 3, 25, 3);
+                }
+
+                context.strokeStyle = "#d7aa62";
+                context.lineWidth = 5;
+                ladderX.forEach((x, level) => {
+                    const bottom = platformY(level);
+                    const top = platformY(level + 1) + 12;
+                    context.beginPath();
+                    context.moveTo(x, bottom);
+                    context.lineTo(x, top);
+                    context.moveTo(x + 24, bottom);
+                    context.lineTo(x + 24, top);
+                    context.stroke();
+                    context.lineWidth = 3;
+                    for (let y = top + 9; y < bottom; y += 13) {
+                        context.beginPath();
+                        context.moveTo(x, y);
+                        context.lineTo(x + 24, y);
+                        context.stroke();
+                    }
+                    context.lineWidth = 5;
+                });
+
+                context.fillStyle = "#e8c678";
+                context.fillRect(548, platformY(4) - 42, 22, 42);
+                context.fillStyle = "#fff";
+                context.font = "700 11px Inter";
+                context.textAlign = "center";
+                context.fillText("HEDEF", 559, platformY(4) - 49);
+
+                barrels.forEach(barrel => {
+                    const y = platformY(barrel.level) - 13;
+                    context.fillStyle = "#c17843";
+                    context.beginPath();
+                    context.arc(barrel.x, y, 13, 0, Math.PI * 2);
+                    context.fill();
+                    context.strokeStyle = "#492a20";
+                    context.lineWidth = 3;
+                    context.stroke();
+                    context.beginPath();
+                    context.moveTo(barrel.x - 9, y - 8);
+                    context.lineTo(barrel.x + 9, y + 8);
+                    context.stroke();
+                });
+
+                const playerY = platformY(player.level) - player.h - jumpOffset;
+                context.globalAlpha = invulnerable > 0 && Math.floor(invulnerable / 5) % 2 ? .35 : 1;
+                context.fillStyle = "#e7c57e";
+                context.fillRect(player.x + 6, playerY, 14, 12);
+                context.fillStyle = "#547ec5";
+                context.fillRect(player.x, playerY + 12, player.w, 17);
+                context.fillStyle = "#f5f0e8";
+                context.fillRect(player.x + 2, playerY + 29, 8, 5);
+                context.fillRect(player.x + 16, playerY + 29, 8, 5);
+                context.globalAlpha = 1;
+
+                context.fillStyle = "#f5f0e8";
+                context.font = "12px Inter";
+                context.textAlign = "left";
+                context.fillText(`Tur: ${round}  Can: ${lives}`, 18, 23);
+                if (!running) {
+                    context.fillStyle = "rgba(8,8,16,.72)";
+                    context.fillRect(0, 170, 600, 82);
+                    context.fillStyle = "#fff";
+                    context.font = "700 21px Inter";
+                    context.textAlign = "center";
+                    context.fillText(lives <= 0 ? "Kule seni yendi" : "Oyunu Başlat", 300, 220);
+                }
+            };
+            const loop = () => {
+                if (!running) return;
+                tick++;
+                if (left) player.x = Math.max(20, player.x - 3.5);
+                if (right) player.x = Math.min(554, player.x + 3.5);
+                if (jumpOffset > 0 || jumpVelocity > 0) {
+                    jumpOffset += jumpVelocity;
+                    jumpVelocity -= .62;
+                    if (jumpOffset <= 0) {
+                        jumpOffset = 0;
+                        jumpVelocity = 0;
+                    }
+                }
+                if (invulnerable > 0) invulnerable--;
+
+                const spawnRate = Math.max(58, 118 - round * 5);
+                if (tick % spawnRate === 0) barrels.push({ x: 34, level: 4, direction: 1 });
+                const speed = 1.8 + round * .16;
+                barrels.forEach(barrel => {
+                    barrel.x += barrel.direction * speed;
+                    if (barrel.x > 568 || barrel.x < 32) {
+                        if (barrel.level > 0) {
+                            barrel.level--;
+                            barrel.direction *= -1;
+                            barrel.x = Math.max(32, Math.min(568, barrel.x));
+                        } else {
+                            barrel.done = true;
+                            score += 15;
+                            updateScore();
+                        }
+                    }
+                    if (
+                        barrel.level === player.level &&
+                        Math.abs(barrel.x - (player.x + player.w / 2)) < 22 &&
+                        jumpOffset < 24
+                    ) hit();
+                });
+                barrels = barrels.filter(barrel => !barrel.done);
+
+                if (player.level === 4 && player.x > 520) {
+                    score += 500 * round;
+                    round++;
+                    barrels = [];
+                    resetPlayer();
+                    updateScore();
+                }
+
+                draw();
+                frame = requestAnimationFrame(loop);
+            };
+            const start = () => {
+                cancelAnimationFrame(frame);
+                running = true;
+                tick = 0;
+                score = 0;
+                lives = 3;
+                round = 1;
+                barrels = [];
+                resetPlayer();
+                updateScore();
+                loop();
+            };
+            const keyDown = event => {
+                if (["ArrowLeft", "ArrowRight", "ArrowUp", "Space"].includes(event.code)) event.preventDefault();
+                if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") left = true;
+                if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") right = true;
+                if (event.key === "ArrowUp" || event.key.toLowerCase() === "w") climb();
+                if (event.code === "Space") jump();
+            };
+            const keyUp = event => {
+                if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") left = false;
+                if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") right = false;
+            };
+            const action = name => {
+                if (name === "climb") climb();
+                if (name === "jump") jump();
+            };
+            window.addEventListener("keydown", keyDown);
+            window.addEventListener("keyup", keyUp);
+            startButton.addEventListener("click", start);
+            document.querySelectorAll("[data-barrel-action]").forEach(button => {
+                const name = button.dataset.barrelAction;
+                if (["left", "right"].includes(name)) {
+                    button.addEventListener("pointerdown", () => name === "left" ? left = true : right = true);
+                    ["pointerup", "pointercancel", "pointerleave"].forEach(type =>
+                        button.addEventListener(type, () => { left = false; right = false; })
+                    );
+                } else {
+                    button.addEventListener("pointerdown", () => action(name));
+                }
+            });
+            draw();
+            return () => {
+                running = false;
+                cancelAnimationFrame(frame);
+                window.removeEventListener("keydown", keyDown);
+                window.removeEventListener("keyup", keyUp);
+            };
+        }
+
+
+        function initializeMazeGame(startButton, scoreLabel) {
+            const canvas = document.getElementById("mazeGameCanvas");
+            const context = canvas?.getContext("2d");
+            if (!context) return () => {};
+
+            const map = [
+                "#############",
+                "#.....#.....#",
+                "#.###.#.###.#",
+                "#...........#",
+                "#.#.#####.#.#",
+                "#.#...#...#.#",
+                "#...#...#...#",
+                "###.#.#.#.###",
+                "#...#...#...#",
+                "#.#.#####.#.#",
+                "#...........#",
+                "#.....#.....#",
+                "#############"
+            ];
+            const cell = 32;
+            const directions = {
+                up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0]
+            };
+            let frame = 0, running = false, score = 0, lives = 3, level = 1;
+            let player = { x: 1, y: 1 }, enemies = [], dots = new Set();
+            let direction = "right", queuedDirection = "right", lastPlayerMove = 0, lastEnemyMove = 0, invulnerable = 0;
+
+            const keyFor = (x, y) => `${x},${y}`;
+            const walkable = (x, y) => map[y]?.[x] && map[y][x] !== "#";
+            const resetDots = () => {
+                dots = new Set();
+                map.forEach((row, y) => [...row].forEach((tile, x) => {
+                    if (tile === ".") dots.add(keyFor(x, y));
+                }));
+                dots.delete(keyFor(1, 1));
+            };
+            const resetActors = () => {
+                player = { x: 1, y: 1 };
+                enemies = [
+                    { x: 11, y: 11, color: "#e76872" },
+                    { x: 11, y: 1, color: "#63c7ff" },
+                    { x: 1, y: 11, color: "#c985e8" }
+                ];
+                direction = "right";
+                queuedDirection = "right";
+                invulnerable = 8;
+            };
+            const updateScore = () => {
+                scoreLabel.textContent = `Skor: ${score.toLocaleString("tr-TR")} · Can: ${lives} · Bölüm: ${level}`;
+            };
+            const draw = () => {
+                context.fillStyle = "#070817";
+                context.fillRect(0, 0, 416, 416);
+                map.forEach((row, y) => [...row].forEach((tile, x) => {
+                    if (tile === "#") {
+                        context.fillStyle = "#263b83";
+                        context.fillRect(x * cell + 2, y * cell + 2, cell - 4, cell - 4);
+                        context.strokeStyle = "#5274de";
+                        context.strokeRect(x * cell + 5, y * cell + 5, cell - 10, cell - 10);
+                    } else if (dots.has(keyFor(x, y))) {
+                        context.fillStyle = "#ead18c";
+                        context.beginPath();
+                        context.arc(x * cell + 16, y * cell + 16, 3, 0, Math.PI * 2);
+                        context.fill();
+                    }
+                }));
+
+                const px = player.x * cell + 16, py = player.y * cell + 16;
+                context.globalAlpha = invulnerable > 0 && invulnerable % 2 ? .35 : 1;
+                context.fillStyle = "#f2c95f";
+                context.beginPath();
+                context.arc(px, py, 12, .25, Math.PI * 2 - .25);
+                context.lineTo(px, py);
+                context.fill();
+                context.globalAlpha = 1;
+
+                enemies.forEach(enemy => {
+                    const x = enemy.x * cell + 5, y = enemy.y * cell + 6;
+                    context.fillStyle = enemy.color;
+                    context.beginPath();
+                    context.arc(x + 11, y + 10, 11, Math.PI, 0);
+                    context.lineTo(x + 22, y + 23);
+                    context.lineTo(x + 16, y + 18);
+                    context.lineTo(x + 11, y + 23);
+                    context.lineTo(x + 6, y + 18);
+                    context.lineTo(x, y + 23);
+                    context.closePath();
+                    context.fill();
+                    context.fillStyle = "#fff";
+                    context.fillRect(x + 5, y + 9, 5, 6);
+                    context.fillRect(x + 14, y + 9, 5, 6);
+                });
+
+                if (!running) {
+                    context.fillStyle = "rgba(7,8,23,.78)";
+                    context.fillRect(0, 164, 416, 88);
+                    context.fillStyle = "#fff";
+                    context.font = "700 20px Inter";
+                    context.textAlign = "center";
+                    context.fillText(lives <= 0 ? "Hayaletler seni yakaladı" : "Oyunu Başlat", 208, 216);
+                }
+            };
+            const collisionCheck = () => {
+                if (invulnerable > 0) return;
+                if (!enemies.some(enemy => enemy.x === player.x && enemy.y === player.y)) return;
+                lives--;
+                if (lives <= 0) {
+                    running = false;
+                    updateScore();
+                    draw();
+                    saveGameScore("maze", score);
+                } else {
+                    resetActors();
+                    updateScore();
+                }
+            };
+            const movePlayer = () => {
+                const queued = directions[queuedDirection];
+                if (queued && walkable(player.x + queued[0], player.y + queued[1])) direction = queuedDirection;
+                const delta = directions[direction];
+                if (delta && walkable(player.x + delta[0], player.y + delta[1])) {
+                    player.x += delta[0];
+                    player.y += delta[1];
+                }
+                const dotKey = keyFor(player.x, player.y);
+                if (dots.delete(dotKey)) {
+                    score += 10;
+                    updateScore();
+                }
+                collisionCheck();
+                if (!dots.size && running) {
+                    score += 500 * level;
+                    level++;
+                    resetDots();
+                    resetActors();
+                    updateScore();
+                }
+            };
+            const moveEnemies = () => {
+                enemies.forEach(enemy => {
+                    const options = Object.values(directions)
+                        .map(([dx, dy]) => ({ x: enemy.x + dx, y: enemy.y + dy }))
+                        .filter(position => walkable(position.x, position.y));
+                    if (!options.length) return;
+                    options.sort((a, b) =>
+                        (Math.abs(a.x - player.x) + Math.abs(a.y - player.y)) -
+                        (Math.abs(b.x - player.x) + Math.abs(b.y - player.y))
+                    );
+                    const next = Math.random() < .72
+                        ? options[0]
+                        : options[Math.floor(Math.random() * options.length)];
+                    enemy.x = next.x;
+                    enemy.y = next.y;
+                });
+                if (invulnerable > 0) invulnerable--;
+                collisionCheck();
+            };
+            const loop = time => {
+                if (!running) return;
+                if (time - lastPlayerMove > 135) {
+                    movePlayer();
+                    lastPlayerMove = time;
+                }
+                if (time - lastEnemyMove > Math.max(135, 310 - level * 14)) {
+                    moveEnemies();
+                    lastEnemyMove = time;
+                }
+                draw();
+                frame = requestAnimationFrame(loop);
+            };
+            const start = () => {
+                cancelAnimationFrame(frame);
+                score = 0;
+                lives = 3;
+                level = 1;
+                running = true;
+                resetDots();
+                resetActors();
+                lastPlayerMove = performance.now();
+                lastEnemyMove = performance.now();
+                updateScore();
+                loop(performance.now());
+            };
+            const chooseDirection = name => {
+                if (directions[name]) queuedDirection = name;
+            };
+            const keyDown = event => {
+                const keys = {
+                    ArrowUp: "up", w: "up", W: "up",
+                    ArrowDown: "down", s: "down", S: "down",
+                    ArrowLeft: "left", a: "left", A: "left",
+                    ArrowRight: "right", d: "right", D: "right"
+                };
+                if (!keys[event.key]) return;
+                event.preventDefault();
+                chooseDirection(keys[event.key]);
+            };
+            window.addEventListener("keydown", keyDown);
+            startButton.addEventListener("click", start);
+            document.querySelectorAll("[data-maze-action]").forEach(button =>
+                button.addEventListener("pointerdown", () => chooseDirection(button.dataset.mazeAction))
+            );
+            resetDots();
+            resetActors();
+            draw();
+            return () => {
+                running = false;
+                cancelAnimationFrame(frame);
+                window.removeEventListener("keydown", keyDown);
+            };
+        }
+
+
+        function initializeFighterGame(startButton, scoreLabel) {
+            const canvas = document.getElementById("fighterGameCanvas");
+            const context = canvas?.getContext("2d");
+            if (!context) return () => {};
+
+            const ground = 312;
+            let frame = 0, running = false, score = 0, round = 1, left = false, right = false;
+            let player, rival;
+
+            const fighter = (x, color, facing) => ({
+                x, y: ground - 64, w: 34, h: 64, vy: 0, health: 100, maxHealth: 100,
+                color, facing, attackTimer: 0, attackKind: "", hitDone: false, cooldown: 0, guardTimer: 0
+            });
+            const resetRound = (carriedHealth = 100) => {
+                player = fighter(100, "#5d8fe8", 1);
+                player.health = Math.max(1, Math.min(100, carriedHealth));
+                rival = fighter(506, "#c85d65", -1);
+                rival.maxHealth = Math.min(190, 100 + (round - 1) * 12);
+                rival.health = rival.maxHealth;
+            };
+            const updateScore = () => {
+                scoreLabel.textContent = `Skor: ${score.toLocaleString("tr-TR")} · Raund: ${round}`;
+            };
+            const jump = actor => {
+                if (running && actor.y >= ground - actor.h - .5) actor.vy = -11;
+            };
+            const attack = (actor, kind) => {
+                if (!running || actor.cooldown > 0 || actor.attackTimer > 0) return;
+                actor.attackKind = kind;
+                actor.attackTimer = kind === "kick" ? 15 : 11;
+                actor.cooldown = kind === "kick" ? 34 : 24;
+                actor.hitDone = false;
+            };
+            const tryHit = (attacker, defender, isPlayer) => {
+                if (attacker.hitDone || attacker.attackTimer !== 7) return;
+                attacker.hitDone = true;
+                const range = attacker.attackKind === "kick" ? 82 : 60;
+                const vertical = Math.abs((attacker.y + attacker.h / 2) - (defender.y + defender.h / 2));
+                if (Math.abs((attacker.x + attacker.w / 2) - (defender.x + defender.w / 2)) > range || vertical > 48) return;
+                let damage = attacker.attackKind === "kick" ? 16 : 10;
+                if (isPlayer && defender.guardTimer > 0) {
+                    damage = Math.max(3, Math.floor(damage * .25));
+                } else if (!isPlayer) {
+                    damage = Math.round(damage * Math.min(1.7, 1 + (round - 1) * .08));
+                }
+                defender.health = Math.max(0, defender.health - damage);
+                defender.x += attacker.facing * (defender.guardTimer > 0 ? 5 : 12);
+                if (isPlayer) {
+                    score += damage * 2;
+                    updateScore();
+                }
+            };
+            const drawFighter = fighterData => {
+                const x = fighterData.x, y = fighterData.y;
+                context.fillStyle = fighterData.color;
+                context.fillRect(x + 7, y + 18, 20, 30);
+                context.fillStyle = "#d9ad87";
+                context.fillRect(x + 9, y, 17, 18);
+                context.fillStyle = "#25211e";
+                context.fillRect(x + 7, y + 48, 8, 16);
+                context.fillRect(x + 20, y + 48, 8, 16);
+                const reach = fighterData.attackTimer > 0
+                    ? (fighterData.attackKind === "kick" ? 31 : 23)
+                    : 12;
+                context.fillStyle = fighterData.attackKind === "kick" ? "#25211e" : "#d9ad87";
+                context.fillRect(
+                    fighterData.facing > 0 ? x + 26 : x + 8 - reach,
+                    y + (fighterData.attackKind === "kick" ? 42 : 24),
+                    reach,
+                    7
+                );
+                if (fighterData.guardTimer > 0) {
+                    context.strokeStyle = "#f2d187";
+                    context.lineWidth = 3;
+                    context.strokeRect(x - 5, y - 5, fighterData.w + 10, fighterData.h + 10);
+                }
+            };
+            const draw = () => {
+                const sky = context.createLinearGradient(0, 0, 0, ground);
+                sky.addColorStop(0, "#161b33");
+                sky.addColorStop(1, "#55313d");
+                context.fillStyle = sky;
+                context.fillRect(0, 0, 640, 360);
+                context.fillStyle = "rgba(255,255,255,.12)";
+                for (let x = 25; x < 640; x += 58) {
+                    context.beginPath();
+                    context.arc(x, 220 + (x % 3) * 8, 16, 0, Math.PI * 2);
+                    context.fill();
+                }
+                context.fillStyle = "#6a4b36";
+                context.fillRect(0, ground, 640, 48);
+                context.fillStyle = "#e7c57e";
+                context.fillRect(20, 20, 250 * (player.health / 100), 16);
+                context.fillStyle = "rgba(255,255,255,.12)";
+                context.fillRect(20 + 250 * (player.health / 100), 20, 250 * (1 - player.health / 100), 16);
+                const rivalMax = rival.maxHealth || 100;
+                context.fillStyle = "#e36b72";
+                context.fillRect(370 + 250 * (1 - rival.health / rivalMax), 20, 250 * (rival.health / rivalMax), 16);
+                context.fillStyle = "#fff";
+                context.font = "700 12px Inter";
+                context.textAlign = "left";
+                context.fillText("SEN", 20, 53);
+                context.textAlign = "right";
+                context.fillText(`RAKİP · RAUND ${round}`, 620, 53);
+                drawFighter(player);
+                drawFighter(rival);
+                if (!running) {
+                    context.fillStyle = "rgba(8,8,16,.72)";
+                    context.fillRect(0, 135, 640, 88);
+                    context.fillStyle = "#fff";
+                    context.font = "700 22px Inter";
+                    context.textAlign = "center";
+                    context.fillText(player?.health <= 0 ? "Nakavt!" : "Dövüşü Başlat", 320, 187);
+                }
+            };
+            const physics = actor => {
+                actor.vy += .58;
+                actor.y += actor.vy;
+                if (actor.y > ground - actor.h) {
+                    actor.y = ground - actor.h;
+                    actor.vy = 0;
+                }
+                actor.x = Math.max(10, Math.min(596, actor.x));
+                if (actor.attackTimer > 0) actor.attackTimer--;
+                if (actor.cooldown > 0) actor.cooldown--;
+                if (actor.guardTimer > 0) actor.guardTimer--;
+            };
+            const loop = () => {
+                if (!running) return;
+                if (left) player.x -= 3.6;
+                if (right) player.x += 3.6;
+                player.facing = rival.x >= player.x ? 1 : -1;
+                rival.facing = player.x >= rival.x ? 1 : -1;
+
+                const distance = Math.abs(player.x - rival.x);
+                if (player.attackTimer > 0 && rival.guardTimer <= 0 && distance < 92
+                    && Math.random() < Math.min(.42, .15 + round * .025)) {
+                    rival.guardTimer = 18;
+                }
+                if (distance > 70) rival.x += rival.facing * (1.75 + Math.min(1.6, round * .12));
+                else if (rival.guardTimer <= 0 && rival.cooldown <= 0 && Math.random() < .075 + round * .005) {
+                    attack(rival, Math.random() < .52 ? "kick" : "punch");
+                }
+                if (Math.random() < .004 + round * .0007) jump(rival);
+
+                physics(player);
+                physics(rival);
+                tryHit(player, rival, true);
+                tryHit(rival, player, false);
+
+                if (rival.health <= 0) {
+                    score += 500 * round;
+                    const remainingHealth = player.health;
+                    round++;
+                    resetRound(Math.min(100, remainingHealth + 18));
+                    updateScore();
+                } else if (player.health <= 0) {
+                    running = false;
+                    updateScore();
+                    draw();
+                    saveGameScore("fighter", score);
+                    return;
+                }
+
+                draw();
+                frame = requestAnimationFrame(loop);
+            };
+            const start = () => {
+                cancelAnimationFrame(frame);
+                score = 0;
+                round = 1;
+                left = false;
+                right = false;
+                running = true;
+                resetRound();
+                updateScore();
+                loop();
+            };
+            const action = name => {
+                if (name === "jump") jump(player);
+                if (name === "punch" || name === "kick") attack(player, name);
+            };
+            const keyDown = event => {
+                const key = event.key.toLowerCase();
+                if (["a", "d", "w", "j", "k"].includes(key)) event.preventDefault();
+                if (key === "a") left = true;
+                if (key === "d") right = true;
+                if (key === "w") jump(player);
+                if (key === "j") attack(player, "punch");
+                if (key === "k") attack(player, "kick");
+            };
+            const keyUp = event => {
+                const key = event.key.toLowerCase();
+                if (key === "a") left = false;
+                if (key === "d") right = false;
+            };
+            window.addEventListener("keydown", keyDown);
+            window.addEventListener("keyup", keyUp);
+            startButton.addEventListener("click", start);
+            document.querySelectorAll("[data-fighter-action]").forEach(button => {
+                const name = button.dataset.fighterAction;
+                if (["left", "right"].includes(name)) {
+                    button.addEventListener("pointerdown", () => name === "left" ? left = true : right = true);
+                    ["pointerup", "pointercancel", "pointerleave"].forEach(type =>
+                        button.addEventListener(type, () => { left = false; right = false; })
+                    );
+                } else {
+                    button.addEventListener("pointerdown", () => action(name));
+                }
+            });
+            resetRound();
+            draw();
+            return () => {
+                running = false;
+                cancelAnimationFrame(frame);
+                window.removeEventListener("keydown", keyDown);
+                window.removeEventListener("keyup", keyUp);
+            };
+        }
+
+
+        function spaceRpgMarkupLegacy() {
+            return `
+                <div class="space-rpg-shell" id="legacySpaceRpgShell">
+                    <section class="rpg-command-deck">
+                        <div class="rpg-command-header">
+                            <div>
+                                <span class="route-eyebrow">Sonsuz Uzay FRP'si</span>
+                                <h2 id="legacyRpgCampaignTitle">Yıldızların Ardında</h2>
+                            </div>
+                            <button class="primary-btn" id="legacyStartSpaceRpg" type="button">
+                                <i class="fa-solid fa-shuttle-space"></i>
+                                Yeni Macera
+                            </button>
+                        </div>
+                        <div class="rpg-status-grid" aria-label="Gemi durumu">
+                            <div class="rpg-stat"><span>Gövde</span><strong id="legacyRpgHull">100</strong></div>
+                            <div class="rpg-stat"><span>Oksijen</span><strong id="legacyRpgOxygen">100</strong></div>
+                            <div class="rpg-stat"><span>Moral</span><strong id="legacyRpgMorale">100</strong></div>
+                            <div class="rpg-stat"><span>Kredi</span><strong id="legacyRpgCredits">40</strong></div>
+                        </div>
+                        <div class="rpg-story-panel">
+                            <div class="rpg-turn-label" id="legacyRpgTurnLabel">Kaptan köşkünde bekleniyor</div>
+                            <h3 id="legacyRpgStoryTitle">Yeni bir galaksi seni bekliyor</h3>
+                            <div class="rpg-story-text" id="legacyRpgStoryText">Her macera farklı bir kaptan, gemi, görev ve tehlikeyle başlar. Seçimlerin geminin gövdesini, oksijenini ve mürettebatın moralini belirler. Kaybedene kadar yolculuk devam eder.</div>
+                            <div class="rpg-choice-grid" id="legacyRpgChoices">
+                                <button class="rpg-choice" type="button" data-rpg-start><strong>1.</strong> Yeni Macera Başlat</button>
+                                <button class="rpg-choice" type="button" disabled><strong>2.</strong> Sinyal bekleniyor</button>
+                                <button class="rpg-choice" type="button" disabled><strong>3.</strong> Rota bekleniyor</button>
+                                <button class="rpg-choice" type="button" disabled><strong>4.</strong> Mürettebat bekleniyor</button>
+                            </div>
+                        </div>
+                        <div class="rpg-transmission-log" id="legacyRpgTransmissionLog"></div>
+                    </section>
+                </div>
+            `;
+        }
+
+
+        function initializeSpaceRpgLegacy() {
+            const shell = document.getElementById("spaceRpgShell");
+            const startButton = document.getElementById("startSpaceRpg");
+            const choicesElement = document.getElementById("rpgChoices");
+            const titleElement = document.getElementById("rpgCampaignTitle");
+            const turnElement = document.getElementById("rpgTurnLabel");
+            const storyTitleElement = document.getElementById("rpgStoryTitle");
+            const storyTextElement = document.getElementById("rpgStoryText");
+            const logElement = document.getElementById("rpgTransmissionLog");
+            const statElements = {
+                hull: document.getElementById("rpgHull"),
+                oxygen: document.getElementById("rpgOxygen"),
+                morale: document.getElementById("rpgMorale"),
+                credits: document.getElementById("rpgCredits")
+            };
+            if (!shell || !startButton || !choicesElement) return;
+
+            const pick = values => values[Math.floor(Math.random() * values.length)];
+            const names = ["Aylin Varga", "Tayfun Aras", "Mira Kestrel", "Ogan-7", "Lale Sagan", "Deniz Kael", "Rana Voss", "Baran Sol"];
+            const ships = ["SS Ufuk Çizgisi", "Kervan-9", "Altın Zar", "Kara Lale", "Orion Yolcusu", "Sessiz Meeple", "Anka Protokolü"];
+            const sectors = ["Nysa Bulutsusu", "Kırık Taç Sistemi", "Vega'nın Karanlık Yakası", "Kepler Mezarlığı", "Asterion Geçidi", "Sessiz Devler Kuşağı"];
+            const missions = ["kayıp bir araştırma gemisini bulmak", "insan kolonisine ilaç ulaştırmak", "yasak bir yıldız haritasını çözmek", "diplomatik elçiyi ateşkese taşımak", "antik bir sinyalin kaynağını keşfetmek", "çöken bir koloniden sivilleri tahliye etmek"];
+            const companions = ["sentetik kâşif LUX", "eski korsan Vera", "ksenobiyolog Dr. Cem", "telepat mühendis Ela", "gözcü robot PİP", "sürgün diplomat Nox"];
+            const factions = ["Kızıl Yörünge korsanları", "Helios Konsorsiyumu", "Cam Taht elçileri", "Serbest Madenciler Birliği", "Ölü Yıldız tarikatı", "Vega devriye filosu"];
+            const worlds = ["mor denizli Khepra", "gece tarafı donmuş Talassa", "halkalarla çevrili Orfe", "cam ormanlı Mir", "iki güneşli Sedir", "terk edilmiş Luna-13"];
+
+            const option = (label, successText, successDelta, risk = 0, failureText = "Plan beklenmedik biçimde ters gider.", failureDelta = {}) => ({
+                label, successText, successDelta, risk, failureText, failureDelta
+            });
+
+            const encounterFactories = [
+                state => ({
+                    title: "Karanlıktaki yardım çağrısı",
+                    text: `${state.sector} içinde sürüklenen bir gemiden kesik bir SOS sinyali geliyor. Tarayıcı, yaşam belirtisinin yanında reaktör sızıntısı da gösteriyor. ${state.companion}, bunun bir tuzak olabileceğini söylüyor.`,
+                    choices: [
+                        option("Gemiye kenetlen ve kurtarma ekibi gönder", "Mahsur kalanları kurtarıyorsun; içlerinden bir teknisyen gövdeyi onarıyor.", { hull: 12, morale: 10 }, .3, "Gemi korsan tuzağı çıkar; patlayıcılar bordayı yarar.", { hull: -24, oxygen: -8 }),
+                        option("Uzaktan sistemlerine bağlan", "Geminin veri kasasından değerli rota kayıtları çıkarıyorsun.", { credits: 24, morale: 4 }, .38, "Zararlı yazılım yaşam destek sistemine sıçrıyor.", { oxygen: -16, morale: -7 }),
+                        option("Onlara erzak kapsülü gönder", "Kurtulanlar teşekkür ediyor; mürettebat doğru olanı yaptığına inanıyor.", { oxygen: -9, morale: 14 }),
+                        option("Sinyali işaretle ve göreve devam et", "Tehlikeden uzak kalıyorsun fakat köprüde ağır bir sessizlik oluşuyor.", { hull: 3, morale: -9 })
+                    ]
+                }),
+                state => ({
+                    title: "İyon fırtınası",
+                    text: `${state.ship}, yıldız haritalarında görünmeyen mavi bir iyon cephesine giriyor. Fırtına her dakika büyüyor; iletişim subayı, rotanın ikiye ayrıldığını bildiriyor.`,
+                    choices: [
+                        option("Kalkanları aşırı yükleyip içinden geç", "Kalkanlar dayanıyor ve değerli zaman kazanıyorsun.", { morale: 6, credits: 8 }, .34, "Kalkan dizisi çöküyor ve gövde ağır hasar alıyor.", { hull: -27, oxygen: -5 }),
+                        option("Motorları kapatıp fırtınayla sürüklen", "Enerji izini gizleyerek fırtınanın sakin cebine ulaşıyorsun.", { hull: 5, oxygen: -8 }, .2, "Sürüklenen enkaz gemiye çarpıyor.", { hull: -17, morale: -5 }),
+                        option("Yakındaki ayın gölgesine sığın", "Ayın kraterinde eski bir yakıt deposu buluyorsun.", { oxygen: 14, credits: 10 }, .42, "Kraterin çekimi gemiyi kayalara sürüklüyor.", { hull: -19 }),
+                        option("Navigasyonu ${state.companion} yönetimine bırak", "Cesur manevra mürettebatı birbirine kenetliyor.", { morale: 15, hull: -4 }, .28, "Hatalı hesap gemiyi fırtınanın merkezine sokuyor.", { hull: -15, oxygen: -12 })
+                    ]
+                }),
+                state => ({
+                    title: "Yörünge pazarı",
+                    text: `${pick(worlds)} yörüngesindeki gezici pazarda yüzlerce gemi yan yana demirlemiş. ${pick(factions)} temsilcileri seni izlerken tüccarlar yakıt, bilgi ve yasak teknoloji satıyor.`,
+                    choices: [
+                        option("Yaşam destek malzemesi satın al", "Yeni filtreler oksijen rezervini yeniliyor.", { credits: -16, oxygen: 25 }),
+                        option("Kaçak silah kasasını al", "Kasadaki parçaları kârlı biçimde elden çıkarıyorsun.", { credits: 34, morale: 3 }, .4, "Gümrük baskınında kasaya ve depozito kredilerine el konuyor.", { credits: -18, morale: -8 }),
+                        option("Yerel pilotlarla zar oyna", "Şans senden yana; masadan dolu bir kredi çipiyle kalkıyorsun.", { credits: 28, morale: 10 }, .48, "Masayı kaybediyor ve mürettebat bütçesini tüketiyorsun.", { credits: -22, morale: -6 }),
+                        option("Ücretsiz liman bakımını kabul et", "Liman teknisyenleri gövdeyi güçlendiriyor.", { hull: 20 }, .24, "Teknisyen kılığındaki hırsızlar oksijen tüplerini çalıyor.", { oxygen: -18, credits: -5 })
+                    ]
+                }),
+                state => ({
+                    title: "Hayalet geminin ambarı",
+                    text: `Sensörlerde yüz yıldır kayıp görünen ARK-04 beliriyor. Geminin ambarı açık, ışıkları yanıyor; fakat içeride tek bir canlı izi yok. Görev bilgisayarı bunun ${state.mission} için önemli olabileceğini hesaplıyor.`,
+                    choices: [
+                        option("Ambarı bizzat araştır", "Eski kaptanın günlüğü yeni bir geçit ve değerli şifreler sunuyor.", { credits: 22, morale: 8 }, .35, "Savunma Hayaletleri uyanıyor; ekibin güçlükle geri dönüyor.", { hull: -10, morale: -14 }),
+                        option("LUX benzeri bir sonda gönder", "Sonda nadir reaktör çekirdekleri buluyor.", { credits: 18, hull: 8 }, .27, "Sonda bilinmeyen bir sinyalle yok oluyor ve enerji geri tepiyor.", { hull: -13 }),
+                        option("Gemiyi çekme halatına bağla", "Hurda gemiyi güvenli rotada bir tüccara satıyorsun.", { credits: 40, oxygen: -8 }, .45, "Hayalet geminin motoru patlıyor ve halat gövdeyi parçalıyor.", { hull: -30 }),
+                        option("Kayıt alıp uzaklaş", "Tehlikeli enkazı arkada bırakıyor, rotayı koruyorsun.", { morale: 2, oxygen: 3 })
+                    ]
+                }),
+                state => ({
+                    title: "Korsan ablukası",
+                    text: `${pick(factions)}, ${state.ship} gemisini üç yönden kuşatıyor. Liderleri yükünün yarısını bırakmanı, aksi hâlde ateş açacaklarını söylüyor.`,
+                    choices: [
+                        option("Tam güç saldır", "İlk salvoyla amiral gemisini devre dışı bırakıyor ve ganimet topluyorsun.", { credits: 30, morale: 12, hull: -5 }, .44, "Korsanlar çapraz ateş açıyor; motor bölmesi parçalanıyor.", { hull: -32, oxygen: -9 }),
+                        option("Sahte filo sinyali yayınla", "Korsanlar yaklaşan donanmadan korkup kaçıyor.", { morale: 9, credits: 10 }, .33, "Aldatmaca çözülüyor ve ceza olarak kargona el konuyor.", { credits: -24, morale: -8 }),
+                        option("Geçiş ücreti öde", "Kredileri bırakarak çatışmasız geçiyorsun.", { credits: -25, hull: 4 }),
+                        option("Asteroitlerin arasına dal", "Dar geçitte korsanları atlatıyorsun.", { morale: 13 }, .38, "Manevra sırasında gövde asteroide sürtüyor.", { hull: -21, oxygen: -4 })
+                    ]
+                }),
+                state => ({
+                    title: "Yabancı eser",
+                    text: `${pick(worlds)} yüzeyinde bulunan siyah bir küre, sen yaklaşınca ${state.captain} adını söylüyor. Kürenin içinde yıldızlar hareket ediyor ve mürettebat aynı rüyayı görmeye başlıyor.`,
+                    choices: [
+                        option("Küreyle zihinsel bağ kur", "Küre sana bilinmeyen bir sıçrama rotası öğretiyor.", { morale: 18, credits: 12 }, .5, "Kürenin sesi zihninde kalıyor; köprü ekibi sana güvenini yitiriyor.", { morale: -28 }),
+                        option("Eseri bilim laboratuvarına taşı", "Analiz, geminin zırhını güçlendiren yeni bir alaşım üretiyor.", { hull: 22 }, .36, "Küre laboratuvar enerjisini emiyor ve yaşam desteğini zayıflatıyor.", { oxygen: -20, hull: -7 }),
+                        option("Küreyi pazarda sat", "Kimliğini gizleyen bir koleksiyoncu servet ödüyor.", { credits: 48, morale: -3 }, .28, "Alıcılar pusu kuruyor ve ödeme çiplerini geri alıyor.", { credits: -12, hull: -12 }),
+                        option("Eseri yörüngeye bırak", "Kürenin etkisi kesiliyor; mürettebat rahat bir nefes alıyor.", { morale: 8, oxygen: 4 })
+                    ]
+                }),
+                state => ({
+                    title: "Köprüde isyan",
+                    text: `Uzayan yolculuk ve ${state.mission} görevinin belirsizliği mürettebatı bölüyor. Bir grup rotayı değiştirmek istiyor; ${state.companion} senden hemen karar vermeni bekliyor.`,
+                    choices: [
+                        option("Mürettebat meclisi topla", "Herkesi dinleyip ortak bir rota belirliyorsun.", { morale: 20, oxygen: -5 }, .22, "Tartışma kavgaya dönüşüyor ve köprü ekipmanı zarar görüyor.", { morale: -17, hull: -8 }),
+                        option("Liderleri kamaraya kapat", "İsyan kısa sürede bastırılıyor.", { hull: 2, morale: -16 }),
+                        option("Görev kayıtlarını herkese aç", "Gerçek tehlikeyi gören mürettebat yeniden birleşiyor.", { morale: 16 }, .3, "Kayıtlardaki gizli emirler güveni tamamen sarsıyor.", { morale: -24 }),
+                        option("Rotayı mürettebatın istediği yöne çevir", "Yeni rotada terk edilmiş bir ikmal istasyonu bulunuyor.", { oxygen: 22, hull: 8, morale: 8 }, .34, "Rota bir radyasyon kuşağına çıkıyor.", { hull: -14, oxygen: -12 })
+                    ]
+                }),
+                state => ({
+                    title: "Solucan deliğinin şarkısı",
+                    text: `${state.sector} sınırında açılan solucan deliği düzenli radyo darbeleri yayıyor. İçinden geçmek yolculuğu aylarca kısaltabilir; fakat çıkış noktası bilinmiyor.`,
+                    choices: [
+                        option("Doğrudan geçide gir", "Gemi uzak bir güvenli sisteme sıçrıyor ve nadir madenler buluyor.", { credits: 35, morale: 14 }, .46, "Geçit gemiyi parçalayacak kadar geriyor.", { hull: -34, oxygen: -8 }),
+                        option("Önce keşif sondası gönder", "Sonda güvenli frekansı buluyor; geçiş kontrollü oluyor.", { morale: 8, oxygen: -4 }, .25, "Sonda kayboluyor ve geçit kapanırken şok dalgası oluşuyor.", { hull: -14 }),
+                        option("Geçidi enerjiyle sabitle", "Mühendisler geçidi sabitliyor ve başka gemiler sana ödeme yapıyor.", { credits: 42, hull: -8, oxygen: -8 }, .32, "Enerji geri tepmesi reaktör katını yakıyor.", { hull: -25 }),
+                        option("Uzak durup normal rotaya devam et", "Güvenli ama uzun rota erzak tüketiyor.", { oxygen: -12, morale: -4, hull: 3 })
+                    ]
+                }),
+                state => ({
+                    title: "Karantina uydusu",
+                    text: `${pick(worlds)} üzerinde salgın ilan edilmiş. Yüzeydeki koloni, elindeki son aşı kasasının yörüngede kaldığını ve yardım gelmezse şafağı göremeyeceklerini bildiriyor.`,
+                    choices: [
+                        option("Aşıyı yüzeye indir", "Koloniyi kurtarıyor, karşılığında geminin tüm depolarını dolduruyorsun.", { oxygen: 28, morale: 20, credits: 8 }, .34, "Karantina Hayaletleri gemiyi enfekte sanıp ateş açıyor.", { hull: -22, oxygen: -10 }),
+                        option("Aşıyı yüksek fiyata sat", "Konsorsiyum büyük ödeme yapıyor, ancak mürettebat kararından utanıyor.", { credits: 55, morale: -24 }),
+                        option("Aşının formülünü yayınla", "Yakın sistemler ilacı üretmeye başlıyor; koloniler sana destek gönderiyor.", { morale: 18, oxygen: 12 }, .29, "Formül eksik çıkıyor ve suçlamalar gemine yöneliyor.", { morale: -16, credits: -8 }),
+                        option("Karantina sınırını geçme", "Gemiyi riske atmadan bölgeden ayrılıyorsun.", { hull: 4, morale: -8 })
+                    ]
+                }),
+                state => ({
+                    title: "Kadim istasyon",
+                    text: `Bir gaz devinin içinde saklanan istasyon ${state.ship} yaklaşınca kendiliğinden açılıyor. Merkez salonunda dört kapı var; her birinin üzerinde insanlıktan eski semboller yanıyor.`,
+                    choices: [
+                        option("Güneş sembollü kapıyı aç", "İçeride gemiyi besleyen temiz enerji kuyusu buluyorsun.", { oxygen: 24, hull: 10 }, .25, "Enerji kuyusu kararsızlaşıyor ve gövdeyi kavuruyor.", { hull: -20 }),
+                        option("Taç sembollü kapıyı aç", "Unutulmuş bir uygarlığın hazinesi seni bekliyor.", { credits: 50 }, .42, "Oda bir güvenlik kasası çıkar ve kapılar üzerine kapanır.", { oxygen: -18, morale: -10 }),
+                        option("Göz sembollü kapıyı aç", "Galaksinin canlı bir haritasını görüp görevin için yeni ipuçları alıyorsun.", { morale: 22, credits: 8 }, .35, "Harita zihnine dayanılmaz olasılıklar yüklüyor.", { morale: -25 }),
+                        option("İstasyondan hiçbir şey almadan çık", "İstasyon arkandan kapanıyor; mürettebat tedbirini takdir ediyor.", { morale: 6, hull: 4 })
+                    ]
+                })
+            ];
+
+            let state = null;
+            let currentEncounter = null;
+
+            const clampStats = () => {
+                state.hull = Math.max(0, Math.min(100, state.hull));
+                state.oxygen = Math.max(0, Math.min(100, state.oxygen));
+                state.morale = Math.max(0, Math.min(100, state.morale));
+                state.credits = Math.max(0, state.credits);
+            };
+            const renderStats = () => {
+                Object.entries(statElements).forEach(([key, element]) => {
+                    if (!element) return;
+                    element.textContent = state ? Math.round(state[key]).toLocaleString("tr-TR") : "—";
+                    element.style.color = state && key !== "credits" && state[key] <= 25
+                        ? "var(--danger)"
+                        : "";
+                });
+            };
+            const renderLog = () => {
+                if (!logElement || !state) return;
+                logElement.innerHTML = state.log.slice(0, 8).map(entry =>
+                    `<div class="rpg-log-entry">${escapeHTML(entry)}</div>`
+                ).join("");
+            };
+            const endCampaign = () => {
+                state.alive = false;
+                const reason = state.hull <= 0
+                    ? `${state.ship} parçalanarak yıldız tozuna karıştı.`
+                    : state.oxygen <= 0
+                        ? "Yaşam destek sistemi sustu ve son ışıklar söndü."
+                        : "Mürettebatın morali çöktü; kaptanlık yetkin sona erdi.";
+                turnElement.textContent = `Sefer sonu · ${state.turn} karar`;
+                storyTitleElement.textContent = "Yolculuk burada bitti";
+                storyTextElement.textContent = `${reason}\n\nKaptan ${state.captain}, ${state.mission} görevini tamamlayamadan kayboldu. Yeni macerada bambaşka bir galaksi seni bekliyor.`;
+                choicesElement.innerHTML = `
+                    <button class="rpg-choice" type="button" data-rpg-start>
+                        <strong>↻</strong> Yeni Bir Macera Başlat
+                    </button>
+                `;
+                renderStats();
+                renderLog();
+            };
+            const showEncounter = () => {
+                if (!state?.alive) return;
+                let nextIndex = Math.floor(Math.random() * encounterFactories.length);
+                if (encounterFactories.length > 1 && nextIndex === state.lastEncounter) {
+                    nextIndex = (nextIndex + 1 + Math.floor(Math.random() * (encounterFactories.length - 1))) % encounterFactories.length;
+                }
+                state.lastEncounter = nextIndex;
+                currentEncounter = encounterFactories[nextIndex](state);
+                turnElement.textContent = `Seyir ${state.turn} · ${state.sector}`;
+                storyTitleElement.textContent = currentEncounter.title;
+                storyTextElement.textContent = currentEncounter.text;
+                choicesElement.innerHTML = currentEncounter.choices.map((choice, index) => `
+                    <button class="rpg-choice" type="button" data-rpg-choice="${index}">
+                        <strong>${index + 1}.</strong> ${escapeHTML(choice.label)}
+                    </button>
+                `).join("");
+                renderStats();
+                renderLog();
+            };
+            const applyDelta = delta => {
+                Object.entries(delta || {}).forEach(([key, value]) => {
+                    if (Object.prototype.hasOwnProperty.call(state, key)) state[key] += Number(value) || 0;
+                });
+            };
+            const resolveChoice = choiceIndex => {
+                if (!state?.alive || !currentEncounter) return;
+                const choice = currentEncounter.choices[choiceIndex];
+                if (!choice) return;
+                choicesElement.querySelectorAll("button").forEach(button => button.disabled = true);
+                const failed = choice.risk > 0 && Math.random() < choice.risk;
+                applyDelta(failed ? choice.failureDelta : choice.successDelta);
+                state.oxygen -= 2 + Math.floor(Math.random() * 4);
+                state.turn++;
+                clampStats();
+                const outcome = failed ? choice.failureText : choice.successText;
+                state.log.unshift(`Seyir ${state.turn - 1}: ${choice.label} — ${outcome}`);
+                storyTextElement.textContent = `${outcome}\n\nGemi yeni koordinatlara yönelirken sensörler bir sonraki olayı tarıyor.`;
+                renderStats();
+                renderLog();
+
+                if (state.hull <= 0 || state.oxygen <= 0 || state.morale <= 0) {
+                    window.setTimeout(endCampaign, 450);
+                    return;
+                }
+
+                choicesElement.innerHTML = `
+                    <button class="rpg-choice" type="button" data-rpg-continue>
+                        <strong>→</strong> Sonraki Bölüme Geç
+                    </button>
+                `;
+            };
+            const startCampaign = () => {
+                state = {
+                    captain: pick(names),
+                    ship: pick(ships),
+                    sector: pick(sectors),
+                    mission: pick(missions),
+                    companion: pick(companions),
+                    faction: pick(factions),
+                    hull: 100,
+                    oxygen: 100,
+                    morale: 100,
+                    credits: 40,
+                    turn: 1,
+                    alive: true,
+                    lastEncounter: -1,
+                    log: []
+                };
+                titleElement.textContent = `${state.ship} · Kaptan ${state.captain}`;
+                state.log.push(`Görev başladı: ${state.sector} bölgesinde ${state.mission}. Yol arkadaşın ${state.companion}.`);
+                renderStats();
+                renderLog();
+                showEncounter();
+            };
+
+            const clickHandler = event => {
+                if (event.target.closest("[data-rpg-start]")) {
+                    startCampaign();
+                    return;
+                }
+                const choiceButton = event.target.closest("[data-rpg-choice]");
+                if (choiceButton) {
+                    resolveChoice(Number(choiceButton.dataset.rpgChoice));
+                    return;
+                }
+                if (event.target.closest("[data-rpg-continue]")) showEncounter();
+            };
+            startButton.addEventListener("click", startCampaign);
+            choicesElement.addEventListener("click", clickHandler);
+            activeRpgSession = { active: true };
+            activeGameCleanup = () => {
+                startButton.removeEventListener("click", startCampaign);
+                choicesElement.removeEventListener("click", clickHandler);
+                activeRpgSession = null;
+            };
+        }
+
+
+        function spaceRpgMarkup() {
+            return `
+                <div class="space-rpg-shell" id="spaceRpgShell">
+                    <section class="rpg-command-deck">
+                        <div class="rpg-command-header">
+                            <div>
+                                <span class="route-eyebrow">Karar Odaklı Uzay FRP'si</span>
+                                <h2 id="rpgCampaignTitle">Yıldızların Ardında</h2>
+                            </div>
+                            <button class="primary-btn" id="startSpaceRpg" type="button">
+                                <i class="fa-solid fa-shuttle-space"></i>
+                                Yeni Sefer
+                            </button>
+                        </div>
+
+                        <div class="rpg-status-grid" aria-label="Gemi durumu">
+                            <div class="rpg-stat"><span>Gövde</span><strong id="rpgHull">100</strong></div>
+                            <div class="rpg-stat"><span>Oksijen</span><strong id="rpgOxygen">100</strong></div>
+                            <div class="rpg-stat"><span>Moral</span><strong id="rpgMorale">100</strong></div>
+                            <div class="rpg-stat"><span>Kredi</span><strong id="rpgCredits">40</strong></div>
+                        </div>
+
+                        <div class="rpg-campaign-strip">
+                            <div>
+                                <span class="rpg-thread-label">Ana gizem</span>
+                                <div class="rpg-thread-text" id="rpgArcSummary">Yeni bir sefer başladığında burada çözmen gereken gizem görünecek.</div>
+                            </div>
+                            <div class="rpg-progress-wrap">
+                                <div class="rpg-progress-meta">
+                                    <span id="rpgProgressText">Görev %0</span>
+                                    <span id="rpgThreatText">Tehdit düşük</span>
+                                </div>
+                                <div class="rpg-progress-track"><div class="rpg-progress-fill" id="rpgProgressFill"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="rpg-crew-grid" id="rpgCrewGrid">
+                            <div class="rpg-crew-member"><strong>Mürettebat seçilmedi</strong><small>Sefer bekleniyor</small></div>
+                        </div>
+
+                        <div class="rpg-story-panel">
+                            <div class="rpg-turn-label" id="rpgTurnLabel">Kaptan köşkünde bekleniyor</div>
+                            <h3 id="rpgStoryTitle">Her karar geri döner</h3>
+                            <div class="rpg-story-text" id="rpgStoryText">Sekiz bölümlük hikâye yaylarında bir gizemin izini süreceksin. Kurtardığın insanlar, verdiğin sözler ve aldığın riskler sonraki bölümlerde karşına çıkacak. Bir hikâye sona erdiğinde aynı gemi ve mürettebatla yeni bir sezona geçeceksin; yolculuk kaybedene kadar devam edecek.</div>
+                            <div class="rpg-choice-grid" id="rpgChoices">
+                                <button class="rpg-choice" type="button" data-rpg-start><strong>1.</strong> Yeni Sefer Başlat<small>Yeni kaptan, gemi, mürettebat ve ana hikâye oluşturur.</small></button>
+                                <button class="rpg-choice" type="button" disabled><strong>2.</strong> Sinyal bekleniyor</button>
+                                <button class="rpg-choice" type="button" disabled><strong>3.</strong> Rota bekleniyor</button>
+                                <button class="rpg-choice" type="button" disabled><strong>4.</strong> Mürettebat bekleniyor</button>
+                            </div>
+                            <div class="rpg-consequence" id="rpgConsequence" hidden></div>
+                        </div>
+
+                        <div class="rpg-transmission-log" id="rpgTransmissionLog"></div>
+                    </section>
+                </div>
+            `;
+        }
+
+
+        function initializeSpaceRpg() {
+            const shell = document.getElementById("spaceRpgShell");
+            const startButton = document.getElementById("startSpaceRpg");
+            const choicesElement = document.getElementById("rpgChoices");
+            const titleElement = document.getElementById("rpgCampaignTitle");
+            const turnElement = document.getElementById("rpgTurnLabel");
+            const storyTitleElement = document.getElementById("rpgStoryTitle");
+            const storyTextElement = document.getElementById("rpgStoryText");
+            const consequenceElement = document.getElementById("rpgConsequence");
+            const logElement = document.getElementById("rpgTransmissionLog");
+            const crewElement = document.getElementById("rpgCrewGrid");
+            const arcSummaryElement = document.getElementById("rpgArcSummary");
+            const progressElement = document.getElementById("rpgProgressFill");
+            const progressTextElement = document.getElementById("rpgProgressText");
+            const threatTextElement = document.getElementById("rpgThreatText");
+            const statElements = {
+                hull: document.getElementById("rpgHull"),
+                oxygen: document.getElementById("rpgOxygen"),
+                morale: document.getElementById("rpgMorale"),
+                credits: document.getElementById("rpgCredits")
+            };
+            if (!shell || !startButton || !choicesElement) return;
+
+            const pick = values => values[Math.floor(Math.random() * values.length)];
+            const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+            const names = ["Aylin Varga", "Tayfun Aras", "Mira Kestrel", "Ogan-7", "Lale Sagan", "Deniz Kael", "Rana Voss", "Baran Sol"];
+            const ships = ["SS Ufuk Çizgisi", "Kervan-9", "Altın Zar", "Kara Lale", "Orion Yolcusu", "Sessiz Meeple", "Anka Protokolü"];
+            const sectors = ["Nysa Bulutsusu", "Kırık Taç Sistemi", "Vega'nın Karanlık Yakası", "Kepler Mezarlığı", "Asterion Geçidi", "Sessiz Devler Kuşağı"];
+            const crewPools = {
+                science: ["Ksenobiyolog Dr. Cem", "Astrofizikçi Leyla Venn", "Sentetik araştırmacı LUX", "Arşivci Nil Sato"],
+                engineering: ["Başmühendis Ela", "Reaktör ustası Kaan Rhee", "Teknisyen PİP-4", "Sistem mimarı Vera Holt"],
+                security: ["Güvenlik subayı Nox", "Eski korsan Riva", "Pilot Barış Kestrel", "İz sürücü Sera Voss"]
+            };
+            const roles = { science: "Bilim", engineering: "Mühendislik", security: "Güvenlik" };
+
+            const campaignBlueprints = [
+                {
+                    id: "black-sun",
+                    title: "Kara Güneş Protokolü",
+                    mystery: "Ölü bir yıldız, kaptanın hiç yaşamadığı çocukluk anılarını yayınlıyor.",
+                    signal: "Kharon İstasyonu'ndan gelen sinyal senin çocukluk sesinle ‘Bu kez bizi bırakma’ diyor.",
+                    witness: "zaman çizgisinden silinmiş bir koloninin son navigatörü",
+                    faction: "Helios Muhafızı Veyra",
+                    artifact: "Sıfır Çekirdeği",
+                    destination: "Kharon'un karanlık fotosferi",
+                    truth: "İstasyon olası gelecekleri yakıt olarak tüketiyor; her geri sarışta bir koloni tarihten siliniyor.",
+                    stakes: "Çekirdek yeniden ateşlenirse binlerce insan hiç doğmamış olacak."
+                },
+                {
+                    id: "sleeping-world",
+                    title: "Uyuyan Dünya",
+                    mystery: "Buzla kaplı Talassa'nın altından bütün mürettebatın rüyalarına aynı şehir giriyor.",
+                    signal: "Talassa'nın buz kabuğu altından, henüz söylenmemiş cevaplarını içeren bir yardım çağrısı yükseliyor.",
+                    witness: "üç yüz yıldır yaşlanmayan bir koloni çocuğu",
+                    faction: "Cam Taht'ın biyomühendisleri",
+                    artifact: "Rüya Tohumu",
+                    destination: "Talassa'nın batık başkenti",
+                    truth: "Gezegen uyumuyor; yörüngedeki herkesi ortak bir zihne dönüştürerek yalnızlığını sona erdirmeye çalışıyor.",
+                    stakes: "Bağ tamamlanırsa mürettebatın bedenleri yaşayacak, ama hiçbiri kendi düşüncesine sahip olmayacak."
+                },
+                {
+                    id: "glass-heir",
+                    title: "Cam Taht'ın Son Varisi",
+                    mystery: "Öldüğü ilan edilen bir varis, geminin kapalı kargo bölümünden yardım istiyor.",
+                    signal: "Mühürlü kargo kapsülü içeriden açılıyor ve genç bir yabancı seni yıllardır tanıyormuş gibi adınla selamlıyor.",
+                    witness: "hafızası parçalara ayrılmış taht varisi Ilyra",
+                    faction: "Taht Naibi Orven ve ayna filosu",
+                    artifact: "Anı Tacı",
+                    destination: "Cam Saray'ın kırık yörüngesi",
+                    truth: "Ilyra tek kişi değil; devrilen hanedanın anıları onun zihninde yüzlerce kişilik bir meclis oluşturuyor.",
+                    stakes: "Taç uyanırsa savaşı bitirebilir ya da bütün sektörü tek bir iradenin kölesi yapabilir."
+                },
+                {
+                    id: "silent-god",
+                    title: "Sessiz Tanrının Sinyali",
+                    mystery: "Galaksinin boş bölgesinde bir makine, yalnızca ölen insanların isimleriyle koordinat veriyor.",
+                    signal: "Hiçbir yıldızın bulunmadığı boşluktan gelen yayın, mürettebatın kaybettiklerinin isimlerini tek tek okuyor.",
+                    witness: "sinyali yirmi yıl takip etmiş kör kâhin Ada-9",
+                    faction: "Ölü Yıldız Cemaati",
+                    artifact: "Eşik Çanı",
+                    destination: "Haritalanmamış Sessizlik Merkezi",
+                    truth: "Sinyal bir tanrıdan değil, evrenin sonunu önceden yaşamış bir uygarlığın kaçış makinesinden geliyor.",
+                    stakes: "Makine açılırsa bir avuç kişi kurtulabilir; fakat çıkış için yaşayan bir güneş feda edilmeli."
+                }
+            ];
+
+            let state = null;
+            let currentScene = null;
+
+            const choice = (label, hint, type, success, failure, settings = {}) => ({
+                label, hint, type, success, failure,
+                delta: settings.delta || {},
+                failureDelta: settings.failureDelta || {},
+                risk: settings.risk ?? .25,
+                progress: settings.progress ?? 10,
+                clues: settings.clues ?? 0,
+                threat: settings.threat ?? 0,
+                flag: settings.flag || "",
+                crew: settings.crew || ""
+            });
+
+            const crewByRole = role => state.crew.find(member => member.role === role) || state.crew[0];
+            const lowestCrew = () => [...state.crew].sort((a, b) => a.trust - b.trust)[0];
+            const averageTrust = () => state.crew.reduce((total, member) => total + member.trust, 0) / state.crew.length;
+            const approachLabel = type => ({ diplomacy: "merhamet", science: "merak", force: "kararlılık", stealth: "kurnazlık" }[type] || "sezgi");
+            const dominantApproach = () => Object.entries(state.approaches).sort((a, b) => b[1] - a[1])[0]?.[0] || "diplomacy";
+
+            const previousEcho = () => {
+                if (!state.lastOutcome) return "";
+                const echoes = [
+                    `Önceki kararının sonucu hâlâ köprüde hissediliyor: ${state.lastOutcome}`,
+                    `${state.lastChoice} emrinin bedeli unutulmadı. ${state.lastOutcome}`,
+                    `Seyir günlüğü son kararını yeniden önüne getiriyor: ${state.lastOutcome}`
+                ];
+                return pick(echoes);
+            };
+
+            const flagEcho = () => {
+                if (state.flags.savedWitness) return `${state.arc.witness}, verdiğin sözü unutmadı ve gizli bir frekans üzerinden yardım teklif ediyor.`;
+                if (state.flags.stoleMemory) return "Çaldığın hafıza parçası her gece başka bir mürettebat üyesinin rüyasında konuşuyor.";
+                if (state.flags.deal) return `${state.arc.faction} ile yaptığın anlaşmanın görünmeyen maddeleri şimdi yürürlüğe giriyor.`;
+                if (state.flags.attacked) return "Daha önce açtığın ateş yüzünden bölgedeki bütün silah sistemleri gemini düşman olarak tanıyor.";
+                return "Verdiğin ilk karar, sensör kayıtlarında silinmeyen bir iz bırakmış durumda.";
+            };
+
+            const buildScene = () => {
+                const arc = state.arc;
+                const scientist = crewByRole("science");
+                const engineer = crewByRole("engineering");
+                const guard = crewByRole("security");
+                const doubter = lowestCrew();
+                const echo = previousEcho();
+
+                if (state.phase === 0) return {
+                    title: "Bölüm I · Sinyal",
+                    text: `${state.ship}, ${state.sector} sınırında normal seyirdeyken bütün ekranlar aynı anda kararıyor. ${arc.signal}\n\n${scientist.name}, yayının fizik kurallarına göre henüz gönderilmemiş olması gerektiğini söylüyor. ${guard.name} ise silahları hazırlamış, bunun seni tanıyan biri tarafından kurulmuş bir tuzak olduğuna inanıyor.`,
+                    choices: [
+                        choice("Sinyale kendi sesinle cevap ver", "Yayının sahibine güven; seni de tanımasına izin ver.", "diplomacy", "Karşı taraf tek bir koordinat ve ‘Beni hatırladığında çok geç olacak’ cümlesini gönderiyor.", "Cevabın kopyalanıp yüzlerce sahte gemiden geri geliyor; hangisinin gerçek olduğunu ayırt edemiyorsun.", { delta: { morale: 5 }, failureDelta: { morale: -9 }, risk: .18, progress: 8, clues: 1, flag: "answered", crew: "science" }),
+                        choice("Sinyali parçalara ayır ve kaynağı izle", "Bilim ekibi zaman damgasındaki tutarsızlığı incelesin.", "science", "Sinyalin içinde, yalnızca gelecekteki motor imzanızla açılan ikinci bir veri katmanı buluyorsun.", "Kod yaşam desteğine sızıyor; temizlenene kadar oksijen rezervi harcanıyor.", { delta: { oxygen: -3 }, failureDelta: { oxygen: -13 }, risk: .22, progress: 10, clues: 2, flag: "decoded", crew: "science" }),
+                        choice("Silahları açıp koordinata sıçra", "Tehlike hazırlanmadan önce sen saldır.", "force", "Ani sıçrayış seni kaynağın dibine getiriyor; oradaki gözcü gemi kaçamadan veri çekirdeğini bırakıyor.", "Sıçrayış bir mayın halkasının içinde bitiyor ve sancak zırhı parçalanıyor.", { delta: { hull: -3 }, failureDelta: { hull: -19, morale: -5 }, risk: .34, progress: 12, clues: 1, threat: 9, flag: "attacked", crew: "security" }),
+                        choice("Gemiyi karartıp sinyali uzaktan takip et", "Kimliğini gizle ve avcının seni av sanmasına izin ver.", "stealth", "Yayını taşıyan kurye gemisini görünmeden izliyor, gizli rotasını kaydediyorsun.", "Kurye sessizliğini fark edip iyon izi bırakıyor; peşine düşen filo seni işaretliyor.", { delta: { credits: 7 }, failureDelta: { hull: -8, morale: -6 }, risk: .27, progress: 9, clues: 1, threat: 5, flag: "shadowed", crew: "engineering" })
+                    ]
+                };
+
+                if (state.phase === 1) return {
+                    title: "Bölüm II · Silinmiş Tanık",
+                    text: `${echo}\n\nKoordinatlarda parçalanmış bir araştırma gemisi buluyorsun. İçeride yalnızca ${arc.witness} yaşıyor. Tanık, ${arc.artifact} adını fısıldıyor ve ${arc.faction} gelmeden önce kendisini gemiye alman için yalvarıyor. Ancak taramalar bedeninde geminin sistemlerine bulaşabilecek yabancı bir yapı gösteriyor.`,
+                    choices: [
+                        choice("Tanığı karantinaya alıp kurtar", "Bir hayatı riske rağmen koru; daha sonra sana borçlu kalabilir.", "diplomacy", "Tanık kurtuluyor ve yıllardır sakladığı yıldız haritasının yarısını sana veriyor.", "Karantina mührü çatlıyor; yabancı yapı geminin oksijen filtrelerine yayılıyor.", { delta: { morale: 10, oxygen: -4 }, failureDelta: { oxygen: -17, morale: -4 }, risk: .27, progress: 11, clues: 2, flag: "savedWitness", crew: "science" }),
+                        choice("Hafızasını uzaktan kopyala", "Bedeni değil bilgiyi kurtar; vicdanın bedelini göze al.", "science", `Kopyada ${arc.destination} için gizli bir yaklaşma rotası buluyorsun.`, "Tanığın korkusu da kopyaya karışıyor ve gemi bilgisayarı mürettebata özel anıları yayınlıyor.", { delta: { morale: -7 }, failureDelta: { morale: -18 }, risk: .3, progress: 13, clues: 3, flag: "stoleMemory", crew: "science" }),
+                        choice("Gemiye bordala, çekirdeği zorla al", "Rakip gelmeden kanıtı ele geçir.", "force", `${guard.name} çekirdeği çıkarıyor; enkazdaki otomatik silahları da ganimet olarak topluyorsun.`, "Enkaz savunmaya geçiyor; çatışmada kurtarma ekibi yaralanıyor.", { delta: { credits: 20, hull: -4 }, failureDelta: { hull: -22, morale: -11 }, risk: .38, progress: 12, clues: 1, threat: 11, flag: "attacked", crew: "security" }),
+                        choice(`${arc.faction} ile tanık karşılığında pazarlık yap`, "Düşmanın kaynaklarını kullan, fakat ona bir borç ver.", "stealth", "Sahte bir yaşam kapsülü teslim edip gerçek tanığı gizliyorsun; karşılığında yakıt ve geçiş kodu alıyorsun.", "Aldatmaca teslim anında çözülüyor ve geminin kimliği av listesine ekleniyor.", { delta: { credits: 18, oxygen: 10 }, failureDelta: { hull: -12, credits: -10 }, risk: .35, progress: 9, clues: 1, threat: 14, flag: "deal", crew: "engineering" })
+                    ]
+                };
+
+                if (state.phase === 2) return {
+                    title: "Bölüm III · Köprüdeki Çatlak",
+                    text: `${echo}\n\nYolculuğun üçüncü gecesinde ${doubter.name}, seyir kayıtlarını kilitleyip gemiyi durduruyor. ${arc.artifact} peşinde koşmanın herkesi öldüreceğini düşünüyor. ${engineer.name}, reaktörün karar verilene kadar yalnızca birkaç saat dayanacağını bildiriyor. Tartışma artık görevle değil, sana duyulan güvenle ilgili.`,
+                    choices: [
+                        choice(`${doubter.name} ile yalnız konuş`, "Korkusunun nedenini dinle ve sırrını öğren.", "diplomacy", `${doubter.name}, bu sinyali yıllar önce de duyduğunu itiraf ediyor ve sakladığı koordinatları paylaşıyor.`, "Konuşmayı zayıflık sayıyor; köprüden çıktığında ekibin yarısını yanına alıyor.", { delta: { morale: 12 }, failureDelta: { morale: -16 }, risk: .2, progress: 9, clues: 2, flag: "earnedTrust", crew: doubter.role }),
+                        choice("Bütün kanıtları mürettebata aç", "Gerçeği saklama; belirsizliği birlikte taşıyın.", "science", "Kayıtlardaki örüntüyü ekip birlikte çözüyor ve görev ilk kez ortak bir amaca dönüşüyor.", "Verilerde kaptanlık yetkini sorgulayan gizli bir kayıt bulunuyor; güven daha da sarsılıyor.", { delta: { morale: 9 }, failureDelta: { morale: -17 }, risk: .25, progress: 12, clues: 2, flag: "openFiles", crew: "science" }),
+                        choice("Yetkiyi hatırlat ve rotayı zorla aç", "İsyanı şimdi bastır; sonuçlarla sonra ilgilen.", "force", "Köprü kontrolünü geri alıyorsun ve reaktör kapanmadan sıçrama başlıyor.", "Emir uygulanıyor ama sabotaj sırasında ana güç hattı zarar görüyor.", { delta: { morale: -10 }, failureDelta: { hull: -16, morale: -19 }, risk: .32, progress: 13, threat: 6, flag: "commanded", crew: "security" }),
+                        choice("Sahte bir geri dönüş rotası göster", "Ekibin kaygısını yatıştırırken gizlice göreve devam et.", "stealth", `${engineer.name} seninle işbirliği yapıyor; gemi eve dönüyormuş gibi görünürken hedefe yaklaşıyor.`, "Sahte rota fark ediliyor ve bundan sonraki her emrin kuşkuyla karşılanıyor.", { delta: { oxygen: -4 }, failureDelta: { morale: -22 }, risk: .3, progress: 14, flag: "liedToCrew", crew: "engineering" })
+                    ]
+                };
+
+                if (state.phase === 3) return {
+                    title: "Bölüm IV · Avcının Teklifi",
+                    text: `${flagEcho()}\n\n${arc.faction}, ${state.ship} gemisini ${state.sector} çıkışında kuşatıyor. Ana ekranda yüzünü gösteren elçi, senin bugüne kadar verdiğin kararları tek tek sayıyor. ${arc.artifact} karşılığında bütün mürettebata özgürlük ve sana geçmişini değiştirecek tek bir fırsat teklif ediyor.`,
+                    choices: [
+                        choice("Elçiden ateşkes ve ortak soruşturma iste", "Sözlerine bir kez güven; gerçek niyetini masada gör.", "diplomacy", "Elçi silahlarını indiriyor ve kendi tarafında da tarihten silinen insanlar olduğunu itiraf ediyor.", "Görüşme yalnızca seni oyalamak içinmiş; kenetlenme kancaları gövdeye saplanıyor.", { delta: { morale: 7 }, failureDelta: { hull: -17, morale: -5 }, risk: .3, progress: 10, clues: 2, flag: "truce", crew: "security" }),
+                        choice("Topladığın ipuçlarıyla teklifini çürüt", "Çelişkilerini kanıtla; filosunun önünde otoritesini kır.", "science", "Veri zinciri elçinin kendi kayıtlarıyla uyuşuyor; iki eskort gemisi taraf değiştiriyor.", "Eksik bir zaman damgası bütün iddianı çökertiyor ve elçi ateş emri veriyor.", { delta: { morale: 11 }, failureDelta: { hull: -20 }, risk: .34, progress: 13, clues: 2, threat: -5, flag: "exposed", crew: "science" }),
+                        choice("Amiral gemisine önleyici saldırı yap", "Kuşatmayı tek darbede başsız bırak.", "force", "Saldırı şaşırtıcı biçimde başarılı oluyor; filonun rota kasasını ele geçiriyorsun.", "Elçi saldırını bekliyormuş; çapraz ateş motorlarını parçalıyor.", { delta: { credits: 22, hull: -6 }, failureDelta: { hull: -29, oxygen: -7 }, risk: .43, progress: 15, clues: 1, threat: 15, flag: "brokeFleet", crew: "security" }),
+                        choice("Teklifi kabul etmiş gibi yapıp iz bırak", "Filo seni götürsün; kalbine içeriden gir.", "stealth", `Gemiye yerleştirdiğin iz sürücü, düşmanın ${arc.destination} rotasını açığa çıkarıyor.`, "Elçi niyetini seziyor ve teminat olarak mürettebattan birini istiyor.", { delta: { credits: 8 }, failureDelta: { morale: -18 }, risk: .36, progress: 14, clues: 2, threat: 7, flag: "falseDeal", crew: "engineering" })
+                    ]
+                };
+
+                if (state.phase === 4) return {
+                    title: "Bölüm V · Gerçek",
+                    text: `${echo}\n\n${arc.destination} içinde ${arc.artifact} sonunda açılıyor. Gördüğün şey bir silah ya da hazine değil: ${arc.truth}\n\n${arc.stakes} Mürettebat sessiz. Bu andan sonra görev, başladığınız görev değil; artık neyin korunmaya değer olduğuna karar veriyorsun.`,
+                    choices: [
+                        choice("Etkilenen insanların sesini kayda al", "Kararı vermeden önce bedeli yaşayanları dinle.", "diplomacy", "Binlerce parçalı anı tek bir tanıklıkta birleşiyor; kurbanlar sana çekirdeğin zayıf noktasını gösteriyor.", "Çığlıklar köprü ekibinin zihnine doluyor; bazıları görev yapamaz hâle geliyor.", { delta: { morale: 8 }, failureDelta: { morale: -21 }, risk: .27, progress: 12, clues: 3, flag: "heardVictims", crew: "science" }),
+                        choice("Mekanizmanın çalışma ilkesini çöz", "Gerçeği anlamadan hiçbir şeyi yok etme.", "science", `${scientist.name}, sistemi durdurup içindekileri koruyabilecek üçüncü bir yol hesaplıyor.`, "Analiz çekirdeği uyandırıyor; geminin yaşam desteğinden enerji çekmeye başlıyor.", { delta: { oxygen: -7 }, failureDelta: { oxygen: -22, hull: -5 }, risk: .31, progress: 15, clues: 3, flag: "thirdWay", crew: "science" }),
+                        choice("Çekirdeğe patlayıcı yerleştir", "Tehdit büyümeden geri dönüş yolunu kapat.", "force", "Patlayıcılar yerleşiyor; artık sistemi tek emirle yok edebilirsin.", "Çekirdek savunma katmanını kapatıyor ve ekibi boşluğa savuruyor.", { delta: { hull: -5 }, failureDelta: { hull: -25, morale: -8 }, risk: .4, progress: 16, clues: 1, threat: 10, flag: "armedCore", crew: "security" }),
+                        choice("Çekirdekten gelecekteki kendi kararını çal", "Henüz yaşanmamış sonucun kısa bir görüntüsünü al.", "stealth", "Gelecekteki kendin sana tek bir isim ve kaçınman gereken kapıyı gösteriyor.", "İki olası hafıza zihninde çarpışıyor; hangisinin gerçekten sana ait olduğunu ayıramıyorsun.", { delta: { morale: -4 }, failureDelta: { morale: -20 }, risk: .37, progress: 13, clues: 3, flag: "futureMemory", crew: "engineering" })
+                    ]
+                };
+
+                if (state.phase === 5) return {
+                    title: "Bölüm VI · İhanetin Bedeli",
+                    text: `${flagEcho()}\n\n${doubter.name} kamarandan ${arc.artifact} erişim anahtarını çalarken yakalanıyor. Bunu para için yapmadığını; senin son kararının bütün mürettebatı yok edeceğine inandığını söylüyor. Tam o sırada ${arc.faction} gemiye kilitleniyor. Anahtarı geri almak için yalnızca dakikaların var.`,
+                    choices: [
+                        choice(`${doubter.name} kişisine son kez güven`, "Silahını indir ve planını anlatmasını iste.", "diplomacy", `${doubter.name} çözüyor; anahtarı düşmana sahte koordinat göndermek için çaldığını açıklıyor ve plan işe yarıyor.`, "Güvenin karşılıksız kalıyor; kaçış kapsülü anahtarla birlikte fırlatılıyor.", { delta: { morale: 14 }, failureDelta: { morale: -22 }, risk: clamp(.42 - doubter.trust / 250, .12, .42), progress: 12, clues: 1, threat: -8, flag: "forgaveBetrayal", crew: doubter.role }),
+                        choice("Anahtarı gemi ağından geçersiz kıl", "Kişiyi değil sistemi kontrol et.", "science", `${engineer.name} erişimi kesiyor ve anahtarın içindeki düşman izleme kodunu buluyor.`, "İptal komutu çekirdekle bağı da kesiyor; topladığın bazı veriler kayboluyor.", { delta: { credits: -5 }, failureDelta: { oxygen: -13, morale: -8 }, risk: .28, progress: 11, clues: 2, flag: "lockedKey", crew: "engineering" }),
+                        choice("Anahtarı zorla al ve hapse kapat", "İhanetin cevabını tereddütsüz ver.", "force", "Anahtar geri alınıyor ve güvenlik kontrolü sağlanıyor; kimse emrini bir daha sorgulamıyor.", `Arbede sırasında anahtar kırılıyor ve ${doubter.name} ağır yaralanıyor.`, { delta: { morale: -12 }, failureDelta: { morale: -25, hull: -5 }, risk: .27, progress: 13, threat: 7, flag: "imprisoned", crew: "security" }),
+                        choice("Sahte anahtarı düşmana ulaştırmasına izin ver", "İhaneti daha büyük bir aldatmacanın parçası yap.", "stealth", "Düşman sahte erişimi kullanınca kendi filosunun konumu gemine akıyor.", `${doubter.name} planı değiştirip gerçek anahtarı da iletiyor; düşman çekirdeğe senden önce ulaşıyor.`, { delta: { credits: 12 }, failureDelta: { morale: -18 }, risk: .38, progress: 15, clues: 2, threat: 10, flag: "doubleCross", crew: "engineering" })
+                    ]
+                };
+
+                if (state.phase === 6) return {
+                    title: "Bölüm VII · Dönüşü Olmayan Rota",
+                    text: `${echo}\n\nSon geçit açıldı. Ötesinde ${arc.artifact}, ${arc.faction} ve hikâyenin son kararı bekliyor. Sensörler ${state.threat >= 55 ? "ezici bir düşman kuvveti" : "dağınık fakat tetikte bir savunma"} gösteriyor. Elinde ${state.clues} sağlam ipucu var; mürettebat güveni yüzde ${Math.round(averageTrust())}. Bu hazırlık, finalde hangi seçeneklerin yaşayacağını belirleyecek.`,
+                    choices: [
+                        choice("Mürettebata neden savaşmaya devam ettiğini anlat", "Son adımdan önce gemide ortak bir amaç yarat.", "diplomacy", "Konuşma bittiğinde kimse alkışlamıyor; yalnızca herkes görev yerine dönüyor. Bu sessizlik, güvenden geliyor.", "Sözlerin yorgun ekibe boş geliyor; bazı istasyonlar insansız kalıyor.", { delta: { morale: 16 }, failureDelta: { morale: -15 }, risk: clamp(.38 - averageTrust() / 300, .12, .38), progress: 10, threat: -4, flag: "unitedCrew", crew: doubter.role }),
+                        choice("Bütün ipuçlarından tek bir zayıf nokta çıkar", "Finali şansa değil hazırlığa bırak.", "science", "İpuçları birleşiyor ve çekirdeğin yalnızca kırk yedi saniye savunmasız kalacağı anı buluyorsun.", "Verilerin bir kısmı kasıtlı olarak sahte bırakılmış; rota tuzağa dönüşüyor.", { delta: { oxygen: -4 }, failureDelta: { hull: -15, oxygen: -9 }, risk: clamp(.4 - state.clues * .025, .1, .4), progress: 14, clues: 1, flag: "finalWindow", crew: "science" }),
+                        choice("Gemiyi savaş düzenine geçir", "Hasarı kabul et, son kapıyı güçle aç.", "force", `${guard.name} savunmayı deliyor; bedeli ağır olsa da doğrudan çekirdek odasına ulaşıyorsun.`, "Savunma beklenenden güçlü çıkıyor ve gemi finale yaralı giriyor.", { delta: { hull: -8, morale: 5 }, failureDelta: { hull: -27, oxygen: -6 }, risk: .41, progress: 16, threat: 8, flag: "breached", crew: "security" }),
+                        choice("Düşman filosuna sahte tahliye emri gönder", "Final başlamadan savaş alanını boşalt.", "stealth", "Filo ikiye bölünüyor; çekirdeğe giden görünmez bir koridor açılıyor.", "Sahte emir çözülüyor ve kaçış rotan da mühürleniyor.", { delta: { credits: -7 }, failureDelta: { hull: -11, morale: -9 }, risk: .35, progress: 13, threat: 5, flag: "falseEvacuation", crew: "engineering" })
+                    ]
+                };
+
+                return {
+                    title: "Bölüm VIII · Son Karar",
+                    text: `${flagEcho()}\n\n${arc.artifact} önünde duruyorsun. ${arc.faction} son kez bağlantı kuruyor: ‘Bunu durdurursan kaybettiklerin geri gelmeyecek.’ Arkanda nefesini tutan mürettebat, önünde bütün bir sektör var. ${arc.stakes}\n\nBurada doğru cevap yok. Yalnızca, sonraki sezonda birlikte yaşamak zorunda kalacağınız bir sonuç var.`,
+                    finale: true,
+                    choices: [
+                        choice("Çekirdeği kapat, içeride kalanları kurtar", "Kimseyi araç olarak görmeyen zor yolu seç.", "diplomacy", "Çekirdek susarken silinen insanların anıları gerçek dünyaya sızıyor. Hepsini kurtaramıyorsun; ama isimleri artık unutulmayacak.", "Tahliye tamamlanmadan sistem çöküyor ve geri tepme gemiyi parçalıyor.", { delta: { morale: 15 }, failureDelta: { hull: -40, oxygen: -18 }, risk: .36, progress: 18, flag: "mercyEnding", crew: "science" }),
+                        choice("Sistemi yeniden yaz ve üçüncü yolu uygula", "Topladığın ipuçlarıyla makinenin amacını değiştir.", "science", "Kırk yedi saniyelik pencerede kod tamamlanıyor. Çekirdek ilk kez gelecek tüketmek yerine olasılık üretmeye başlıyor.", "Tek bir eksik sembol hesaplamayı tersine çeviriyor; olası bütün felaketler aynı anda gemiye yükleniyor.", { delta: { oxygen: -10, hull: -6 }, failureDelta: { hull: -45, morale: -22 }, risk: clamp(.52 - state.clues * .025, .12, .52), progress: 22, flag: "scienceEnding", crew: "science" }),
+                        choice("Çekirdeği ve düşman filosunu yok et", "Tehdidi sonsuza kadar bitir; içeridekileri geride bırak.", "force", `Patlama ${arc.destination} bölgesini beyaz bir güneşe çeviriyor. Düşman yok oluyor; zaferin sessizliği ise gemiye seninle geliyor.`, "Patlayıcı zinciri erken başlıyor; şok dalgası kaçış rotasına yetişiyor.", { delta: { hull: -15, morale: -8 }, failureDelta: { hull: -55, oxygen: -14 }, risk: .43, progress: 20, flag: "forceEnding", crew: "security" }),
+                        choice("İki tarafı da kandırıp çekirdeği gemiye bağla", "Gücü yok etmek yerine kontrol etmeyi dene.", "stealth", "Sahte imzalar düşmanı yanıltıyor. Çekirdeğin küçük bir parçası artık geminde; kurtardığı mı yoksa seni seçtiği mi belirsiz.", "Çekirdek kimin kimi kullandığını gösteriyor ve bütün sistemlerini ele geçiriyor.", { delta: { credits: 28, morale: -5 }, failureDelta: { hull: -38, oxygen: -23, morale: -16 }, risk: .46, progress: 21, flag: "shadowEnding", crew: "engineering" })
+                    ]
+                };
+            };
+
+            const clampState = () => {
+                state.hull = clamp(state.hull, 0, 100);
+                state.oxygen = clamp(state.oxygen, 0, 100);
+                state.morale = clamp(state.morale, 0, 100);
+                state.credits = Math.max(0, state.credits);
+                state.progress = clamp(state.progress, 0, 100);
+                state.threat = clamp(state.threat, 0, 100);
+                state.clues = Math.max(0, state.clues);
+                state.crew.forEach(member => member.trust = clamp(member.trust, 0, 100));
+            };
+
+            const renderStatus = () => {
+                if (!state) return;
+                Object.entries(statElements).forEach(([key, element]) => {
+                    if (!element) return;
+                    element.textContent = Math.round(state[key]).toLocaleString("tr-TR");
+                    element.style.color = key !== "credits" && state[key] <= 25 ? "var(--danger)" : "";
+                });
+                progressElement.style.width = `${Math.round(state.progress)}%`;
+                progressTextElement.textContent = `Görev %${Math.round(state.progress)} · ${state.clues} ipucu`;
+                threatTextElement.textContent = `Tehdit ${state.threat >= 70 ? "kritik" : state.threat >= 40 ? "yüksek" : "düşük"}`;
+                threatTextElement.style.color = state.threat >= 70 ? "var(--danger)" : "";
+                arcSummaryElement.textContent = state.arc.mystery;
+                crewElement.innerHTML = state.crew.map(member => {
+                    const statusClass = member.trust >= 70 ? "is-loyal" : member.trust <= 30 ? "is-fractured" : "";
+                    const status = member.trust >= 70 ? "Sadık" : member.trust <= 30 ? "Güveni kırık" : "Temkinli";
+                    return `<div class="rpg-crew-member ${statusClass}"><strong>${escapeHTML(member.name)}</strong><small>${roles[member.role]} · Güven ${Math.round(member.trust)} · ${status}</small></div>`;
+                }).join("");
+            };
+
+            const renderLog = () => {
+                if (!state || !logElement) return;
+                logElement.innerHTML = state.log.slice(0, 10).map(entry =>
+                    `<div class="rpg-log-entry">${escapeHTML(entry)}</div>`
+                ).join("");
+            };
+
+            const renderScene = () => {
+                if (!state?.alive) return;
+                currentScene = buildScene();
+                consequenceElement.hidden = true;
+                turnElement.textContent = `Sezon ${state.season} · Seyir ${state.turn} · ${state.sector}`;
+                storyTitleElement.textContent = currentScene.title;
+                storyTextElement.textContent = currentScene.text;
+                choicesElement.innerHTML = currentScene.choices.map((item, index) => `
+                    <button class="rpg-choice" type="button" data-rpg-choice="${index}">
+                        <strong>${index + 1}.</strong> ${escapeHTML(item.label)}
+                        <small>${escapeHTML(item.hint)}</small>
+                    </button>
+                `).join("");
+                renderStatus();
+                renderLog();
+            };
+
+            const endCampaign = () => {
+                state.alive = false;
+                const reason = state.hull <= 0
+                    ? `${state.ship} son darbeyle parçalandı.`
+                    : state.oxygen <= 0
+                        ? "Yaşam desteği sustu; köprüdeki son nefes de yıldızlara karıştı."
+                        : "Mürettebat artık emirlerini uygulamayı reddetti ve kaptanlık yetkin sona erdi.";
+                turnElement.textContent = `Sefer sonu · ${state.turn - 1} karar · ${state.season} sezon`;
+                storyTitleElement.textContent = "Yolculuğun son kaydı";
+                storyTextElement.textContent = `${reason}\n\nKaptan ${state.captain} yönetiminde verdiğin kararların izi kaldı: ${state.log.length} kayıt, ${state.clues} ipucu ve ${approachLabel(dominantApproach())} ile şekillenen bir miras. Başka bir seferde galaksi aynı olmayacak.`;
+                consequenceElement.hidden = false;
+                consequenceElement.textContent = "Bu sefer sona erdi. Yeni Sefer, farklı bir kaptan, mürettebat ve ana gizem oluşturur.";
+                choicesElement.innerHTML = `<button class="rpg-choice" type="button" data-rpg-start><strong>↻</strong> Yeni Bir Sefer Başlat<small>Bambaşka bir hikâye oluştur.</small></button>`;
+                renderStatus();
+                renderLog();
+            };
+
+            const beginNextSeason = () => {
+                const currentId = state.arc.id;
+                const alternatives = campaignBlueprints.filter(item => item.id !== currentId);
+                state.arc = pick(alternatives.length ? alternatives : campaignBlueprints);
+                state.sector = pick(sectors);
+                state.season++;
+                state.phase = 0;
+                state.progress = 0;
+                state.threat = clamp(Math.round(state.threat * .45), 8, 38);
+                state.clues = 0;
+                state.hull = clamp(state.hull + 24, 1, 100);
+                state.oxygen = clamp(state.oxygen + 30, 1, 100);
+                state.morale = clamp(state.morale + 16, 1, 100);
+                state.crew.forEach(member => member.trust = clamp(member.trust + 5, 0, 100));
+                state.flags = {};
+                state.lastChoice = "Önceki sezonun son kararı";
+                state.lastOutcome = "Gemi kurtuldu, fakat taşıdığınız anılar yeni sinyalin ne anlama geldiğini değiştiriyor.";
+                state.log.unshift(`Sezon ${state.season} başladı: ${state.arc.title}. Gemideki eski yaralar ve güven bağları korunuyor.`);
+                titleElement.textContent = `${state.arc.title} · ${state.ship}`;
+                renderScene();
+            };
+
+            const finishSeason = outcome => {
+                const approach = dominantApproach();
+                const trust = averageTrust();
+                const endingTone = trust >= 68
+                    ? "Mürettebat kararının arkasında duruyor; kimse bunun kolay ya da kusursuz olduğunu söylemiyor."
+                    : trust <= 35
+                        ? "Gemi kurtuldu, fakat mürettebat artık aynı masaya oturduğunda göz göze gelmiyor."
+                        : "Zafer ile pişmanlık köprüde yan yana duruyor.";
+                storyTitleElement.textContent = `${state.arc.title} · Sezon Finali`;
+                storyTextElement.textContent = `${outcome}\n\n${endingTone}\n\nBu sezonu en çok ${approachLabel(approach)} biçimlendirdi. Tam yıldızlar sakinleşirken iletişim konsolunda yeni bir sinyal beliriyor. Kaynağı başka bir sektörde; fakat sinyal, yalnızca bu yolculukta verdiğin kararları bilen birinin kullanabileceği şifreyle açılıyor.`;
+                turnElement.textContent = `Sezon ${state.season} tamamlandı · ${state.turn - 1} karar`;
+                consequenceElement.hidden = false;
+                consequenceElement.textContent = "Hikâye bitmedi: gövde, kaynaklar ve mürettebat güveni sonraki sezona taşınacak.";
+                choicesElement.innerHTML = `<button class="rpg-choice" type="button" data-rpg-next-season><strong>→</strong> Aynı Gemiyle Sonraki Sezona Geç<small>Kararlarının izlerini yeni bir ana hikâyeye taşı.</small></button>`;
+                renderStatus();
+                renderLog();
+            };
+
+            const applyDelta = delta => {
+                Object.entries(delta || {}).forEach(([key, value]) => {
+                    if (Object.prototype.hasOwnProperty.call(state, key) && typeof state[key] === "number") {
+                        state[key] += Number(value) || 0;
+                    }
+                });
+            };
+
+            const resolveChoice = index => {
+                if (!state?.alive || !currentScene) return;
+                const selected = currentScene.choices[index];
+                if (!selected) return;
+                choicesElement.querySelectorAll("button").forEach(button => button.disabled = true);
+
+                const specialist = selected.crew ? crewByRole(selected.crew) : null;
+                const experienceBonus = (state.approaches[selected.type] || 0) * .012;
+                const trustBonus = specialist ? Math.max(0, specialist.trust - 45) * .0025 : 0;
+                const risk = clamp(selected.risk - experienceBonus - trustBonus + state.threat * .0014, .06, .68);
+                const failed = Math.random() < risk;
+                const outcome = failed ? selected.failure : selected.success;
+
+                applyDelta(failed ? selected.failureDelta : selected.delta);
+                state.oxygen -= 2 + Math.floor(state.phase / 3);
+                state.progress += failed ? Math.max(3, selected.progress * .38) : selected.progress;
+                state.clues += failed ? 0 : selected.clues;
+                state.threat += selected.threat + (failed ? 7 : -2);
+                state.approaches[selected.type] = (state.approaches[selected.type] || 0) + 1;
+                if (selected.flag) state.flags[selected.flag] = !failed;
+                if (specialist) specialist.trust += failed ? -10 : 8;
+                state.lastChoice = selected.label;
+                state.lastOutcome = outcome;
+                state.turn++;
+                state.phase++;
+                clampState();
+                state.log.unshift(`S${state.season} / Bölüm ${state.phase}: ${selected.label} — ${outcome}`);
+
+                storyTextElement.textContent = outcome;
+                consequenceElement.hidden = false;
+                consequenceElement.textContent = failed
+                    ? `Plan ters gitti. Bu sonuç sonraki bölümlerde hatırlanacak. Risk: %${Math.round(risk * 100)}.`
+                    : `Kararın yeni bir yol açtı. ${specialist ? `${specialist.name} kişisinin güveni değişti. ` : ""}Bu sonuç hikâyeye taşınacak.`;
+                renderStatus();
+                renderLog();
+
+                if (state.hull <= 0 || state.oxygen <= 0 || state.morale <= 0) {
+                    window.setTimeout(endCampaign, 320);
+                    return;
+                }
+                if (currentScene.finale) {
+                    finishSeason(outcome);
+                    return;
+                }
+                choicesElement.innerHTML = `<button class="rpg-choice" type="button" data-rpg-continue><strong>→</strong> Sonraki Bölümü Aç<small>Bu kararın etkisini hikâyede gör.</small></button>`;
+            };
+
+            const startCampaign = () => {
+                const arc = pick(campaignBlueprints);
+                state = {
+                    captain: pick(names),
+                    ship: pick(ships),
+                    sector: pick(sectors),
+                    arc,
+                    season: 1,
+                    phase: 0,
+                    turn: 1,
+                    alive: true,
+                    hull: 100,
+                    oxygen: 100,
+                    morale: 100,
+                    credits: 40,
+                    progress: 0,
+                    threat: 10,
+                    clues: 0,
+                    approaches: { diplomacy: 0, science: 0, force: 0, stealth: 0 },
+                    flags: {},
+                    lastChoice: "",
+                    lastOutcome: "",
+                    crew: [
+                        { role: "science", name: pick(crewPools.science), trust: 55 },
+                        { role: "engineering", name: pick(crewPools.engineering), trust: 55 },
+                        { role: "security", name: pick(crewPools.security), trust: 55 }
+                    ],
+                    log: []
+                };
+                state.log.push(`Sefer başladı: Kaptan ${state.captain}, ${state.ship} ve üç kişilik köprü ekibi ${arc.title} gizemiyle karşılaştı.`);
+                titleElement.textContent = `${arc.title} · ${state.ship}`;
+                renderScene();
+            };
+
+            const clickHandler = event => {
+                if (event.target.closest("[data-rpg-start]")) {
+                    startCampaign();
+                    return;
+                }
+                const choiceButton = event.target.closest("[data-rpg-choice]");
+                if (choiceButton) {
+                    resolveChoice(Number(choiceButton.dataset.rpgChoice));
+                    return;
+                }
+                if (event.target.closest("[data-rpg-continue]")) {
+                    renderScene();
+                    return;
+                }
+                if (event.target.closest("[data-rpg-next-season]")) beginNextSeason();
+            };
+
+            startButton.addEventListener("click", startCampaign);
+            choicesElement.addEventListener("click", clickHandler);
+            activeRpgSession = { active: true };
+            activeGameCleanup = () => {
+                startButton.removeEventListener("click", startCampaign);
+                choicesElement.removeEventListener("click", clickHandler);
+                activeRpgSession = null;
+            };
+        }
+
+
         function initializeGame(gameId) {
             if (activeGameCleanup) activeGameCleanup();
             const startButton = document.getElementById("startMiniGame");
@@ -8090,6 +10105,21 @@
 
             if (gameId === "blocks") {
                 activeGameCleanup = initializeBlocksGame(startButton, scoreLabel);
+                return;
+            }
+
+            if (gameId === "barrel") {
+                activeGameCleanup = initializeBarrelGame(startButton, scoreLabel);
+                return;
+            }
+
+            if (gameId === "maze") {
+                activeGameCleanup = initializeMazeGame(startButton, scoreLabel);
+                return;
+            }
+
+            if (gameId === "fighter") {
+                activeGameCleanup = initializeFighterGame(startButton, scoreLabel);
                 return;
             }
 
@@ -8183,11 +10213,13 @@
             const rawHash = decodeURIComponent(window.location.hash.slice(1));
             syncEngagementListeners(rawHash);
 
-            if (rawHash === "chat") {
+            if (auth?.currentUser) {
                 startRealtimeChatListener();
             } else {
                 stopRealtimeChatListener();
             }
+
+            markCurrentChatRouteSeen(rawHash);
 
             if (!rawHash.startsWith("dm=") && !rawHash.startsWith("community-chat=")) {
                 stopActiveFirestoreChat();
@@ -8200,6 +10232,14 @@
             ) {
                 const leaderboard = document.getElementById("gameLeaderboard");
                 if (leaderboard) leaderboard.outerHTML = gameLeaderboardMarkup(activeGameSession.gameId);
+                return;
+            }
+
+            if (
+                activeRpgSession?.active &&
+                rawHash === "space-rpg" &&
+                document.getElementById("spaceRpgShell")
+            ) {
                 return;
             }
 
@@ -8656,6 +10696,16 @@
                  */
                 initializeGame(gameId);
 
+            } else if (rawHash === "space-rpg") {
+                setRouteHeader(
+                    "Karar Odaklı Uzay FRP'si",
+                    "Yıldızların Ardında",
+                    "Önceki kararlarının sonraki bölümlere döndüğü, mürettebat güveni ve ana gizem etrafında ilerleyen bir uzay seferine çık."
+                );
+                routeContent.innerHTML = spaceRpgMarkup();
+                document.querySelector('nav a[data-action="games"]')?.classList.add("active");
+                initializeSpaceRpg();
+
             } else if (rawHash === "admin") {
                 ensureAdminDataLoaded();
                 setRouteHeader(
@@ -8770,6 +10820,46 @@
 
         adminBtn.addEventListener("click", () => {
             window.location.hash = "admin";
+        });
+
+        chatQuickButton.addEventListener("click", event => {
+            event.stopPropagation();
+            const willOpen = !chatQuickMenu.classList.contains("open");
+            if (willOpen) {
+                renderChatQuickMenu();
+                chatQuickMenu.classList.add("open");
+            } else {
+                chatQuickMenu.classList.remove("open");
+            }
+            chatQuickButton.setAttribute("aria-expanded", String(willOpen));
+        });
+
+        chatQuickMenu.addEventListener("click", event => {
+            const routeButton = event.target.closest("[data-chat-quick-route]");
+            const directButton = event.target.closest("[data-chat-quick-dm]");
+            const communityButton = event.target.closest("[data-chat-quick-community]");
+            if (!routeButton && !directButton && !communityButton) return;
+
+            event.preventDefault();
+            closeChatQuickMenu();
+
+            if (directButton) {
+                window.location.hash = "dm=" + encodeURIComponent(directButton.dataset.chatQuickDm);
+                return;
+            }
+            if (communityButton) {
+                window.location.hash = "community-chat=" + encodeURIComponent(communityButton.dataset.chatQuickCommunity);
+                return;
+            }
+            window.location.hash = routeButton.dataset.chatQuickRoute || "chat";
+        });
+
+        document.addEventListener("click", event => {
+            if (!chatQuickWrap.contains(event.target)) closeChatQuickMenu();
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") closeChatQuickMenu();
         });
 
         window.addEventListener("hashchange", renderRoute);
@@ -11166,6 +13256,7 @@
                             ...communityDocument.data()
                         }))
                         .sort((a, b) => (a.name || "").localeCompare(b.name || "", "tr"));
+                    refreshCommunityActivityListeners();
                     renderHomeChallenges();
                     renderRoute();
                 },
@@ -11185,6 +13276,7 @@
                         id: membershipDocument.id,
                         ...membershipDocument.data()
                     }));
+                    refreshCommunityActivityListeners();
                     renderHomeChallenges();
                     renderRoute();
                 },
@@ -11400,8 +13492,11 @@
                                 (a, b) => Number(a.createdAt || 0) - Number(b.createdAt || 0)
                             );
 
-                            if (decodeURIComponent(window.location.hash.slice(1)) === "chat") {
+                            const route = decodeURIComponent(window.location.hash.slice(1));
+                            if (route === "chat") {
                                 renderRoute();
+                            } else {
+                                renderChatQuickMenu();
                             }
                         },
                         error => {
@@ -11489,8 +13584,12 @@
 
                     startPresence(user);
                     await refreshAdminStatus(user);
+                    getChatSeenState(user);
+                    startRealtimeChatListener();
                     startDirectConversationsListener(user);
+                    refreshCommunityActivityListeners();
                     renderCurrentUserUpvotes();
+                    renderChatQuickMenu();
                     renderRoute();
 
                     if (!isRegistering) {
@@ -11519,8 +13618,12 @@
                     cachedProfileUid = null;
                     isCurrentUserAdmin = false;
                     stopDirectConversationsListener();
+                    stopCommunityActivityListeners();
                     stopActiveFirestoreChat();
                     stopRealtimeChatListener();
+                    chatSeenState = null;
+                    chatSeenUserId = "";
+                    closeChatQuickMenu();
                     adminBtn.style.display = "none";
 
                     stopPresence();
@@ -11530,6 +13633,7 @@
                     userArea.style.display = "none";
                     userName.textContent = "Kullanıcı";
                     renderCurrentUserUpvotes();
+                    renderChatQuickMenu();
                     renderRoute();
 
                     closeModal(profileModal);
@@ -11551,4 +13655,4 @@
     </script>
 
 </body>
-    </html>
+</html>
