@@ -8467,7 +8467,57 @@
         }
 
 
-        function initializeGalagaGame(startButton, scoreLabel) {
+        const FIXED_GAME_STEP_MS = 1000 / 60;
+
+
+        function createFixedGameLoop(update, draw, isRunning) {
+            let frameId = 0;
+            let previousTime = 0;
+            let accumulator = 0;
+
+            const animate = currentTime => {
+                if (!isRunning()) return;
+
+                if (!previousTime) previousTime = currentTime;
+                const elapsed = Math.min(Math.max(currentTime - previousTime, 0), 100);
+                previousTime = currentTime;
+                accumulator += elapsed;
+
+                let stepCount = 0;
+                while (
+                    accumulator >= FIXED_GAME_STEP_MS &&
+                    isRunning() &&
+                    stepCount < 6
+                ) {
+                    update();
+                    accumulator -= FIXED_GAME_STEP_MS;
+                    stepCount++;
+                }
+
+                if (stepCount === 6) accumulator = 0;
+                draw();
+
+                if (isRunning()) frameId = requestAnimationFrame(animate);
+            };
+
+            return {
+                start() {
+                    this.stop();
+                    previousTime = 0;
+                    accumulator = 0;
+                    frameId = requestAnimationFrame(animate);
+                },
+                stop() {
+                    if (frameId) cancelAnimationFrame(frameId);
+                    frameId = 0;
+                    previousTime = 0;
+                    accumulator = 0;
+                }
+            };
+        }
+
+
+        function initializeGalagaGameLegacy(startButton, scoreLabel) {
             const canvas = document.getElementById("galagaGameCanvas"), ctx = canvas?.getContext("2d");
             if (!ctx) return () => {};
             let frame=0, running=false, left=false, right=false, score=0, lives=3, tick=0, lastShot=0;
@@ -8484,17 +8534,394 @@
         }
 
 
+        function initializeGalagaGame(startButton, scoreLabel) {
+            const canvas = document.getElementById("galagaGameCanvas");
+            const context = canvas?.getContext("2d");
+            if (!context) return () => {};
+
+            let running = false;
+            let left = false;
+            let right = false;
+            let score = 0;
+            let lives = 3;
+            let tick = 0;
+            let lastShot = 0;
+            let player = { x: 163, y: 442, w: 34, h: 22 };
+            let bullets = [];
+            let enemyBullets = [];
+            let enemies = [];
+
+            const resetWave = () => {
+                enemies = [];
+                for (let row = 0; row < 3; row++) {
+                    for (let column = 0; column < 7; column++) {
+                        enemies.push({
+                            baseX: 18 + column * 47,
+                            baseY: 48 + row * 38,
+                            x: 0,
+                            y: 0,
+                            phase: column * .7 + row,
+                            dive: false,
+                            diveT: 0
+                        });
+                    }
+                }
+            };
+            const fire = () => {
+                if (!running || performance.now() - lastShot < 230) return;
+                bullets.push({ x: player.x + 16, y: player.y });
+                lastShot = performance.now();
+            };
+            const hit = (first, second) =>
+                first.x < second.x + second.w &&
+                first.x + first.w > second.x &&
+                first.y < second.y + second.h &&
+                first.y + first.h > second.y;
+            const draw = () => {
+                context.fillStyle = "#070919";
+                context.fillRect(0, 0, 360, 480);
+                context.fillStyle = "#fff";
+                for (let index = 0; index < 42; index++) {
+                    context.fillRect((index * 83 + tick * .15) % 360, (index * 127) % 440, 1, 1);
+                }
+                context.fillStyle = "#7eb6ff";
+                context.beginPath();
+                context.moveTo(player.x + 17, player.y);
+                context.lineTo(player.x + 34, player.y + 22);
+                context.lineTo(player.x + 17, player.y + 17);
+                context.lineTo(player.x, player.y + 22);
+                context.closePath();
+                context.fill();
+                context.fillStyle = "#e7c57e";
+                bullets.forEach(bullet => context.fillRect(bullet.x, bullet.y, 3, 11));
+                context.fillStyle = "#ff7b7b";
+                enemyBullets.forEach(bullet => context.fillRect(bullet.x, bullet.y, 3, 9));
+                enemies.forEach((enemy, index) => {
+                    context.fillStyle = index % 3 === 0 ? "#cf76ff" : index % 3 === 1 ? "#68b58a" : "#e7c57e";
+                    context.beginPath();
+                    context.moveTo(enemy.x + 15, enemy.y);
+                    context.lineTo(enemy.x + 30, enemy.y + 17);
+                    context.lineTo(enemy.x + 22, enemy.y + 14);
+                    context.lineTo(enemy.x + 15, enemy.y + 22);
+                    context.lineTo(enemy.x + 8, enemy.y + 14);
+                    context.lineTo(enemy.x, enemy.y + 17);
+                    context.closePath();
+                    context.fill();
+                });
+                context.fillStyle = "#f5f0e8";
+                context.font = "12px Inter";
+                context.textAlign = "left";
+                context.fillText(`Can: ${lives}`, 10, 20);
+                if (!running) {
+                    context.fillStyle = "rgba(7,9,25,.72)";
+                    context.fillRect(0, 195, 360, 80);
+                    context.fillStyle = "#fff";
+                    context.font = "700 18px Inter";
+                    context.textAlign = "center";
+                    context.fillText(lives <= 0 ? "Filo seni düşürdü" : "Oyunu Başlat", 180, 242);
+                }
+            };
+            const update = () => {
+                tick++;
+                if (left) player.x = Math.max(0, player.x - 4);
+                if (right) player.x = Math.min(326, player.x + 4);
+                bullets.forEach(bullet => bullet.y -= 7);
+                enemyBullets.forEach(bullet => bullet.y += 3.4);
+                bullets = bullets.filter(bullet => bullet.y > -15);
+                enemyBullets = enemyBullets.filter(bullet => bullet.y < 490);
+
+                if (tick % 110 === 0) {
+                    const candidates = enemies.filter(enemy => !enemy.dive);
+                    if (candidates.length) {
+                        const enemy = candidates[Math.floor(Math.random() * candidates.length)];
+                        enemy.dive = true;
+                        enemy.diveT = 0;
+                    }
+                }
+                if (tick % 75 === 0 && enemies.length) {
+                    const enemy = enemies[Math.floor(Math.random() * enemies.length)];
+                    enemyBullets.push({ x: enemy.x + 14, y: enemy.y + 18, w: 3, h: 9 });
+                }
+
+                enemies.forEach(enemy => {
+                    if (enemy.dive) {
+                        enemy.diveT += .035;
+                        enemy.x = enemy.baseX + Math.sin(enemy.diveT * 3) * 95;
+                        enemy.y = enemy.baseY + enemy.diveT * 78;
+                        if (enemy.y > 490) {
+                            enemy.dive = false;
+                            enemy.diveT = 0;
+                        }
+                    } else {
+                        enemy.x = enemy.baseX + Math.sin(tick * .012 + enemy.phase) * 12;
+                        enemy.y = enemy.baseY;
+                    }
+                });
+
+                for (let bulletIndex = bullets.length - 1; bulletIndex >= 0; bulletIndex--) {
+                    for (let enemyIndex = enemies.length - 1; enemyIndex >= 0; enemyIndex--) {
+                        const bullet = { ...bullets[bulletIndex], w: 3, h: 11 };
+                        const enemy = { ...enemies[enemyIndex], w: 30, h: 22 };
+                        if (bullets[bulletIndex] && hit(bullet, enemy)) {
+                            bullets.splice(bulletIndex, 1);
+                            enemies.splice(enemyIndex, 1);
+                            score += 20;
+                            scoreLabel.textContent = `Skor: ${score}`;
+                            break;
+                        }
+                    }
+                }
+
+                const damaged = enemyBullets.some(bullet => hit(player, bullet)) ||
+                    enemies.some(enemy => hit(player, { ...enemy, w: 30, h: 22 }));
+                if (damaged) {
+                    lives--;
+                    enemyBullets = [];
+                    player.x = 163;
+                    if (lives <= 0) {
+                        running = false;
+                        saveGameScore("galaga", score);
+                        return;
+                    }
+                }
+                if (!enemies.length) {
+                    score += 150;
+                    scoreLabel.textContent = `Skor: ${score}`;
+                    resetWave();
+                }
+            };
+
+            const gameLoop = createFixedGameLoop(update, draw, () => running);
+            const start = () => {
+                gameLoop.stop();
+                score = 0;
+                lives = 3;
+                tick = 0;
+                bullets = [];
+                enemyBullets = [];
+                player.x = 163;
+                resetWave();
+                running = true;
+                scoreLabel.textContent = "Skor: 0";
+                gameLoop.start();
+            };
+            const keyDown = event => {
+                if (event.key === "ArrowLeft") left = true;
+                if (event.key === "ArrowRight") right = true;
+                if (event.code === "Space") {
+                    event.preventDefault();
+                    fire();
+                }
+            };
+            const keyUp = event => {
+                if (event.key === "ArrowLeft") left = false;
+                if (event.key === "ArrowRight") right = false;
+            };
+
+            window.addEventListener("keydown", keyDown);
+            window.addEventListener("keyup", keyUp);
+            startButton.addEventListener("click", start);
+            document.querySelectorAll("[data-galaga-move]").forEach(button => {
+                const side = button.dataset.galagaMove;
+                button.addEventListener("pointerdown", () => side === "left" ? left = true : right = true);
+                button.addEventListener("pointerup", () => { left = false; right = false; });
+                button.addEventListener("pointercancel", () => { left = false; right = false; });
+            });
+            document.querySelector("[data-galaga-fire]")?.addEventListener("pointerdown", fire);
+            resetWave();
+            draw();
+
+            return () => {
+                running = false;
+                gameLoop.stop();
+                window.removeEventListener("keydown", keyDown);
+                window.removeEventListener("keyup", keyUp);
+            };
+        }
+
+
         function initializeContraGame(startButton, scoreLabel) {
-            const canvas=document.getElementById("contraGameCanvas"),ctx=canvas?.getContext("2d");if(!ctx)return()=>{};
-            let frame=0,running=false,left=false,right=false,score=0,lives=3,tick=0,lastShot=0,enemies=[],bullets=[];let player={x:70,y:286,w:28,h:44,vy:0,onGround:true};
-            const fire=()=>{if(!running||performance.now()-lastShot<210)return;bullets.push({x:player.x+26,y:player.y+16,w:12,h:4});lastShot=performance.now();};
-            const jump=()=>{if(running&&player.onGround){player.vy=-10.5;player.onGround=false;}};
-            const hit=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
-            const draw=()=>{const sky=ctx.createLinearGradient(0,0,0,330);sky.addColorStop(0,"#17243d");sky.addColorStop(1,"#294f40");ctx.fillStyle=sky;ctx.fillRect(0,0,640,360);ctx.fillStyle="#183b2c";for(let i=0;i<9;i++){const x=((i*103-tick*1.2)%760)-60;ctx.beginPath();ctx.moveTo(x,310);ctx.lineTo(x+45,150+(i%3)*25);ctx.lineTo(x+90,310);ctx.fill();}ctx.fillStyle="#59422f";ctx.fillRect(0,330,640,30);ctx.fillStyle="#d7b06a";ctx.fillRect(player.x+7,player.y,14,13);ctx.fillStyle="#4c7c53";ctx.fillRect(player.x,player.y+13,28,25);ctx.fillStyle="#25211e";ctx.fillRect(player.x+3,player.y+38,8,6);ctx.fillRect(player.x+18,player.y+38,8,6);ctx.fillStyle="#f1d36f";bullets.forEach(b=>ctx.fillRect(b.x,b.y,b.w,b.h));enemies.forEach(e=>{ctx.fillStyle=e.type?"#813f3f":"#30333a";ctx.fillRect(e.x,e.y,e.w,e.h);ctx.fillStyle="#e0c49b";ctx.fillRect(e.x+6,e.y-10,14,10);});ctx.fillStyle="#fff";ctx.font="13px Inter";ctx.fillText(`Can: ${lives}`,12,22);if(!running){ctx.fillStyle="rgba(10,15,14,.65)";ctx.fillRect(0,135,640,90);ctx.fillStyle="#fff";ctx.font="700 22px Inter";ctx.textAlign="center";ctx.fillText("Oyunu Başlat",320,188);ctx.textAlign="left";}};
-            const loop=()=>{if(!running)return;tick++;if(left)player.x=Math.max(15,player.x-3.5);if(right)player.x=Math.min(360,player.x+3.5);player.vy+=.55;player.y+=player.vy;if(player.y>=286){player.y=286;player.vy=0;player.onGround=true;}if(tick%75===0)enemies.push({x:650,y:296,w:28,h:34,type:Math.random()>.7,speed:2.2+Math.random()*1.4});enemies.forEach(e=>e.x-=e.speed);bullets.forEach(b=>b.x+=8);bullets=bullets.filter(b=>b.x<660);for(let bi=bullets.length-1;bi>=0;bi--)for(let ei=enemies.length-1;ei>=0;ei--){if(bullets[bi]&&hit(bullets[bi],enemies[ei])){bullets.splice(bi,1);enemies.splice(ei,1);score+=25;scoreLabel.textContent=`Skor: ${score}`;break;}}const danger=enemies.find(e=>hit(player,e));if(danger){enemies.splice(enemies.indexOf(danger),1);lives--;if(lives<=0){running=false;draw();saveGameScore("contra",score);return;}}enemies=enemies.filter(e=>{if(e.x+e.w<0){score=Math.max(0,score-5);scoreLabel.textContent=`Skor: ${score}`;return false;}return true;});draw();frame=requestAnimationFrame(loop);};
-            const start=()=>{cancelAnimationFrame(frame);score=0;lives=3;tick=0;enemies=[];bullets=[];player={x:70,y:286,w:28,h:44,vy:0,onGround:true};running=true;scoreLabel.textContent="Skor: 0";loop();};
-            const kd=e=>{if(e.key==="ArrowLeft")left=true;if(e.key==="ArrowRight")right=true;if(e.key==="ArrowUp"){e.preventDefault();jump();}if(e.code==="Space"){e.preventDefault();fire();}};const ku=e=>{if(e.key==="ArrowLeft")left=false;if(e.key==="ArrowRight")right=false;};window.addEventListener("keydown",kd);window.addEventListener("keyup",ku);startButton.addEventListener("click",start);document.querySelectorAll("[data-contra-move]").forEach(b=>{const side=b.dataset.contraMove;b.addEventListener("pointerdown",()=>side==="left"?left=true:right=true);b.addEventListener("pointerup",()=>{left=false;right=false;});b.addEventListener("pointercancel",()=>{left=false;right=false;});});document.querySelector("[data-contra-jump]")?.addEventListener("pointerdown",jump);document.querySelector("[data-contra-fire]")?.addEventListener("pointerdown",fire);draw();
-            return()=>{running=false;cancelAnimationFrame(frame);window.removeEventListener("keydown",kd);window.removeEventListener("keyup",ku);};
+            const canvas = document.getElementById("contraGameCanvas");
+            const context = canvas?.getContext("2d");
+            if (!context) return () => {};
+
+            let running = false;
+            let left = false;
+            let right = false;
+            let score = 0;
+            let lives = 3;
+            let tick = 0;
+            let lastShot = 0;
+            let enemies = [];
+            let bullets = [];
+            let player = { x: 70, y: 286, w: 28, h: 44, vy: 0, onGround: true };
+
+            const fire = () => {
+                if (!running || performance.now() - lastShot < 210) return;
+                bullets.push({ x: player.x + 26, y: player.y + 16, w: 12, h: 4 });
+                lastShot = performance.now();
+            };
+            const jump = () => {
+                if (running && player.onGround) {
+                    player.vy = -10.5;
+                    player.onGround = false;
+                }
+            };
+            const hit = (first, second) =>
+                first.x < second.x + second.w &&
+                first.x + first.w > second.x &&
+                first.y < second.y + second.h &&
+                first.y + first.h > second.y;
+            const draw = () => {
+                const sky = context.createLinearGradient(0, 0, 0, 330);
+                sky.addColorStop(0, "#17243d");
+                sky.addColorStop(1, "#294f40");
+                context.fillStyle = sky;
+                context.fillRect(0, 0, 640, 360);
+                context.fillStyle = "#183b2c";
+                for (let index = 0; index < 9; index++) {
+                    const x = ((index * 103 - tick * 1.2) % 760) - 60;
+                    context.beginPath();
+                    context.moveTo(x, 310);
+                    context.lineTo(x + 45, 150 + (index % 3) * 25);
+                    context.lineTo(x + 90, 310);
+                    context.fill();
+                }
+                context.fillStyle = "#59422f";
+                context.fillRect(0, 330, 640, 30);
+                context.fillStyle = "#d7b06a";
+                context.fillRect(player.x + 7, player.y, 14, 13);
+                context.fillStyle = "#4c7c53";
+                context.fillRect(player.x, player.y + 13, 28, 25);
+                context.fillStyle = "#25211e";
+                context.fillRect(player.x + 3, player.y + 38, 8, 6);
+                context.fillRect(player.x + 18, player.y + 38, 8, 6);
+                context.fillStyle = "#f1d36f";
+                bullets.forEach(bullet => context.fillRect(bullet.x, bullet.y, bullet.w, bullet.h));
+                enemies.forEach(enemy => {
+                    context.fillStyle = enemy.type ? "#813f3f" : "#30333a";
+                    context.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
+                    context.fillStyle = "#e0c49b";
+                    context.fillRect(enemy.x + 6, enemy.y - 10, 14, 10);
+                });
+                context.fillStyle = "#fff";
+                context.font = "13px Inter";
+                context.fillText(`Can: ${lives}`, 12, 22);
+                if (!running) {
+                    context.fillStyle = "rgba(10,15,14,.65)";
+                    context.fillRect(0, 135, 640, 90);
+                    context.fillStyle = "#fff";
+                    context.font = "700 22px Inter";
+                    context.textAlign = "center";
+                    context.fillText(lives <= 0 ? "Görev sona erdi" : "Oyunu Başlat", 320, 188);
+                    context.textAlign = "left";
+                }
+            };
+            const update = () => {
+                tick++;
+                if (left) player.x = Math.max(15, player.x - 3.5);
+                if (right) player.x = Math.min(360, player.x + 3.5);
+                player.vy += .55;
+                player.y += player.vy;
+                if (player.y >= 286) {
+                    player.y = 286;
+                    player.vy = 0;
+                    player.onGround = true;
+                }
+                if (tick % 75 === 0) {
+                    enemies.push({
+                        x: 650,
+                        y: 296,
+                        w: 28,
+                        h: 34,
+                        type: Math.random() > .7,
+                        speed: 2.2 + Math.random() * 1.4
+                    });
+                }
+                enemies.forEach(enemy => enemy.x -= enemy.speed);
+                bullets.forEach(bullet => bullet.x += 8);
+                bullets = bullets.filter(bullet => bullet.x < 660);
+
+                for (let bulletIndex = bullets.length - 1; bulletIndex >= 0; bulletIndex--) {
+                    for (let enemyIndex = enemies.length - 1; enemyIndex >= 0; enemyIndex--) {
+                        if (bullets[bulletIndex] && hit(bullets[bulletIndex], enemies[enemyIndex])) {
+                            bullets.splice(bulletIndex, 1);
+                            enemies.splice(enemyIndex, 1);
+                            score += 25;
+                            scoreLabel.textContent = `Skor: ${score}`;
+                            break;
+                        }
+                    }
+                }
+
+                const danger = enemies.find(enemy => hit(player, enemy));
+                if (danger) {
+                    enemies.splice(enemies.indexOf(danger), 1);
+                    lives--;
+                    if (lives <= 0) {
+                        running = false;
+                        saveGameScore("contra", score);
+                        return;
+                    }
+                }
+                enemies = enemies.filter(enemy => {
+                    if (enemy.x + enemy.w < 0) {
+                        score = Math.max(0, score - 5);
+                        scoreLabel.textContent = `Skor: ${score}`;
+                        return false;
+                    }
+                    return true;
+                });
+            };
+
+            const gameLoop = createFixedGameLoop(update, draw, () => running);
+            const start = () => {
+                gameLoop.stop();
+                score = 0;
+                lives = 3;
+                tick = 0;
+                enemies = [];
+                bullets = [];
+                player = { x: 70, y: 286, w: 28, h: 44, vy: 0, onGround: true };
+                running = true;
+                scoreLabel.textContent = "Skor: 0";
+                gameLoop.start();
+            };
+            const keyDown = event => {
+                if (event.key === "ArrowLeft") left = true;
+                if (event.key === "ArrowRight") right = true;
+                if (event.key === "ArrowUp") {
+                    event.preventDefault();
+                    jump();
+                }
+                if (event.code === "Space") {
+                    event.preventDefault();
+                    fire();
+                }
+            };
+            const keyUp = event => {
+                if (event.key === "ArrowLeft") left = false;
+                if (event.key === "ArrowRight") right = false;
+            };
+            window.addEventListener("keydown", keyDown);
+            window.addEventListener("keyup", keyUp);
+            startButton.addEventListener("click", start);
+            document.querySelectorAll("[data-contra-move]").forEach(button => {
+                const side = button.dataset.contraMove;
+                button.addEventListener("pointerdown", () => side === "left" ? left = true : right = true);
+                button.addEventListener("pointerup", () => { left = false; right = false; });
+                button.addEventListener("pointercancel", () => { left = false; right = false; });
+            });
+            document.querySelector("[data-contra-jump]")?.addEventListener("pointerdown", jump);
+            document.querySelector("[data-contra-fire]")?.addEventListener("pointerdown", fire);
+            draw();
+
+            return () => {
+                running = false;
+                gameLoop.stop();
+                window.removeEventListener("keydown", keyDown);
+                window.removeEventListener("keyup", keyUp);
+            };
         }
 
 
@@ -8584,7 +9011,7 @@
 
             const platformY = level => 390 - level * 72;
             const ladderX = [510, 100, 500, 120];
-            let frame = 0, running = false, tick = 0, score = 0, lives = 3, round = 1;
+            let running = false, tick = 0, score = 0, lives = 3, round = 1;
             let left = false, right = false, jumpOffset = 0, jumpVelocity = 0, invulnerable = 0;
             let player = { x: 38, level: 0, w: 26, h: 34 };
             let barrels = [];
@@ -8705,8 +9132,7 @@
                     context.fillText(lives <= 0 ? "Kule seni yendi" : "Oyunu Başlat", 300, 220);
                 }
             };
-            const loop = () => {
-                if (!running) return;
+            const update = () => {
                 tick++;
                 if (left) player.x = Math.max(20, player.x - 3.5);
                 if (right) player.x = Math.min(554, player.x + 3.5);
@@ -8752,11 +9178,10 @@
                     updateScore();
                 }
 
-                draw();
-                frame = requestAnimationFrame(loop);
             };
+            const gameLoop = createFixedGameLoop(update, draw, () => running);
             const start = () => {
-                cancelAnimationFrame(frame);
+                gameLoop.stop();
                 running = true;
                 tick = 0;
                 score = 0;
@@ -8765,7 +9190,7 @@
                 barrels = [];
                 resetPlayer();
                 updateScore();
-                loop();
+                gameLoop.start();
             };
             const keyDown = event => {
                 if (["ArrowLeft", "ArrowRight", "ArrowUp", "Space"].includes(event.code)) event.preventDefault();
@@ -8799,7 +9224,7 @@
             draw();
             return () => {
                 running = false;
-                cancelAnimationFrame(frame);
+                gameLoop.stop();
                 window.removeEventListener("keydown", keyDown);
                 window.removeEventListener("keyup", keyUp);
             };
@@ -9026,7 +9451,7 @@
             if (!context) return () => {};
 
             const ground = 312;
-            let frame = 0, running = false, score = 0, round = 1, left = false, right = false;
+            let running = false, score = 0, round = 1, left = false, right = false;
             let player, rival;
 
             const fighter = (x, color, facing) => ({
@@ -9147,8 +9572,7 @@
                 if (actor.cooldown > 0) actor.cooldown--;
                 if (actor.guardTimer > 0) actor.guardTimer--;
             };
-            const loop = () => {
-                if (!running) return;
+            const update = () => {
                 if (left) player.x -= 3.6;
                 if (right) player.x += 3.6;
                 player.facing = rival.x >= player.x ? 1 : -1;
@@ -9184,11 +9608,10 @@
                     return;
                 }
 
-                draw();
-                frame = requestAnimationFrame(loop);
             };
+            const gameLoop = createFixedGameLoop(update, draw, () => running);
             const start = () => {
-                cancelAnimationFrame(frame);
+                gameLoop.stop();
                 score = 0;
                 round = 1;
                 left = false;
@@ -9196,7 +9619,7 @@
                 running = true;
                 resetRound();
                 updateScore();
-                loop();
+                gameLoop.start();
             };
             const action = name => {
                 if (name === "jump") jump(player);
@@ -9234,7 +9657,7 @@
             draw();
             return () => {
                 running = false;
-                cancelAnimationFrame(frame);
+                gameLoop.stop();
                 window.removeEventListener("keydown", keyDown);
                 window.removeEventListener("keyup", keyUp);
             };
@@ -10175,7 +10598,7 @@
             const canvas = document.getElementById("spaceGameCanvas");
             const context = canvas?.getContext("2d");
             if (!context) return;
-            let frame = 0, running = false, score = 0, left = false, right = false, lastShot = 0;
+            let running = false, score = 0, left = false, right = false, lastShot = 0;
             let player = {x: 162, y: 438, w: 36, h: 18}, bullets = [], aliens = [], direction = 1, speed = .55;
             const resetAliens = () => { aliens = []; for (let row=0; row<3; row++) for (let col=0; col<6; col++) aliens.push({x: 27+col*52, y: 48+row*42, w: 30, h: 22}); };
             const draw = () => {
@@ -10187,24 +10610,23 @@
                 if (!running) { context.fillStyle="rgba(9,11,22,.72)"; context.fillRect(0,190,360,90); context.fillStyle="#f5f0e8"; context.font="700 18px Inter"; context.textAlign="center"; context.fillText("Oyunu Başlat",180,242); }
             };
             const fire = () => { if (!running || performance.now()-lastShot<260) return; bullets.push({x:player.x+17,y:player.y-10}); lastShot=performance.now(); };
-            const loop = () => {
-                if (!running) return;
+            const update = () => {
                 if (left) player.x=Math.max(0,player.x-4); if (right) player.x=Math.min(324,player.x+4);
                 bullets.forEach(b=>b.y-=6); bullets=bullets.filter(b=>b.y>-12);
                 let edge=false; aliens.forEach(a=>{a.x+=direction*speed;if(a.x<5||a.x+a.w>355)edge=true;});
                 if(edge){direction*=-1;aliens.forEach(a=>a.y+=12);speed+=.035;}
                 for(let bi=bullets.length-1;bi>=0;bi--) for(let ai=aliens.length-1;ai>=0;ai--){const b=bullets[bi],a=aliens[ai];if(b&&b.x>a.x&&b.x<a.x+a.w&&b.y<a.y+a.h&&b.y+10>a.y){bullets.splice(bi,1);aliens.splice(ai,1);score+=10;scoreLabel.textContent=`Skor: ${score}`;break;}}
                 if(!aliens.length){resetAliens();speed+=.25;}
-                if(aliens.some(a=>a.y+a.h>=player.y)){running=false;draw();saveGameScore("space",score);return;}
-                draw(); frame=requestAnimationFrame(loop);
+                if(aliens.some(a=>a.y+a.h>=player.y)){running=false;saveGameScore("space",score);return;}
             };
-            const start = () => { cancelAnimationFrame(frame); score=0; speed=.55; direction=1; bullets=[]; player.x=162; resetAliens(); running=true; scoreLabel.textContent="Skor: 0"; loop(); };
+            const gameLoop = createFixedGameLoop(update, draw, () => running);
+            const start = () => { gameLoop.stop(); score=0; speed=.55; direction=1; bullets=[]; player.x=162; resetAliens(); running=true; scoreLabel.textContent="Skor: 0"; gameLoop.start(); };
             const keyDown = event => { if(event.key==="ArrowLeft")left=true;if(event.key==="ArrowRight")right=true;if(event.code==="Space"){event.preventDefault();fire();} };
             const keyUp = event => { if(event.key==="ArrowLeft")left=false;if(event.key==="ArrowRight")right=false; };
             window.addEventListener("keydown",keyDown); window.addEventListener("keyup",keyUp); startButton.addEventListener("click",start);
             document.querySelectorAll("[data-space-move]").forEach(button=>{const value=button.dataset.spaceMove;button.addEventListener("pointerdown",()=>{if(value==="left")left=true;else right=true;});button.addEventListener("pointerup",()=>{left=false;right=false;});button.addEventListener("pointercancel",()=>{left=false;right=false;});});
             document.querySelector("[data-space-fire]")?.addEventListener("pointerdown",fire); resetAliens(); draw();
-            activeGameCleanup = () => { running=false;cancelAnimationFrame(frame);window.removeEventListener("keydown",keyDown);window.removeEventListener("keyup",keyUp); };
+            activeGameCleanup = () => { running=false;gameLoop.stop();window.removeEventListener("keydown",keyDown);window.removeEventListener("keyup",keyUp); };
         }
 
 
