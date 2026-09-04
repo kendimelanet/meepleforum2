@@ -2463,6 +2463,39 @@
             background: linear-gradient(145deg, rgba(113,52,56,.25), rgba(62,101,79,.2));
         }
 
+        .giveaway-card-image-link {
+            width: calc(100% + 40px);
+            display: block;
+            margin: -20px -20px 18px;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .giveaway-card-image-link .giveaway-card-image {
+            width: 100%;
+            margin: 0;
+            border-bottom: 0;
+            transition: transform .22s ease, filter .22s ease;
+        }
+
+        .giveaway-card-image-link:hover .giveaway-card-image,
+        .giveaway-detail-image-link:hover .topic-detail-image {
+            transform: scale(1.015);
+            filter: brightness(1.08);
+        }
+
+        .giveaway-detail-image-link {
+            display: block;
+            margin-top: 18px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .giveaway-detail-image-link .topic-detail-image {
+            margin-top: 0;
+            transition: transform .22s ease, filter .22s ease;
+        }
+
         .giveaway-label {
             display: inline-flex;
             margin-bottom: 12px;
@@ -2494,6 +2527,80 @@
             border: 1px solid rgba(210,167,92,.25);
             border-radius: var(--radius-md);
             background: var(--bg-card);
+        }
+
+        .giveaway-entry-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin: 18px 0 24px;
+            padding: 18px;
+            border: 1px solid rgba(210,167,92,.26);
+            border-radius: var(--radius-md);
+            background: linear-gradient(145deg, rgba(210,167,92,.1), rgba(62,101,79,.08));
+        }
+
+        .giveaway-entry-panel strong,
+        .giveaway-entry-panel small {
+            display: block;
+        }
+
+        .giveaway-entry-panel small {
+            max-width: 620px;
+            margin-top: 5px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .admin-giveaway-group {
+            margin-bottom: 16px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: rgba(255,255,255,.018);
+        }
+
+        .admin-giveaway-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .admin-giveaway-header small {
+            display: block;
+            margin-top: 4px;
+            color: var(--text-muted);
+        }
+
+        .winner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 7px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgba(210,167,92,.15);
+            color: var(--gold-light);
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        @media (max-width: 700px) {
+            .giveaway-entry-panel,
+            .admin-giveaway-header {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .giveaway-entry-panel .primary-btn,
+            .giveaway-entry-panel .secondary-btn,
+            .admin-giveaway-header .secondary-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         .form-hint {
@@ -3282,11 +3389,14 @@
         .home-giveaway-link:hover { transform: translateY(-3px); border-color: rgba(210,167,92,.58); box-shadow: 0 18px 45px rgba(0,0,0,.25); }
         .home-giveaway-visual { min-height: 260px; position: relative; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 30% 25%,rgba(210,167,92,.22),transparent 38%),linear-gradient(145deg,rgba(113,52,56,.42),rgba(62,101,79,.25)); }
         .home-giveaway-visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; }
+        .home-giveaway-image-link { position: absolute; inset: 0; z-index: 1; display: block; overflow: hidden; }
+        .home-giveaway-image-link img { transition: transform .22s ease, filter .22s ease; }
+        .home-giveaway-image-link:hover img { transform: scale(1.015); filter: brightness(1.08); }
         .home-giveaway-visual > i { color: var(--gold-light); font-size: 64px; }
         .home-giveaway-content { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(24px,4vw,46px); }
         .home-giveaway-content h2 { margin: 10px 0 10px; font-family: "Playfair Display",serif; font-size: clamp(26px,3vw,40px); }
         .home-giveaway-content p { max-width: 680px; color: var(--text-secondary); line-height: 1.7; }
-        .home-giveaway-content .primary-btn { margin-top: 20px; pointer-events: none; }
+        .home-giveaway-content .primary-btn { margin-top: 20px; }
 
         @media (max-width: 900px) {
             .game-grid { grid-template-columns: 1fr; }
@@ -5878,6 +5988,7 @@
         let cachedVotes = [];
         let cachedPublicProfiles = [];
         let cachedGiveaways = [];
+        let cachedGiveawayEntries = [];
         let cachedChatMessages = [];
         let cachedCommunities = [];
         let cachedMemberships = [];
@@ -5906,6 +6017,8 @@
         const pendingUserTopicRequests = new Set();
         const loadedUserTopicProfiles = new Set();
         const pendingProfileRequests = new Set();
+        const loadedGiveawayEntryKeys = new Set();
+        const pendingGiveawayEntryKeys = new Set();
         let activeProfileSearchTerm = "";
         let profileSearchLoading = false;
         let activeEngagementKey = "";
@@ -5983,6 +6096,17 @@
 
             try {
                 const url = new URL(String(value || ""));
+                return url.protocol === "https:" ? url.href : "";
+            } catch {
+                return "";
+            }
+        }
+
+
+        function safeExternalURL(value) {
+
+            try {
+                const url = new URL(String(value || "").trim());
                 return url.protocol === "https:" ? url.href : "";
             } catch {
                 return "";
@@ -6423,7 +6547,7 @@
             adminDataLoading = true;
 
             try {
-                const [topicsSnapshot, commentsSnapshot, votesSnapshot] = await Promise.all([
+                const [topicsSnapshot, commentsSnapshot, votesSnapshot, giveawayEntriesResult] = await Promise.all([
                     getDocs(query(
                         collection(db, "topics"),
                         orderBy("createdAt", "desc"),
@@ -6438,7 +6562,12 @@
                         collection(db, "votes"),
                         orderBy("createdAt", "desc"),
                         limit(1000)
-                    ))
+                    )),
+                    getDocs(query(
+                        collection(db, "giveawayEntries"),
+                        orderBy("createdAt", "desc"),
+                        limit(5000)
+                    )).then(snapshot => ({ snapshot })).catch(error => ({ error }))
                 ]);
 
                 cachedTopics = mergeRowsById(
@@ -6455,6 +6584,18 @@
                     cachedVotes,
                     votesSnapshot.docs.map(item => ({ id: item.id, ...item.data() }))
                 );
+                if (giveawayEntriesResult.error) {
+                    console.error("Çekiliş katılımcıları yüklenemedi:", giveawayEntriesResult.error);
+                    showToast("Katılımcı listesi yüklenemedi. Yeni Firestore kuralını yayınladığından emin ol.", "error");
+                } else {
+                    cachedGiveawayEntries = giveawayEntriesResult.snapshot.docs.map(item => ({
+                        id: item.id,
+                        ...item.data()
+                    }));
+                }
+                cachedGiveawayEntries
+                    .filter(entry => entry.userId === auth?.currentUser?.uid)
+                    .forEach(entry => loadedGiveawayEntryKeys.add(entry.id));
                 adminDataLoaded = true;
             } catch (error) {
                 console.error("Admin verileri yüklenemedi:", error);
@@ -6885,6 +7026,175 @@
         }
 
 
+        function giveawayEntryDocumentId(giveawayId, userId) {
+            return `${giveawayId}_${userId}`;
+        }
+
+
+        function giveawayEntriesFor(giveawayId) {
+            return cachedGiveawayEntries
+                .filter(entry => entry.giveawayId === giveawayId)
+                .sort((first, second) =>
+                    (first.createdAt?.toMillis?.() || 0) -
+                    (second.createdAt?.toMillis?.() || 0)
+                );
+        }
+
+
+        async function ensureGiveawayEntryLoaded(giveawayId) {
+            const user = auth?.currentUser;
+            if (!db || !user || !giveawayId) return;
+
+            const entryId = giveawayEntryDocumentId(giveawayId, user.uid);
+            if (
+                loadedGiveawayEntryKeys.has(entryId) ||
+                pendingGiveawayEntryKeys.has(entryId)
+            ) return;
+
+            pendingGiveawayEntryKeys.add(entryId);
+            try {
+                const entrySnapshot = await getDoc(doc(db, "giveawayEntries", entryId));
+                if (entrySnapshot.exists()) {
+                    cachedGiveawayEntries = mergeRowsById(cachedGiveawayEntries, [{
+                        id: entrySnapshot.id,
+                        ...entrySnapshot.data()
+                    }]);
+                }
+            } catch (error) {
+                console.error("Çekiliş katılımı kontrol edilemedi:", error);
+            } finally {
+                loadedGiveawayEntryKeys.add(entryId);
+                pendingGiveawayEntryKeys.delete(entryId);
+                if (
+                    decodeURIComponent(window.location.hash.slice(1)) ===
+                    `giveaway=${giveawayId}`
+                ) renderRoute();
+            }
+        }
+
+
+        function giveawayParticipationMarkup(giveaway) {
+            const user = window.meepleForumAuthUser;
+
+            if (!user) {
+                return `
+                    <div class="giveaway-entry-panel">
+                        <div>
+                            <strong>Çekilişe katılmak ister misin?</strong>
+                            <small>Katılım için giriş yapmalısın. Kayıtlı e-posta adresin yalnızca çekiliş yönetimi amacıyla admin tarafından görülebilir.</small>
+                        </div>
+                        <button class="primary-btn" type="button" data-login-for-giveaway>
+                            <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap ve Katıl
+                        </button>
+                    </div>
+                `;
+            }
+
+            const entryId = giveawayEntryDocumentId(giveaway.id, user.uid);
+            const entry = cachedGiveawayEntries.find(item => item.id === entryId);
+            const isLoaded = loadedGiveawayEntryKeys.has(entryId);
+
+            return `
+                <div class="giveaway-entry-panel">
+                    <div>
+                        <strong>${entry ? "Bu çekilişe katıldın" : "Çekilişe katıl"}</strong>
+                        <small>
+                            ${entry
+                                ? "Katılımın kullanıcı adın ve kayıtlı e-posta adresinle kaydedildi. Dilersen katılımını iptal edebilirsin."
+                                : "Her hesap yalnızca bir kez katılabilir. Kullanıcı adın ve kayıtlı e-posta adresin sadece adminin katılımcı listesinde görünür."}
+                        </small>
+                    </div>
+                    <button
+                        class="${entry ? "secondary-btn" : "primary-btn"}"
+                        type="button"
+                        data-toggle-giveaway-entry="${escapeHTML(giveaway.id)}"
+                        ${isLoaded ? "" : "disabled"}
+                    >
+                        <i class="fa-solid ${!isLoaded ? "fa-spinner fa-spin" : entry ? "fa-user-minus" : "fa-ticket"}"></i>
+                        ${!isLoaded ? "Katılım kontrol ediliyor..." : entry ? "Katılımı İptal Et" : "Çekilişe Katıl"}
+                    </button>
+                </div>
+            `;
+        }
+
+
+        function exportGiveawayEntries(giveawayId) {
+            if (!isCurrentUserAdmin || !auth?.currentUser) {
+                showToast("Katılımcı listesini yalnızca admin dışa aktarabilir.", "error");
+                return;
+            }
+
+            const giveaway = cachedGiveaways.find(item => item.id === giveawayId);
+            const entries = giveawayEntriesFor(giveawayId);
+            if (!giveaway || !entries.length) {
+                showToast("Bu çekilişte dışa aktarılacak katılımcı yok.", "error");
+                return;
+            }
+
+            const csvCell = value => `"${String(value ?? "").replace(/"/g, '""')}"`;
+            const rows = [
+                ["Sıra", "Çekiliş", "Kullanıcı Adı", "E-posta", "Kullanıcı UID", "Katılım Tarihi", "Durum"],
+                ...entries.map((entry, index) => [
+                    index + 1,
+                    giveaway.title || "MeepleForum Çekilişi",
+                    entry.displayName || "Kullanıcı",
+                    entry.email || "",
+                    entry.userId || "",
+                    entry.createdAt?.toDate?.().toLocaleString("tr-TR") || "",
+                    entry.winner ? "Kazanan" : "Katılımcı"
+                ])
+            ];
+            const csv = `\uFEFF${rows.map(row => row.map(csvCell).join(";")).join("\r\n")}`;
+            const blobURL = URL.createObjectURL(new Blob([csv], {
+                type: "text/csv;charset=utf-8"
+            }));
+            const safeName = String(giveaway.title || "cekilis-katilimcilari")
+                .toLocaleLowerCase("tr-TR")
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-|-$/g, "") || "cekilis-katilimcilari";
+            const downloadLink = document.createElement("a");
+            downloadLink.href = blobURL;
+            downloadLink.download = `${safeName}-katilimcilar.csv`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            downloadLink.remove();
+            setTimeout(() => URL.revokeObjectURL(blobURL), 1000);
+            showToast("Katılımcı listesi CSV olarak indirildi.");
+        }
+
+
+        function giveawayImageMarkup(giveaway, mode = "card") {
+            const imageURL = safeImageURL(giveaway.imageURL);
+            if (!imageURL) return "";
+
+            const linkURL = safeExternalURL(giveaway.linkURL);
+            const imageClass = mode === "detail"
+                ? "topic-detail-image"
+                : mode === "home"
+                    ? ""
+                    : "giveaway-card-image";
+            const image = `<img class="${imageClass}" src="${escapeHTML(imageURL)}" alt="${escapeHTML(giveaway.title || "Çekiliş görseli")}" loading="lazy">`;
+            if (!linkURL) return image;
+
+            const linkClass = mode === "detail"
+                ? "giveaway-detail-image-link"
+                : mode === "home"
+                    ? "home-giveaway-image-link"
+                    : "giveaway-card-image-link";
+            return `
+                <a
+                    class="${linkClass}"
+                    href="${escapeHTML(linkURL)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="${escapeHTML(giveaway.title || "Çekiliş bağlantısını aç")}"
+                >${image}</a>
+            `;
+        }
+
+
         function giveawaysMarkup() {
 
             const adminForm = isCurrentUserAdmin ? `
@@ -6930,6 +7240,18 @@
                         >
                         <small class="form-hint">JPG, PNG veya WebP · en fazla 10 MB. Yüklemeden önce otomatik küçültülür.</small>
                     </div>
+                    <div class="form-group">
+                        <label for="giveawayLink">Fotoğrafa Bağlanacak Adres (isteğe bağlı)</label>
+                        <input
+                            class="form-input"
+                            id="giveawayLink"
+                            name="linkURL"
+                            type="url"
+                            maxlength="1000"
+                            placeholder="https://..."
+                        >
+                        <small class="form-hint">Yalnızca HTTPS bağlantıları kabul edilir. Bu alan sadece admin hesabında görünür.</small>
+                    </div>
                     <button class="primary-btn" type="submit">
                         <i class="fa-solid fa-gift"></i>
                         Çekilişi Yayınla
@@ -6942,14 +7264,7 @@
                 <div class="giveaway-grid">
                     ${cachedGiveaways.length ? cachedGiveaways.map(giveaway => `
                         <article class="giveaway-card">
-                            ${safeImageURL(giveaway.imageURL) ? `
-                                <img
-                                    class="giveaway-card-image"
-                                    src="${escapeHTML(safeImageURL(giveaway.imageURL))}"
-                                    alt="${escapeHTML(giveaway.title || "Çekiliş görseli")}"
-                                    loading="lazy"
-                                >
-                            ` : ""}
+                            ${giveawayImageMarkup(giveaway, "card")}
                             <span class="giveaway-label">
                                 ${giveaway.period === "monthly" ? "Aylık Çekiliş" : "Haftalık Çekiliş"}
                             </span>
@@ -8153,11 +8468,61 @@
                                 <strong>${escapeHTML(giveaway.title || "Adsız çekiliş")}</strong>
                                 <small>${giveaway.period === "monthly" ? "Aylık" : "Haftalık"}</small>
                             </div>
-                            <button class="danger-btn" type="button" data-delete-giveaway="${escapeHTML(giveaway.id)}">
-                                <i class="fa-solid fa-trash"></i> Çekilişi Sil
-                            </button>
+                            <div class="owner-actions">
+                                <button class="vote-btn" type="button" data-edit-giveaway-link="${escapeHTML(giveaway.id)}">
+                                    <i class="fa-solid fa-link"></i> Görsel Linki
+                                </button>
+                                <button class="danger-btn" type="button" data-delete-giveaway="${escapeHTML(giveaway.id)}">
+                                    <i class="fa-solid fa-trash"></i> Çekilişi Sil
+                                </button>
+                            </div>
                         </div>
                     `).join("") || '<div class="empty-state">Henüz çekiliş yok.</div>'}
+
+                    <h2>Çekiliş Katılımcıları (${cachedGiveawayEntries.length})</h2>
+                    ${cachedGiveaways.map(giveaway => {
+                        const entries = giveawayEntriesFor(giveaway.id);
+                        return `
+                            <section class="admin-giveaway-group">
+                                <div class="admin-giveaway-header">
+                                    <div>
+                                        <strong>${escapeHTML(giveaway.title || "Adsız çekiliş")}</strong>
+                                        <small>${entries.length} katılımcı</small>
+                                    </div>
+                                    <button
+                                        class="secondary-btn"
+                                        type="button"
+                                        data-export-giveaway-entries="${escapeHTML(giveaway.id)}"
+                                        ${entries.length ? "" : "disabled"}
+                                    >
+                                        <i class="fa-solid fa-file-csv"></i> CSV Dışa Aktar
+                                    </button>
+                                </div>
+                                ${entries.map(entry => `
+                                    <div class="admin-row">
+                                        <div>
+                                            <strong>
+                                                ${escapeHTML(entry.displayName || "Kullanıcı")}
+                                                ${entry.winner ? '<span class="winner-badge"><i class="fa-solid fa-trophy"></i> Kazanan</span>' : ""}
+                                            </strong>
+                                            <small>
+                                                ${escapeHTML(entry.email || "E-posta yok")}
+                                                · ${escapeHTML(formatTopicDate(entry.createdAt))}
+                                            </small>
+                                        </div>
+                                        <div class="owner-actions">
+                                            <button class="vote-btn" type="button" data-toggle-giveaway-winner="${escapeHTML(entry.id)}">
+                                                <i class="fa-solid fa-trophy"></i> ${entry.winner ? "Kazananı Geri Al" : "Kazanan Yap"}
+                                            </button>
+                                            <button class="danger-btn" type="button" data-delete-giveaway-entry="${escapeHTML(entry.id)}">
+                                                <i class="fa-solid fa-user-xmark"></i> Listeden Çıkar
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join("") || '<div class="empty-state">Bu çekilişte henüz katılımcı yok.</div>'}
+                            </section>
+                        `;
+                    }).join("") || '<div class="empty-state">Katılımcısı görüntülenecek çekiliş yok.</div>'}
 
                     <h2>İncelemeler</h2>
                     ${getPublishedReviews().map(([reviewId, review]) => `
@@ -8203,33 +8568,28 @@
                 return;
             }
 
-            const imageURL = safeImageURL(giveaway.imageURL);
             const periodLabel = giveaway.period === "monthly"
                 ? "Aylık Çekiliş"
                 : "Haftalık Çekiliş";
 
             homeGiveawayShowcase.hidden = false;
             homeGiveawayShowcase.innerHTML = `
-                <a
-                    class="home-giveaway-link"
-                    href="#giveaway=${encodeURIComponent(giveaway.id)}"
-                    aria-label="${escapeHTML(giveaway.title || "Çekilişi aç")}" 
-                >
+                <article class="home-giveaway-link">
                     <div class="home-giveaway-visual">
-                        ${imageURL
-                            ? `<img src="${escapeHTML(imageURL)}" alt="${escapeHTML(giveaway.title || "Çekiliş görseli")}" loading="lazy">`
+                        ${safeImageURL(giveaway.imageURL)
+                            ? giveawayImageMarkup(giveaway, "home")
                             : '<i class="fa-solid fa-gift" aria-hidden="true"></i>'}
                     </div>
                     <div class="home-giveaway-content">
                         <span class="giveaway-label">${periodLabel}</span>
                         <h2>${escapeHTML(giveaway.title || "MeepleForum Çekilişi")}</h2>
                         <p>${escapeHTML(String(giveaway.description || "").slice(0, 220))}${String(giveaway.description || "").length > 220 ? "…" : ""}</p>
-                        <span class="primary-btn">
+                        <a class="primary-btn" href="#giveaway=${encodeURIComponent(giveaway.id)}">
                             <i class="fa-solid fa-gift"></i>
                             Çekilişe Git
-                        </span>
+                        </a>
                     </div>
-                </a>
+                </article>
             `;
         }
 
@@ -11032,16 +11392,12 @@
                                 <span>${escapeHTML(formatTopicDate(giveaway.createdAt))}</span>
                             </div>
                             <div class="topic-detail-body">${escapeHTML(giveaway.description || "")}</div>
-                            ${safeImageURL(giveaway.imageURL) ? `
-                                <img
-                                    class="topic-detail-image"
-                                    src="${escapeHTML(safeImageURL(giveaway.imageURL))}"
-                                    alt="${escapeHTML(giveaway.title || "Çekiliş görseli")}"
-                                >
-                            ` : ""}
+                            ${giveawayImageMarkup(giveaway, "detail")}
                         </article>
+                        ${giveawayParticipationMarkup(giveaway)}
                         ${engagementMarkup("giveaway", giveaway.id, false)}
                     `;
+                    if (auth?.currentUser) ensureGiveawayEntryLoaded(giveaway.id);
                 }
                 document.querySelector('nav a[data-action="giveaways"]')?.classList.add("active");
 
@@ -11133,7 +11489,7 @@
                 setRouteHeader(
                     "Moderasyon",
                     "Admin Paneli",
-                    "Başlıkları, incelemeleri, yorumları, çekilişleri ve BKFK onaylarını yönet."
+                    "İçerikleri, çekiliş katılımcılarını, dışa aktarımları ve BKFK onaylarını yönet."
                 );
                 routeContent.innerHTML = `
                     ${adminDataLoading ? `
@@ -12630,9 +12986,16 @@
                     const period = giveawayForm.elements.period.value;
                     const description = giveawayForm.elements.description.value.trim();
                     const imageFile = giveawayForm.elements.image.files?.[0] || null;
+                    const rawLinkURL = giveawayForm.elements.linkURL.value.trim();
+                    const linkURL = safeExternalURL(rawLinkURL);
                     const submitButton = giveawayForm.querySelector('button[type="submit"]');
 
                     if (!title || !description || !["weekly", "monthly"].includes(period)) return;
+
+                    if (rawLinkURL && !linkURL) {
+                        showToast("Fotoğraf bağlantısı https:// ile başlayan geçerli bir adres olmalı.", "error");
+                        return;
+                    }
 
                     if (
                         imageFile &&
@@ -12682,6 +13045,7 @@
                             period,
                             description,
                             imageURL,
+                            linkURL,
                             createdBy: user.uid,
                             authorName: cachedProfile?.displayName || getDefaultDisplayName(user),
                             status: "active",
@@ -12935,6 +13299,11 @@
                     return;
                 }
 
+                if (event.target.closest("[data-login-for-giveaway]")) {
+                    openModal("loginModal");
+                    return;
+                }
+
                 const voteButton = event.target.closest("[data-vote-type]");
                 const deleteCommentButton = event.target.closest("[data-delete-comment]");
                 const deleteTopicButton = event.target.closest("[data-delete-topic]");
@@ -12954,6 +13323,173 @@
                 const rejectCommunityButton = event.target.closest("[data-reject-community]");
                 const deleteVenueButton = event.target.closest("[data-delete-venue]");
                 const refreshVenueButton = event.target.closest("[data-refresh-venue]");
+                const toggleGiveawayEntryButton = event.target.closest("[data-toggle-giveaway-entry]");
+                const exportGiveawayEntriesButton = event.target.closest("[data-export-giveaway-entries]");
+                const toggleGiveawayWinnerButton = event.target.closest("[data-toggle-giveaway-winner]");
+                const deleteGiveawayEntryButton = event.target.closest("[data-delete-giveaway-entry]");
+                const editGiveawayLinkButton = event.target.closest("[data-edit-giveaway-link]");
+
+                if (toggleGiveawayEntryButton) {
+                    const user = auth.currentUser;
+                    const giveawayId = toggleGiveawayEntryButton.dataset.toggleGiveawayEntry;
+                    const giveaway = cachedGiveaways.find(item => item.id === giveawayId);
+
+                    if (!user) {
+                        openModal("loginModal");
+                        return;
+                    }
+                    if (!giveaway || ["closed", "ended", "inactive"].includes(giveaway.status)) {
+                        showToast("Bu çekiliş artık katılıma açık değil.", "error");
+                        return;
+                    }
+
+                    const entryId = giveawayEntryDocumentId(giveawayId, user.uid);
+                    const currentEntry = cachedGiveawayEntries.find(item => item.id === entryId);
+                    toggleGiveawayEntryButton.disabled = true;
+
+                    try {
+                        if (currentEntry) {
+                            if (!window.confirm("Bu çekilişteki katılımını iptal etmek istediğine emin misin?")) {
+                                toggleGiveawayEntryButton.disabled = false;
+                                return;
+                            }
+                            await deleteDoc(doc(db, "giveawayEntries", entryId));
+                            cachedGiveawayEntries = cachedGiveawayEntries.filter(item => item.id !== entryId);
+                            showToast("Çekiliş katılımın iptal edildi.");
+                        } else {
+                            if (!user.email) {
+                                showToast("Çekilişe katılmak için hesabında kayıtlı bir e-posta adresi olmalı.", "error");
+                                toggleGiveawayEntryButton.disabled = false;
+                                return;
+                            }
+                            const displayName = cachedProfile?.displayName || getDefaultDisplayName(user);
+                            await setDoc(doc(db, "giveawayEntries", entryId), {
+                                giveawayId,
+                                giveawayTitle: giveaway.title || "MeepleForum Çekilişi",
+                                userId: user.uid,
+                                displayName,
+                                email: user.email,
+                                status: "active",
+                                winner: false,
+                                createdAt: serverTimestamp(),
+                                updatedAt: serverTimestamp()
+                            });
+                            const savedEntry = await getDoc(doc(db, "giveawayEntries", entryId));
+                            if (savedEntry.exists()) {
+                                cachedGiveawayEntries = mergeRowsById(cachedGiveawayEntries, [{
+                                    id: savedEntry.id,
+                                    ...savedEntry.data()
+                                }]);
+                            }
+                            showToast("Çekilişe katılımın kaydedildi.");
+                        }
+                        loadedGiveawayEntryKeys.add(entryId);
+                        renderRoute();
+                    } catch (error) {
+                        console.error("Çekiliş katılımı güncellenemedi:", error);
+                        showToast(getDataErrorMessage(error, "Çekiliş katılımı kaydedilemedi."), "error");
+                        toggleGiveawayEntryButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (exportGiveawayEntriesButton) {
+                    exportGiveawayEntries(exportGiveawayEntriesButton.dataset.exportGiveawayEntries);
+                    return;
+                }
+
+                if (toggleGiveawayWinnerButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Kazananı yalnızca admin belirleyebilir.", "error");
+                        return;
+                    }
+                    const entryId = toggleGiveawayWinnerButton.dataset.toggleGiveawayWinner;
+                    const entry = cachedGiveawayEntries.find(item => item.id === entryId);
+                    if (!entry) return;
+
+                    toggleGiveawayWinnerButton.disabled = true;
+                    const winner = !entry.winner;
+                    try {
+                        await setDoc(doc(db, "giveawayEntries", entryId), {
+                            winner,
+                            status: winner ? "winner" : "active",
+                            reviewedBy: auth.currentUser.uid,
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+                        cachedGiveawayEntries = cachedGiveawayEntries.map(item =>
+                            item.id === entryId
+                                ? { ...item, winner, status: winner ? "winner" : "active" }
+                                : item
+                        );
+                        renderRoute();
+                        showToast(winner ? "Katılımcı kazanan olarak işaretlendi." : "Kazanan işareti kaldırıldı.");
+                    } catch (error) {
+                        console.error("Kazanan durumu güncellenemedi:", error);
+                        showToast(getDataErrorMessage(error, "Kazanan durumu güncellenemedi."), "error");
+                        toggleGiveawayWinnerButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (deleteGiveawayEntryButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Katılımcıyı yalnızca admin listeden çıkarabilir.", "error");
+                        return;
+                    }
+                    const entryId = deleteGiveawayEntryButton.dataset.deleteGiveawayEntry;
+                    const entry = cachedGiveawayEntries.find(item => item.id === entryId);
+                    if (!entry || !window.confirm(`“${entry.displayName || "Bu katılımcı"}” listeden çıkarılsın mı?`)) return;
+
+                    deleteGiveawayEntryButton.disabled = true;
+                    try {
+                        await deleteDoc(doc(db, "giveawayEntries", entryId));
+                        cachedGiveawayEntries = cachedGiveawayEntries.filter(item => item.id !== entryId);
+                        renderRoute();
+                        showToast("Katılımcı çekiliş listesinden çıkarıldı.");
+                    } catch (error) {
+                        console.error("Katılımcı listeden çıkarılamadı:", error);
+                        showToast(getDataErrorMessage(error, "Katılımcı listeden çıkarılamadı."), "error");
+                        deleteGiveawayEntryButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (editGiveawayLinkButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Çekiliş görseline yalnızca admin bağlantı ekleyebilir.", "error");
+                        return;
+                    }
+                    const giveawayId = editGiveawayLinkButton.dataset.editGiveawayLink;
+                    const giveaway = cachedGiveaways.find(item => item.id === giveawayId);
+                    if (!giveaway) return;
+
+                    const rawLinkURL = window.prompt(
+                        "Fotoğrafa bağlanacak HTTPS adresi (kaldırmak için boş bırak)",
+                        giveaway.linkURL || ""
+                    );
+                    if (rawLinkURL === null) return;
+                    const trimmedLinkURL = rawLinkURL.trim();
+                    const linkURL = safeExternalURL(trimmedLinkURL);
+                    if (trimmedLinkURL && !linkURL) {
+                        showToast("Bağlantı https:// ile başlayan geçerli bir adres olmalı.", "error");
+                        return;
+                    }
+
+                    editGiveawayLinkButton.disabled = true;
+                    try {
+                        await setDoc(doc(db, "giveaways", giveawayId), {
+                            linkURL,
+                            updatedAt: serverTimestamp(),
+                            updatedBy: auth.currentUser.uid
+                        }, { merge: true });
+                        showToast(linkURL ? "Görsel bağlantısı güncellendi." : "Görsel bağlantısı kaldırıldı.");
+                    } catch (error) {
+                        console.error("Görsel bağlantısı güncellenemedi:", error);
+                        showToast(getDataErrorMessage(error, "Görsel bağlantısı güncellenemedi."), "error");
+                        editGiveawayLinkButton.disabled = false;
+                    }
+                    return;
+                }
 
                 if (deleteEventButton) {
                     const eventId = deleteEventButton.dataset.deleteEvent;
@@ -13529,14 +14065,23 @@
                         const relatedComments = cachedComments.filter(comment =>
                             comment.targetType === "giveaway" && comment.targetId === giveawayId
                         );
+                        const relatedEntries = cachedGiveawayEntries.filter(entry =>
+                            entry.giveawayId === giveawayId
+                        );
 
                         await Promise.all([
                             deleteDoc(doc(db, "giveaways", giveawayId)),
                             ...relatedComments.map(comment =>
                                 deleteDoc(doc(db, "comments", comment.id))
+                            ),
+                            ...relatedEntries.map(entry =>
+                                deleteDoc(doc(db, "giveawayEntries", entry.id))
                             )
                         ]);
 
+                        cachedGiveawayEntries = cachedGiveawayEntries.filter(entry =>
+                            entry.giveawayId !== giveawayId
+                        );
                         showToast("Çekiliş silindi.");
                     } catch (error) {
                         console.error("Çekiliş silinemedi:", error);
@@ -13990,6 +14535,11 @@
             onAuthStateChanged(auth, async user => {
 
                 window.meepleForumAuthUser = user || null;
+                cachedGiveawayEntries = [];
+                loadedGiveawayEntryKeys.clear();
+                pendingGiveawayEntryKeys.clear();
+                adminDataLoaded = false;
+                adminDataLoading = false;
 
                 if (user) {
 
