@@ -2401,6 +2401,69 @@
             overscroll-behavior: contain;
         }
 
+        .admin-security-card {
+            padding: 16px;
+            border: 1px solid rgba(210,167,92,.22);
+            border-radius: 13px;
+            background: linear-gradient(145deg, rgba(210,167,92,.055), rgba(113,52,56,.045));
+        }
+
+        .admin-security-copy {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .admin-security-list {
+            max-height: 430px;
+            overflow-y: auto;
+            display: grid;
+            gap: 8px;
+            padding-right: 5px;
+            overscroll-behavior: contain;
+        }
+
+        .security-status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 6px;
+            padding: 4px 7px;
+            border-radius: 999px;
+            background: rgba(104,181,138,.10);
+            color: var(--success);
+            font-size: 9px;
+            font-weight: 850;
+        }
+
+        .security-status-chip.banned {
+            background: rgba(185,106,106,.12);
+            color: #e6a0a0;
+        }
+
+        .security-status-chip.ip-banned {
+            background: rgba(210,167,92,.13);
+            color: var(--gold-light);
+        }
+
+        .rate-limit-note {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .rate-limit-note > span {
+            padding: 9px 10px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: rgba(255,255,255,.025);
+            color: var(--text-muted);
+            font-size: 10px;
+            line-height: 1.45;
+        }
+
         .admin-row strong,
         .admin-row small {
             display: block;
@@ -6657,6 +6720,11 @@
         } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js";
 
         import {
+            getFunctions,
+            httpsCallable
+        } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-functions.js";
+
+        import {
             getDatabase,
             ref as databaseRef,
             push,
@@ -6815,6 +6883,9 @@
         let cachedComments = [];
         let cachedVotes = [];
         let cachedPublicProfiles = [];
+        let cachedBannedUsers = [];
+        let ownBanUnsubscribe = null;
+        let securityFunctionsAvailable = null;
         let cachedGiveaways = [];
         let cachedDailyQuestion = null;
         let dailyQuestionCommentsUnsubscribe = null;
@@ -6887,6 +6958,10 @@
         let auth = null;
         let db = null;
         let storage = null;
+        let functions = null;
+        let recordSecuritySessionCallable = null;
+        let banMemberWithIpCallable = null;
+        let unbanMemberSecurityCallable = null;
         let realtimeDb = null;
         let cachedProfile = null;
         let cachedProfileUid = null;
@@ -7491,7 +7566,7 @@
             adminDataLoading = true;
 
             try {
-                const [topicsSnapshot, commentsSnapshot, votesSnapshot, giveawayEntriesResult] = await Promise.all([
+                const [topicsSnapshot, commentsSnapshot, votesSnapshot, giveawayEntriesResult, bannedUsersResult] = await Promise.all([
                     getDocs(query(
                         collection(db, "topics"),
                         orderBy("createdAt", "desc"),
@@ -7511,6 +7586,10 @@
                         collection(db, "giveawayEntries"),
                         orderBy("createdAt", "desc"),
                         limit(5000)
+                    )).then(snapshot => ({ snapshot })).catch(error => ({ error })),
+                    getDocs(query(
+                        collection(db, "bannedUsers"),
+                        limit(2000)
                     )).then(snapshot => ({ snapshot })).catch(error => ({ error }))
                 ]);
 
@@ -7540,6 +7619,15 @@
                 cachedGiveawayEntries
                     .filter(entry => entry.userId === auth?.currentUser?.uid)
                     .forEach(entry => loadedGiveawayEntryKeys.add(entry.id));
+                if (bannedUsersResult.error) {
+                    console.error("Ban listesi yüklenemedi:", bannedUsersResult.error);
+                    cachedBannedUsers = [];
+                } else {
+                    cachedBannedUsers = bannedUsersResult.snapshot.docs.map(item => ({
+                        id: item.id,
+                        ...item.data()
+                    }));
+                }
                 adminDataLoaded = true;
             } catch (error) {
                 console.error("Admin verileri yüklenemedi:", error);
@@ -8119,6 +8207,13 @@
             const displayName = cachedProfile?.displayName || getDefaultDisplayName(user);
             const photoURL = cachedProfile?.photoURL || user.photoURL || "";
 
+            try {
+                await assertRateLimitAvailable("comment", user);
+            } catch (error) {
+                if (message) message.textContent = rateLimitMessage(error);
+                return;
+            }
+
             setButtonBusy(
                 submitButton,
                 true,
@@ -8128,38 +8223,42 @@
             if (message) message.textContent = "";
 
             try {
-                const batch = writeBatch(db);
-                batch.set(doc(db, "giveawayEntries", entryId), {
-                    giveawayId: giveaway.id,
-                    giveawayTitle: giveaway.title || "MeepleForum Çekilişi",
-                    question,
-                    answer,
-                    userId: user.uid,
-                    displayName,
-                    email: user.email,
-                    status: "active",
-                    winner: false,
-                    consentAccepted: true,
-                    consentVersion: GIVEAWAY_CONSENT_VERSION,
-                    consentAcceptedAt: serverTimestamp(),
-                    commentId,
-                    createdAt: serverTimestamp(),
-                    updatedAt: serverTimestamp()
-                });
-                batch.set(doc(db, "comments", commentId), {
-                    targetType: "giveaway",
-                    targetId: giveaway.id,
-                    content: answer,
-                    authorId: user.uid,
-                    userId: user.uid,
-                    authorName: displayName,
-                    authorPhotoURL: photoURL,
-                    isGiveawayAnswer: true,
-                    giveawayEntryId: entryId,
-                    giveawayQuestion: question,
-                    createdAt: serverTimestamp()
-                });
-                await withTimeout(batch.commit(), 20000);
+                await withTimeout(
+                    runTransaction(db, async transaction => {
+                        await reserveRateLimitInTransaction(transaction, "comment", user);
+                        transaction.set(doc(db, "giveawayEntries", entryId), {
+                            giveawayId: giveaway.id,
+                            giveawayTitle: giveaway.title || "MeepleForum Çekilişi",
+                            question,
+                            answer,
+                            userId: user.uid,
+                            displayName,
+                            email: user.email,
+                            status: "active",
+                            winner: false,
+                            consentAccepted: true,
+                            consentVersion: GIVEAWAY_CONSENT_VERSION,
+                            consentAcceptedAt: serverTimestamp(),
+                            commentId,
+                            createdAt: serverTimestamp(),
+                            updatedAt: serverTimestamp()
+                        });
+                        transaction.set(doc(db, "comments", commentId), {
+                            targetType: "giveaway",
+                            targetId: giveaway.id,
+                            content: answer,
+                            authorId: user.uid,
+                            userId: user.uid,
+                            authorName: displayName,
+                            authorPhotoURL: photoURL,
+                            isGiveawayAnswer: true,
+                            giveawayEntryId: entryId,
+                            giveawayQuestion: question,
+                            createdAt: serverTimestamp()
+                        });
+                    }),
+                    20000
+                );
 
                 const savedEntry = await getDoc(doc(db, "giveawayEntries", entryId));
                 if (savedEntry.exists()) {
@@ -8178,7 +8277,9 @@
                 if (message) {
                     message.textContent = getDataErrorMessage(
                         error,
-                        "Katılım kaydedilemedi. Firestore kurallarını kontrol edip tekrar dene."
+                        error?.code === "security/rate-limit"
+                            ? rateLimitMessage(error)
+                            : "Katılım kaydedilemedi. Firestore kurallarını kontrol edip tekrar dene."
                     );
                 }
             } finally {
@@ -9830,6 +9931,56 @@
                                 </button>
                             </div>
                         </form>
+                    </section>
+
+                    <h2>Üye Güvenliği</h2>
+                    <section class="admin-security-card">
+                        <p class="admin-security-copy">
+                            Hesap banı Firestore ve Storage işlemlerini engeller. “Hesap + IP Banla” seçeneği,
+                            Firebase Cloud Functions + Authentication Blocking Functions kurulduğunda kullanıcının
+                            son kayıtlı IP özetini de banlar. Güvenlik nedeniyle ham IP adresi panelde tutulmaz.
+                        </p>
+                        <div class="rate-limit-note">
+                            <span><strong>Gönderi limiti:</strong> Üye başına 1 dakikada en fazla 3 forum gönderisi/inceleme. Fotoğraflı gönderi de tek gönderi sayılır.</span>
+                            <span><strong>Yorum limiti:</strong> Üye başına 1 dakikada en fazla 5 yorum. Günün Sorusu cevapları da bu limite dahildir.</span>
+                        </div>
+                        <div class="admin-security-list" style="margin-top:12px">
+                            ${cachedPublicProfiles
+                                .filter(profile => (profile.uid || profile.id) && (profile.uid || profile.id) !== auth?.currentUser?.uid)
+                                .sort((a, b) => String(a.displayName || "").localeCompare(String(b.displayName || ""), "tr"))
+                                .map(profile => {
+                                    const userId = profile.uid || profile.id;
+                                    const ban = cachedBannedUsers.find(item => (item.userId || item.id) === userId);
+                                    return `
+                                        <div class="admin-row">
+                                            <div>
+                                                <strong>${escapeHTML(profile.displayName || "Kullanıcı")}</strong>
+                                                <small>${escapeHTML(userId)}</small>
+                                                ${ban
+                                                    ? `<span class="security-status-chip ${ban.ipBanActive ? "ip-banned" : "banned"}">
+                                                        <i class="fa-solid fa-ban"></i>
+                                                        ${ban.ipBanActive ? "Hesap + IP banlı" : "Hesap banlı"}
+                                                       </span>`
+                                                    : `<span class="security-status-chip"><i class="fa-solid fa-shield"></i> Aktif</span>`}
+                                            </div>
+                                            <div class="owner-actions">
+                                                ${ban ? `
+                                                    <button class="secondary-btn" type="button" data-security-unban="${escapeHTML(userId)}" data-ip-ban-active="${ban.ipBanActive ? "1" : "0"}">
+                                                        <i class="fa-solid fa-unlock"></i> Banı Kaldır
+                                                    </button>
+                                                ` : `
+                                                    <button class="danger-btn" type="button" data-security-account-ban="${escapeHTML(userId)}">
+                                                        <i class="fa-solid fa-user-slash"></i> Hesabı Banla
+                                                    </button>
+                                                    <button class="danger-btn" type="button" data-security-ip-ban="${escapeHTML(userId)}">
+                                                        <i class="fa-solid fa-network-wired"></i> Hesap + IP Banla
+                                                    </button>
+                                                `}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join("") || '<div class="empty-state">Üye profili bulunamadı.</div>'}
+                        </div>
                     </section>
 
                     <h2>BKFK Onayları (${pendingBkfkCommunities.length})</h2>
@@ -13195,7 +13346,7 @@
                 setRouteHeader(
                     "Moderasyon",
                     "Admin Paneli",
-                    "İçerikleri, çekiliş katılımcılarını, dışa aktarımları ve BKFK onaylarını yönet."
+                    "İçerikleri, üye güvenliğini, çekiliş katılımcılarını, dışa aktarımları ve BKFK onaylarını yönet."
                 );
                 routeContent.innerHTML = `
                     ${adminDataLoading ? `
@@ -13493,6 +13644,134 @@
                 "Giriş işlemi tamamlanamadı. Lütfen tekrar dene.";
         }
 
+
+        const MEMBER_RATE_LIMITS = Object.freeze({
+            post: 3,
+            comment: 5,
+            windowMs: 60 * 1000
+        });
+
+        function rateLimitCollectionName(kind) {
+            return kind === "comment" ? "commentRateLimits" : "postRateLimits";
+        }
+
+        function createRateLimitError(kind, waitSeconds = 60) {
+            const label = kind === "comment" ? "yorum" : "gönderi";
+            const max = kind === "comment" ? MEMBER_RATE_LIMITS.comment : MEMBER_RATE_LIMITS.post;
+            const error = new Error(`1 dakika içinde en fazla ${max} ${label} paylaşabilirsin.`);
+            error.code = "security/rate-limit";
+            error.waitSeconds = Math.max(1, Math.ceil(waitSeconds));
+            return error;
+        }
+
+        function rateLimitMessage(error, fallback = "İşlem şu anda tamamlanamadı.") {
+            if (error?.code !== "security/rate-limit") return fallback;
+            return `${error.message} Yaklaşık ${error.waitSeconds || 60} saniye sonra tekrar deneyebilirsin.`;
+        }
+
+        async function assertRateLimitAvailable(kind, user) {
+            if (!user || isCurrentUserAdmin) return;
+            const maximum = kind === "comment" ? MEMBER_RATE_LIMITS.comment : MEMBER_RATE_LIMITS.post;
+            const snapshot = await getDoc(doc(db, rateLimitCollectionName(kind), user.uid));
+            if (!snapshot.exists()) return;
+
+            const data = snapshot.data();
+            const startedAt = data.windowStart?.toMillis?.() || 0;
+            const elapsed = Date.now() - startedAt;
+            const count = Number(data.count || 0);
+            if (startedAt && elapsed < MEMBER_RATE_LIMITS.windowMs && count >= maximum) {
+                throw createRateLimitError(kind, (MEMBER_RATE_LIMITS.windowMs - elapsed) / 1000);
+            }
+        }
+
+        async function reserveRateLimitInTransaction(transaction, kind, user) {
+            if (!user || isCurrentUserAdmin) return;
+
+            const maximum = kind === "comment" ? MEMBER_RATE_LIMITS.comment : MEMBER_RATE_LIMITS.post;
+            const limitRef = doc(db, rateLimitCollectionName(kind), user.uid);
+            const snapshot = await transaction.get(limitRef);
+            const current = snapshot.exists() ? snapshot.data() : {};
+            const startedAt = current.windowStart?.toMillis?.() || 0;
+            const elapsed = Date.now() - startedAt;
+            const windowExpired = !snapshot.exists() || !startedAt || elapsed >= MEMBER_RATE_LIMITS.windowMs;
+            const currentCount = Number(current.count || 0);
+
+            if (!windowExpired && currentCount >= maximum) {
+                throw createRateLimitError(kind, (MEMBER_RATE_LIMITS.windowMs - elapsed) / 1000);
+            }
+
+            transaction.set(limitRef, {
+                userId: user.uid,
+                windowStart: windowExpired ? serverTimestamp() : current.windowStart,
+                count: windowExpired ? 1 : currentCount + 1,
+                updatedAt: serverTimestamp()
+            });
+        }
+
+        function stopOwnBanListener() {
+            ownBanUnsubscribe?.();
+            ownBanUnsubscribe = null;
+        }
+
+        function startOwnBanListener(user) {
+            stopOwnBanListener();
+            if (!db || !user) return;
+
+            ownBanUnsubscribe = onSnapshot(
+                doc(db, "bannedUsers", user.uid),
+                async snapshot => {
+                    if (!snapshot.exists() || auth?.currentUser?.uid !== user.uid) return;
+                    try {
+                        await signOut(auth);
+                    } catch (error) {
+                        console.warn("Banlanan hesap çıkış yaptırılamadı:", error);
+                    }
+                    showToast("Bu hesabın MeepleForum erişimi yönetici tarafından engellendi.", "error");
+                },
+                error => console.warn("Hesap ban durumu dinlenemedi:", error)
+            );
+        }
+
+        async function recordSecuritySession(user) {
+            if (!user || !recordSecuritySessionCallable || securityFunctionsAvailable === false) return;
+            try {
+                await recordSecuritySessionCallable();
+                securityFunctionsAvailable = true;
+            } catch (error) {
+                securityFunctionsAvailable = false;
+                console.warn("IP güvenlik fonksiyonu henüz etkin değil:", error);
+            }
+        }
+
+        async function ensureTargetIsNotAdmin(userId) {
+            if (!userId) throw new Error("Kullanıcı bulunamadı.");
+            if (userId === auth?.currentUser?.uid) throw new Error("Kendi admin hesabını banlayamazsın.");
+            const adminSnapshot = await getDoc(doc(db, "admins", userId));
+            if (adminSnapshot.exists()) throw new Error("Başka bir admin hesabı bu panelden banlanamaz.");
+        }
+
+        async function banAccountOnly(userId) {
+            if (!isCurrentUserAdmin || !auth?.currentUser) throw new Error("Admin yetkisi gerekiyor.");
+            await ensureTargetIsNotAdmin(userId);
+            const profile = cachedPublicProfiles.find(item => (item.uid || item.id) === userId) || {};
+            const banData = {
+                userId,
+                displayName: profile.displayName || "Kullanıcı",
+                bannedBy: auth.currentUser.uid,
+                reason: "Admin tarafından kalıcı hesap banı",
+                ipBanActive: false,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            };
+            await setDoc(doc(db, "bannedUsers", userId), banData, { merge: true });
+            cachedBannedUsers = mergeRowsById(cachedBannedUsers, [{ id: userId, ...banData }]);
+        }
+
+        async function unbanAccountOnly(userId) {
+            if (!isCurrentUserAdmin || !auth?.currentUser) throw new Error("Admin yetkisi gerekiyor.");
+            await deleteDoc(doc(db, "bannedUsers", userId));
+            cachedBannedUsers = cachedBannedUsers.filter(item => (item.userId || item.id) !== userId);
+        }
 
         function getDataErrorMessage(error, fallback) {
 
@@ -14081,6 +14360,10 @@
             auth = getAuth(app);
             db = getFirestore(app);
             storage = getStorage(app);
+            functions = getFunctions(app);
+            recordSecuritySessionCallable = httpsCallable(functions, "recordSecuritySession");
+            banMemberWithIpCallable = httpsCallable(functions, "banMemberWithIp");
+            unbanMemberSecurityCallable = httpsCallable(functions, "unbanMemberSecurity");
 
             auth.useDeviceLanguage();
 
@@ -14796,6 +15079,13 @@
                     return;
                 }
 
+                try {
+                    await assertRateLimitAvailable("post", user);
+                } catch (error) {
+                    setFormMessage(topicMessage, rateLimitMessage(error, "Gönderi limiti kontrol edilemedi."));
+                    return;
+                }
+
                 setButtonBusy(
                     topicSubmit,
                     true,
@@ -14856,28 +15146,28 @@
                         updatedAt: serverTimestamp()
                     };
 
-                    let createdTopic;
+                    const targetCollection = isReview ? "reviews" : "topics";
+                    const createdTopic = doc(collection(db, targetCollection));
 
-                    if (isWeeklyGameReview) {
-                        createdTopic = doc(collection(db, "reviews"));
-                        const weeklyReviewBatch = writeBatch(db);
-                        weeklyReviewBatch.set(createdTopic, topicData);
-                        weeklyReviewBatch.set(doc(db, "siteSettings", "weeklyGame"), {
-                            title,
-                            description: content,
-                            tags,
-                            imageURL,
-                            reviewId: createdTopic.id,
-                            updatedAt: serverTimestamp(),
-                            updatedBy: user.uid
-                        }, { merge: true });
-                        await withTimeout(weeklyReviewBatch.commit(), 20000);
-                    } else {
-                        createdTopic = await withTimeout(
-                            addDoc(collection(db, isReview ? "reviews" : "topics"), topicData),
-                            20000
-                        );
-                    }
+                    await withTimeout(
+                        runTransaction(db, async transaction => {
+                            await reserveRateLimitInTransaction(transaction, "post", user);
+                            transaction.set(createdTopic, topicData);
+
+                            if (isWeeklyGameReview) {
+                                transaction.set(doc(db, "siteSettings", "weeklyGame"), {
+                                    title,
+                                    description: content,
+                                    tags,
+                                    imageURL,
+                                    reviewId: createdTopic.id,
+                                    updatedAt: serverTimestamp(),
+                                    updatedBy: user.uid
+                                }, { merge: true });
+                            }
+                        }),
+                        20000
+                    );
 
                     if (!isReview) {
                         cachedTopics.unshift({
@@ -14913,7 +15203,9 @@
                             error,
                             error?.code === "storage/file-too-large"
                                 ? "Fotoğraf 5 MB yükleme sınırını aşıyor. Daha küçük bir görsel seç."
-                                : "Konu yayınlanamadı. Firestore bağlantısını ve güvenlik kurallarını kontrol et."
+                                : error?.code === "security/rate-limit"
+                                    ? rateLimitMessage(error)
+                                    : "Konu yayınlanamadı. Firestore bağlantısını ve güvenlik kurallarını kontrol et."
                         )
                     );
 
@@ -15650,6 +15942,13 @@
 
                 if (!content) return;
 
+                try {
+                    await assertRateLimitAvailable("comment", user);
+                } catch (error) {
+                    showToast(rateLimitMessage(error), "error");
+                    return;
+                }
+
                 const submitButton = form.querySelector('button[type="submit"]');
                 setButtonBusy(
                     submitButton,
@@ -15664,7 +15963,8 @@
                             ? cachedProfile
                             : {};
 
-                    await addDoc(collection(db, "comments"), {
+                    const commentRef = doc(collection(db, "comments"));
+                    const commentData = {
                         targetType: form.dataset.commentType,
                         targetId: form.dataset.commentId,
                         content,
@@ -15675,6 +15975,11 @@
                         authorPhotoURL:
                             profile.photoURL || user.photoURL || "",
                         createdAt: serverTimestamp()
+                    };
+
+                    await runTransaction(db, async transaction => {
+                        await reserveRateLimitInTransaction(transaction, "comment", user);
+                        transaction.set(commentRef, commentData);
                     });
 
                     textarea.value = "";
@@ -15682,7 +15987,9 @@
                 } catch (error) {
                     console.error("Yorum yayınlanamadı:", error);
                     showToast(
-                        getDataErrorMessage(error, "Yorum yayınlanamadı. Tekrar dene."),
+                        error?.code === "security/rate-limit"
+                            ? rateLimitMessage(error)
+                            : getDataErrorMessage(error, "Yorum yayınlanamadı. Tekrar dene."),
                         "error"
                     );
                 } finally {
@@ -15697,6 +16004,75 @@
 
 
             routeContent.addEventListener("click", async event => {
+
+                const accountBanButton = event.target.closest("[data-security-account-ban]");
+                const ipBanButton = event.target.closest("[data-security-ip-ban]");
+                const unbanButton = event.target.closest("[data-security-unban]");
+
+                if (accountBanButton) {
+                    const userId = accountBanButton.dataset.securityAccountBan;
+                    if (!window.confirm("Bu üyenin hesabı kalıcı olarak banlansın mı? IP adresi bu işlemde banlanmaz.")) return;
+                    accountBanButton.disabled = true;
+                    try {
+                        await banAccountOnly(userId);
+                        showToast("Üyenin hesabı banlandı.");
+                        renderRoute();
+                    } catch (error) {
+                        console.error("Hesap banlanamadı:", error);
+                        showToast(error.message || "Hesap banlanamadı.", "error");
+                        accountBanButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (ipBanButton) {
+                    const userId = ipBanButton.dataset.securityIpBan;
+                    if (!window.confirm("Bu üye hesabı ve son kayıtlı IP'si banlansın mı? Aynı IP'den yeni hesap/giriş engeli için Cloud Functions ve Identity Platform etkin olmalıdır.")) return;
+                    ipBanButton.disabled = true;
+                    try {
+                        if (!banMemberWithIpCallable) throw new Error("Firebase Functions bağlantısı hazır değil.");
+                        await banMemberWithIpCallable({ userId, banIp: true });
+                        securityFunctionsAvailable = true;
+                        const profile = cachedPublicProfiles.find(item => (item.uid || item.id) === userId) || {};
+                        cachedBannedUsers = mergeRowsById(cachedBannedUsers, [{
+                            id: userId,
+                            userId,
+                            displayName: profile.displayName || "Kullanıcı",
+                            ipBanActive: true
+                        }]);
+                        showToast("Üyenin hesabı ve son kayıtlı IP'si banlandı.");
+                        renderRoute();
+                    } catch (error) {
+                        securityFunctionsAvailable = false;
+                        console.error("IP ban uygulanamadı:", error);
+                        showToast("IP ban için Cloud Functions/Identity Platform kurulumu gerekli veya bu kullanıcının kayıtlı IP oturumu yok.", "error");
+                        ipBanButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (unbanButton) {
+                    const userId = unbanButton.dataset.securityUnban;
+                    const ipBanActive = unbanButton.dataset.ipBanActive === "1";
+                    unbanButton.disabled = true;
+                    try {
+                        if (ipBanActive) {
+                            if (!unbanMemberSecurityCallable) throw new Error("Firebase Functions bağlantısı hazır değil.");
+                            await unbanMemberSecurityCallable({ userId });
+                            securityFunctionsAvailable = true;
+                            cachedBannedUsers = cachedBannedUsers.filter(item => (item.userId || item.id) !== userId);
+                        } else {
+                            await unbanAccountOnly(userId);
+                        }
+                        showToast("Üyenin banı kaldırıldı.");
+                        renderRoute();
+                    } catch (error) {
+                        console.error("Ban kaldırılamadı:", error);
+                        showToast(error.message || "Ban kaldırılamadı.", "error");
+                        unbanButton.disabled = false;
+                    }
+                    return;
+                }
 
                 if (event.target.closest("[data-login-for-comment]")) {
                     openModal("loginModal");
@@ -17168,6 +17544,20 @@
 
                 if (user) {
 
+                    try {
+                        const banSnapshot = await getDoc(doc(db, "bannedUsers", user.uid));
+                        if (banSnapshot.exists()) {
+                            await signOut(auth);
+                            showToast("Bu hesabın MeepleForum erişimi yönetici tarafından engellendi.", "error");
+                            return;
+                        }
+                    } catch (error) {
+                        console.warn("Ban durumu ilk girişte kontrol edilemedi:", error);
+                    }
+
+                    startOwnBanListener(user);
+                    recordSecuritySession(user);
+
                     guestArea.style.display = "none";
                     userArea.style.display = "flex";
 
@@ -17211,6 +17601,7 @@
 
                 } else {
 
+                    stopOwnBanListener();
                     cachedProfile = null;
                     cachedProfileUid = null;
                     isCurrentUserAdmin = false;
