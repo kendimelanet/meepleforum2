@@ -9970,6 +9970,9 @@
                                 <small class="form-hint">Hero gibi kadrajlayabilir, yakınlaştırıp uzaklaştırabilirsin. Bu görsel yüksek kaliteyle saklanır.</small>
                             </div>
                             <div class="owner-actions">
+                                <button class="secondary-btn" type="button" data-save-daily-question-image>
+                                    <i class="fa-solid fa-floppy-disk"></i> Soru Görselini Kaydet
+                                </button>
                                 ${safeImageURL(activeDailyQuestion()?.imageURL) ? `
                                     <button class="secondary-btn" type="button" data-clear-daily-question-image>
                                         <i class="fa-regular fa-image"></i> Soru Görselini Kaldır
@@ -16223,8 +16226,91 @@
                 const editGiveawayQuestionButton = event.target.closest("[data-edit-giveaway-question]");
                 const clearSiteBackgroundButton = event.target.closest("[data-clear-site-background]");
                 const clearHeroBackgroundButton = event.target.closest("[data-clear-hero-background]");
+                const saveDailyQuestionImageButton = event.target.closest("[data-save-daily-question-image]");
                 const clearDailyQuestionImageButton = event.target.closest("[data-clear-daily-question-image]");
                 const deleteDailyQuestionButton = event.target.closest("[data-delete-daily-question]");
+
+                if (saveDailyQuestionImageButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Günün Sorusu görselini yalnızca admin kaydedebilir.", "error");
+                        return;
+                    }
+
+                    const question = activeDailyQuestion();
+                    if (!question) {
+                        showToast("Önce bugünün sorusunu yayımla, ardından görseli ayrı olarak kaydedebilirsin.", "error");
+                        return;
+                    }
+
+                    const form = saveDailyQuestionImageButton.closest(".daily-question-form");
+                    const imageFile = form?.elements?.image?.files?.[0] || null;
+
+                    if (!imageFile) {
+                        showToast("Kaydetmek için önce bir Günün Sorusu görseli seç.", "error");
+                        return;
+                    }
+
+                    if (
+                        !/^image\/(jpeg|png|webp)$/.test(imageFile.type) ||
+                        imageFile.size > 10 * 1024 * 1024
+                    ) {
+                        showToast("Günün Sorusu görseli JPG, PNG veya WebP olmalı ve 10 MB'ı geçmemeli.", "error");
+                        return;
+                    }
+
+                    setButtonBusy(
+                        saveDailyQuestionImageButton,
+                        true,
+                        "Görsel kaydediliyor...",
+                        '<i class="fa-solid fa-floppy-disk"></i> Soru Görselini Kaydet'
+                    );
+
+                    try {
+                        const previousImagePath = String(cachedDailyQuestion?.imagePath || "");
+                        const imagePath = `daily-question-images/${auth.currentUser.uid}/${Date.now()}-daily-question`;
+                        const uploadSnapshot = await uploadImageWithTimeout(
+                            storageRef(storage, imagePath),
+                            imageFile,
+                            45000
+                        );
+                        const imageURL = await getUploadedImageURL(uploadSnapshot);
+
+                        await setDoc(doc(db, "siteSettings", "dailyQuestion"), {
+                            imageURL,
+                            imagePath,
+                            updatedAt: serverTimestamp(),
+                            updatedBy: auth.currentUser.uid
+                        }, { merge: true });
+
+                        cachedDailyQuestion = {
+                            ...(cachedDailyQuestion || {}),
+                            imageURL,
+                            imagePath
+                        };
+
+                        if (previousImagePath && previousImagePath !== imagePath) {
+                            await deleteStoredImageQuietly(previousImagePath);
+                        }
+
+                        renderHomeDailyQuestion();
+                        renderRoute();
+                        showToast("Günün Sorusu görseli kaydedildi.");
+                    } catch (error) {
+                        console.error("Günün Sorusu görseli kaydedilemedi:", error);
+                        showToast(
+                            getDataErrorMessage(error, "Günün Sorusu görseli kaydedilemedi."),
+                            "error"
+                        );
+                    } finally {
+                        setButtonBusy(
+                            saveDailyQuestionImageButton,
+                            false,
+                            "",
+                            '<i class="fa-solid fa-floppy-disk"></i> Soru Görselini Kaydet'
+                        );
+                    }
+                    return;
+                }
 
                 if (clearDailyQuestionImageButton) {
                     if (!isCurrentUserAdmin || !auth.currentUser) {
