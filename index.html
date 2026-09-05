@@ -34,22 +34,6 @@
     <style>
 
         /* =========================================================
-           FILGAIA ARAYÜZ FONTU
-           Font dosyalarını index.html ile aynı klasöre koy:
-           Filgaia.woff ve Filgaia.ttf
-        ========================================================== */
-        @font-face {
-            font-family: "Filgaia";
-            src:
-                url("Filgaia.woff") format("woff"),
-                url("Filgaia.ttf") format("truetype");
-            font-weight: 400;
-            font-style: normal;
-            font-display: swap;
-        }
-
-
-        /* =========================================================
            1. RENKLER VE TASARIM DEĞİŞKENLERİ
         ========================================================== */
 
@@ -88,8 +72,6 @@
 
             --container: 1240px;
 
-            --font-ui: "Filgaia", "Inter", sans-serif;
-            --font-user: "Inter", sans-serif;
             --site-background-image: none;
             --hero-background-image: none;
         }
@@ -126,7 +108,7 @@
                 var(--bg-main);
 
             color: var(--text-main);
-            font-family: var(--font-ui);
+            font-family: "Inter", sans-serif;
             line-height: 1.5;
         }
 
@@ -261,7 +243,7 @@
         }
 
         .logo-text {
-            font-family: var(--font-ui);
+            font-family: "Playfair Display", serif;
             font-size: 21px;
             font-weight: 700;
             letter-spacing: -0.5px;
@@ -771,7 +753,7 @@
 
             margin-bottom: 16px;
 
-            font-family: var(--font-ui);
+            font-family: "Playfair Display", serif;
 
             font-size: clamp(32px, 4vw, 48px);
             line-height: 1.1;
@@ -1339,7 +1321,7 @@
         .game-art span {
             color: #eee2cc;
 
-            font-family: var(--font-ui);
+            font-family: "Playfair Display", serif;
 
             font-size: 20px;
             font-weight: 700;
@@ -1732,7 +1714,7 @@
         .modal h2 {
             margin-bottom: 7px;
 
-            font-family: var(--font-ui);
+            font-family: "Playfair Display", serif;
 
             font-size: 25px;
         }
@@ -1857,7 +1839,7 @@
                 );
 
             color: var(--gold-light);
-            font-family: var(--font-ui);
+            font-family: "Playfair Display", serif;
             font-size: 22px;
             font-weight: 700;
 
@@ -2117,7 +2099,7 @@
 
         .route-header h1 {
             margin-bottom: 5px;
-            font-family: var(--font-ui);
+            font-family: "Playfair Display", serif;
             font-size: clamp(28px, 4vw, 42px);
         }
 
@@ -2318,7 +2300,7 @@
 
         .comments-title {
             margin-bottom: 10px;
-            font-family: var(--font-ui);
+            font-family: "Playfair Display", serif;
             font-size: 20px;
         }
 
@@ -2470,7 +2452,7 @@
 
         .profile-page h2 {
             margin-bottom: 7px;
-            font-family: var(--font-ui);
+            font-family: "Playfair Display", serif;
             font-size: 28px;
         }
 
@@ -2841,7 +2823,7 @@
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 1px solid var(--border);
-            font-family: var(--font-ui);
+            font-family: "Playfair Display", serif;
             font-size: 24px;
         }
 
@@ -3665,12 +3647,12 @@
         .score-player .profile-link { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .rpg-launch-card { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 22px; margin-top: 26px; padding: 24px; border: 1px solid rgba(210,167,92,.3); border-radius: var(--radius-lg); background: radial-gradient(circle at 12% 25%,rgba(210,167,92,.16),transparent 24%),linear-gradient(135deg,#171724,#201916); box-shadow: var(--shadow); }
         .rpg-launch-icon { width: 74px; height: 74px; display: grid; place-items: center; border-radius: 20px; background: rgba(210,167,92,.13); color: var(--gold-light); font-size: 32px; }
-        .rpg-launch-card h2 { margin: 5px 0 7px; font-family: var(--font-ui); font-size: 27px; }
+        .rpg-launch-card h2 { margin: 5px 0 7px; font-family: "Playfair Display",serif; font-size: 27px; }
         .rpg-launch-card p { color: var(--text-secondary); line-height: 1.65; }
         .space-rpg-shell { max-width: 980px; margin: 0 auto; }
         .rpg-command-deck { overflow: hidden; border: 1px solid rgba(210,167,92,.28); border-radius: var(--radius-lg); background: radial-gradient(circle at 80% 0,rgba(77,105,173,.2),transparent 32%),linear-gradient(160deg,#111421,#1d1817); box-shadow: var(--shadow); }
         .rpg-command-header { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 22px; border-bottom: 1px solid var(--border); }
-        .rpg-command-header h2 { margin: 5px 0 0; font-family: var(--font-ui); font-size: clamp(24px,4vw,34px); }
+        .rpg-command-header h2 { margin: 5px 0 0; font-family: "Playfair Display",serif; font-size: clamp(24px,4vw,34px); }
         .rpg-status-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; padding: 18px 22px 0; }
         .rpg-stat { padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.035); }
         .rpg-stat span,.rpg-stat strong { display: block; }
@@ -3678,7 +3660,7 @@
         .rpg-stat strong { color: var(--gold-light); font-size: 19px; }
         .rpg-story-panel { padding: 24px 22px; }
         .rpg-turn-label { color: var(--gold); font-size: 11px; font-weight: 850; letter-spacing: .11em; text-transform: uppercase; }
-        .rpg-story-panel h3 { margin: 9px 0 12px; font-family: var(--font-ui); font-size: clamp(24px,4vw,32px); }
+        .rpg-story-panel h3 { margin: 9px 0 12px; font-family: "Playfair Display",serif; font-size: clamp(24px,4vw,32px); }
         .rpg-story-text { min-height: 92px; white-space: pre-wrap; color: var(--text-secondary); font-size: 14px; line-height: 1.85; }
         .rpg-choice-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; margin-top: 20px; }
         .rpg-choice { min-height: 66px; padding: 14px 16px; text-align: left; border: 1px solid var(--border-strong); border-radius: 12px; background: rgba(255,255,255,.035); color: var(--text-primary); font-weight: 700; line-height: 1.45; }
@@ -3704,7 +3686,7 @@
         .rpg-choice small { display: block; margin-top: 5px; color: var(--text-muted); font-weight: 500; }
         .home-showcase { margin: 54px 0 0; padding: 28px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: linear-gradient(135deg,rgba(113,52,56,.14),rgba(62,101,79,.09)),var(--bg-secondary); box-shadow: var(--shadow); }
         .showcase-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 22px; }
-        .showcase-heading h2 { font-family: var(--font-ui); font-size: clamp(25px,3vw,36px); margin: 4px 0 6px; }
+        .showcase-heading h2 { font-family: "Playfair Display",serif; font-size: clamp(25px,3vw,36px); margin: 4px 0 6px; }
         .showcase-heading p { color: var(--text-secondary); max-width: 720px; }
         .home-competition-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
         .challenge-card { padding: 18px; border: 1px solid var(--border); border-radius: 15px; background: rgba(17,16,15,.72); }
@@ -3731,7 +3713,7 @@
         .home-giveaway-image-link:hover img { transform: scale(1.015); filter: brightness(1.08); }
         .home-giveaway-visual > i { color: var(--gold-light); font-size: 64px; }
         .home-giveaway-content { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(24px,4vw,46px); }
-        .home-giveaway-content h2 { margin: 10px 0 10px; font-family: var(--font-ui); font-size: clamp(26px,3vw,40px); }
+        .home-giveaway-content h2 { margin: 10px 0 10px; font-family: "Playfair Display",serif; font-size: clamp(26px,3vw,40px); }
         .home-giveaway-content p { max-width: 680px; color: var(--text-secondary); line-height: 1.7; }
         .home-giveaway-content small { color: var(--text-muted); line-height: 1.5; }
         .home-giveaway-content .primary-btn { margin-top: 20px; }
@@ -3783,7 +3765,7 @@
 
 
         /* =========================================================
-           FILGAIA + KULLANICI İÇERİĞİ FONT AYRIMI
+           SİTE ARKA PLANI + ANA KARŞILAMA GÖRÜNÜMÜ
         ========================================================== */
 
         body {
@@ -3814,61 +3796,6 @@
 
         .hero h1 .hero-main-copy {
             color: inherit;
-        }
-
-        /* Arayüz metinleri Filgaia olarak kalır. */
-        button,
-        .primary-btn,
-        .secondary-btn,
-        .vote-btn,
-        .danger-btn,
-        .login-btn,
-        .register-btn,
-        .logout-btn,
-        .route-back,
-        .topic-tag,
-        .status-chip,
-        .giveaway-label {
-            font-family: var(--font-ui) !important;
-        }
-
-        /* Kullanıcının yazdığı/veri tabanından gelen metinler eski Inter fontunda kalır. */
-        input,
-        textarea,
-        select,
-        .topic-card,
-        .topic-detail,
-        .comment-card,
-        .chat-message,
-        .profile-page,
-        .directory-card,
-        .info-card[data-review-open],
-        .home-giveaway-link[data-review-open],
-        .home-giveaway-link[data-event-open],
-        .admin-row > div:first-child,
-        .admin-giveaway-group .giveaway-entry-answer,
-        .user-generated-text {
-            font-family: var(--font-user) !important;
-        }
-
-        /* Dinamik kartların içindeki arayüz düğmeleri yine Filgaia kullanır. */
-        .topic-card button,
-        .topic-card .topic-category,
-        .topic-detail button,
-        .topic-detail .topic-category,
-        .comment-card button,
-        .chat-message button,
-        .profile-page button,
-        .profile-page .primary-btn,
-        .profile-page .secondary-btn,
-        .directory-card button,
-        .directory-card .primary-btn,
-        .directory-card .secondary-btn,
-        .info-card[data-review-open] .primary-btn,
-        .home-giveaway-link[data-review-open] .primary-btn,
-        .home-giveaway-link[data-event-open] .primary-btn,
-        .admin-row button {
-            font-family: var(--font-ui) !important;
         }
 
         /* =========================================================
@@ -3959,7 +3886,6 @@
 
         .appearance-current-note {
             color: var(--text-muted);
-            font-family: var(--font-ui);
             font-size: 9px;
             line-height: 1.45;
         }
@@ -12951,16 +12877,6 @@
                 window.location.hash = "home";
                 return;
             }
-
-            const routeUsesUserGeneratedTitle =
-                rawHash.startsWith("topic=") ||
-                rawHash.startsWith("review=") ||
-                rawHash.startsWith("profile=") ||
-                rawHash.startsWith("dm=") ||
-                rawHash.startsWith("giveaway=") ||
-                rawHash.startsWith("community=") ||
-                rawHash.startsWith("community-chat=");
-            routeTitle.classList.toggle("user-generated-text", routeUsesUserGeneratedTitle);
 
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
