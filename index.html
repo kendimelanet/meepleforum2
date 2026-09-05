@@ -3685,6 +3685,129 @@
         .rpg-consequence { margin-top: 15px; padding: 12px 14px; border-left: 3px solid var(--gold); border-radius: 0 10px 10px 0; background: rgba(210,167,92,.075); color: var(--text-secondary); font-size: 12px; line-height: 1.65; }
         .rpg-choice small { display: block; margin-top: 5px; color: var(--text-muted); font-weight: 500; }
         .home-showcase { margin: 54px 0 0; padding: 28px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: linear-gradient(135deg,rgba(113,52,56,.14),rgba(62,101,79,.09)),var(--bg-secondary); box-shadow: var(--shadow); }
+
+        /* =========================================================
+           GÜNÜN SORUSU
+        ========================================================== */
+        .daily-question-home {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            padding: clamp(24px,4vw,38px);
+            border: 1px solid rgba(210,167,92,.34);
+            border-radius: 18px;
+            background:
+                radial-gradient(circle at 90% 10%,rgba(210,167,92,.13),transparent 28%),
+                linear-gradient(135deg,rgba(113,52,56,.22),rgba(17,16,15,.86) 52%,rgba(62,101,79,.16));
+            transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+        }
+        .daily-question-home:hover,
+        .daily-question-home:focus-visible {
+            transform: translateY(-3px);
+            border-color: rgba(210,167,92,.62);
+            box-shadow: 0 18px 45px rgba(0,0,0,.25);
+            outline: none;
+        }
+        .daily-question-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 10px;
+            border: 1px solid rgba(210,167,92,.22);
+            border-radius: 999px;
+            background: rgba(210,167,92,.08);
+            color: var(--gold-light);
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .daily-question-home h2 {
+            max-width: 900px;
+            margin: 14px 0 10px;
+            font-family: var(--font-ui);
+            font-size: clamp(27px,4vw,42px);
+            line-height: 1.18;
+        }
+        .daily-question-home > p {
+            max-width: 800px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .daily-question-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            margin-top: 14px;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+        .daily-question-preview-title {
+            margin: 24px 0 10px;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+        .daily-question-preview-list {
+            display: grid;
+            grid-template-columns: repeat(3,minmax(0,1fr));
+            gap: 10px;
+        }
+        .daily-answer-preview {
+            min-width: 0;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255,255,255,.035);
+        }
+        .daily-answer-preview strong,
+        .daily-answer-preview p { display: block; }
+        .daily-answer-preview strong {
+            margin-bottom: 5px;
+            color: var(--gold-light);
+            font-size: 10px;
+        }
+        .daily-answer-preview p {
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+        .daily-question-home-action { margin-top: 18px; }
+        .daily-question-detail {
+            padding: clamp(22px,4vw,36px);
+            border: 1px solid rgba(210,167,92,.28);
+            border-radius: var(--radius-lg);
+            background: linear-gradient(145deg,rgba(113,52,56,.15),rgba(62,101,79,.08)),var(--bg-card);
+            box-shadow: var(--shadow);
+        }
+        .daily-question-detail h2 {
+            margin: 12px 0 10px;
+            font-family: var(--font-ui);
+            font-size: clamp(27px,4vw,40px);
+            line-height: 1.2;
+        }
+        .daily-question-detail p { color: var(--text-secondary); line-height: 1.75; }
+        .daily-question-admin-card {
+            padding: 18px;
+            border: 1px solid rgba(210,167,92,.22);
+            border-radius: 14px;
+            background: linear-gradient(145deg,rgba(210,167,92,.055),rgba(255,255,255,.018));
+        }
+        .daily-question-admin-note {
+            margin: 0 0 15px;
+            color: var(--text-muted);
+            font-size: 11px;
+            line-height: 1.65;
+        }
+        @media (max-width: 760px) {
+            .daily-question-preview-list { grid-template-columns: 1fr; }
+        }
         .showcase-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 22px; }
         .showcase-heading h2 { font-family: "Playfair Display",serif; font-size: clamp(25px,3vw,36px); margin: 4px 0 6px; }
         .showcase-heading p { color: var(--text-secondary); max-width: 720px; }
@@ -4782,6 +4905,13 @@
                 </aside>
 
             </div>
+
+            <section
+                class="home-showcase"
+                id="homeDailyQuestionShowcase"
+                aria-label="Günün sorusu"
+                hidden
+            ></section>
 
             <section
                 class="home-showcase"
@@ -6637,6 +6767,7 @@
         const routeContent = document.getElementById("routeContent");
         const routeBackBtn = document.getElementById("routeBackBtn");
         const homeTopics = document.getElementById("homeTopics");
+        const homeDailyQuestionShowcase = document.getElementById("homeDailyQuestionShowcase");
         const homeGiveawayShowcase = document.getElementById("homeGiveawayShowcase");
         const homeLatestReviewShowcase = document.getElementById("homeLatestReviewShowcase");
         const homeLatestEventShowcase = document.getElementById("homeLatestEventShowcase");
@@ -6685,6 +6816,8 @@
         let cachedVotes = [];
         let cachedPublicProfiles = [];
         let cachedGiveaways = [];
+        let cachedDailyQuestion = null;
+        let dailyQuestionCommentsUnsubscribe = null;
         let cachedGiveawayEntries = [];
         let cachedChatMessages = [];
         let hiddenMainChatMessageIds = new Set();
@@ -6776,6 +6909,90 @@
             heroBackgroundURL: ""
         });
         let cachedSiteAppearance = { ...DEFAULT_SITE_APPEARANCE };
+
+        function dailyQuestionTodayKey() {
+            const parts = new Intl.DateTimeFormat("en-GB", {
+                timeZone: "Europe/Istanbul",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+            }).formatToParts(new Date());
+            const value = type => parts.find(part => part.type === type)?.value || "";
+            return `${value("year")}-${value("month")}-${value("day")}`;
+        }
+
+        function activeDailyQuestion() {
+            if (!cachedDailyQuestion || cachedDailyQuestion.active === false) return null;
+            if (!String(cachedDailyQuestion.question || "").trim()) return null;
+            if (cachedDailyQuestion.dateKey !== dailyQuestionTodayKey()) return null;
+            return cachedDailyQuestion;
+        }
+
+        function dailyQuestionTargetId(question = activeDailyQuestion()) {
+            return String(question?.commentTargetId || (question?.dateKey ? `daily-question-${question.dateKey}` : ""));
+        }
+
+        function formatDailyQuestionDay(dateKey) {
+            const [year, month, day] = String(dateKey || "").split("-").map(Number);
+            if (!year || !month || !day) return "Bugün";
+            return new Intl.DateTimeFormat("tr-TR", {
+                day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Istanbul"
+            }).format(new Date(Date.UTC(year, month - 1, day, 12)));
+        }
+
+        function stopDailyQuestionCommentListener() {
+            dailyQuestionCommentsUnsubscribe?.();
+            dailyQuestionCommentsUnsubscribe = null;
+        }
+
+        function startDailyQuestionCommentListener() {
+            stopDailyQuestionCommentListener();
+            if (!db) return;
+            const question = activeDailyQuestion();
+            const targetId = dailyQuestionTargetId(question);
+            if (!question || !targetId) {
+                renderHomeDailyQuestion();
+                return;
+            }
+
+            dailyQuestionCommentsUnsubscribe = onSnapshot(
+                query(
+                    collection(db, "comments"),
+                    where("targetId", "==", targetId)
+                ),
+                snapshot => {
+                    const otherComments = cachedComments.filter(comment => !(
+                        comment.targetType === "dailyQuestion" && comment.targetId === targetId
+                    ));
+                    const dailyComments = snapshot.docs
+                        .map(commentDocument => ({ id: commentDocument.id, ...commentDocument.data() }))
+                        .filter(comment => comment.targetType === "dailyQuestion");
+                    cachedComments = mergeRowsById(otherComments, dailyComments);
+                    renderHomeDailyQuestion();
+                    if (decodeURIComponent(window.location.hash.slice(1)) === "daily-question") renderRoute();
+                },
+                error => console.error("Günün sorusu cevapları alınamadı:", error)
+            );
+        }
+
+        async function deleteDailyQuestionComments(targetId) {
+            if (!targetId) return;
+            const snapshot = await getDocs(query(
+                collection(db, "comments"),
+                where("targetId", "==", targetId)
+            ));
+            const matchingDocs = snapshot.docs.filter(item => item.data().targetType === "dailyQuestion");
+
+            for (let index = 0; index < matchingDocs.length; index += 450) {
+                const batch = writeBatch(db);
+                matchingDocs.slice(index, index + 450).forEach(item => batch.delete(item.ref));
+                await batch.commit();
+            }
+
+            cachedComments = cachedComments.filter(comment => !(
+                comment.targetType === "dailyQuestion" && comment.targetId === targetId
+            ));
+        }
         let cachedReviews = {
             "dune-imperium": {
                 title: "Dune: Imperium",
@@ -7091,6 +7308,11 @@
             if (rawHash.startsWith("giveaway=")) {
                 return { type: "giveaway", id: rawHash.slice("giveaway=".length) };
             }
+            if (rawHash === "daily-question") {
+                const question = activeDailyQuestion();
+                const targetId = dailyQuestionTargetId(question);
+                if (question && targetId) return { type: "dailyQuestion", id: targetId };
+            }
             if (rawHash === "weekly-game" && cachedWeeklyGame.reviewId) {
                 return { type: "review", id: cachedWeeklyGame.reviewId };
             }
@@ -7130,13 +7352,20 @@
                 return mergeRowsById(otherRows, targetRows);
             };
 
+            const engagementCommentsQuery = target.type === "dailyQuestion"
+                ? query(
+                    collection(db, "comments"),
+                    where("targetId", "==", target.id)
+                )
+                : query(
+                    collection(db, "comments"),
+                    where("targetId", "==", target.id),
+                    limit(200)
+                );
+
             engagementUnsubscribers.push(
                 onSnapshot(
-                    query(
-                        collection(db, "comments"),
-                        where("targetId", "==", target.id),
-                        limit(200)
-                    ),
+                    engagementCommentsQuery,
                     snapshot => {
                         if (activeEngagementKey !== nextKey) return;
                         cachedComments = replaceTargetRows(cachedComments, snapshot, target.type);
@@ -9573,6 +9802,36 @@
                     <h2>Site Görünümü</h2>
                     ${adminAppearanceMarkup()}
 
+                    <h2>Günün Sorusu</h2>
+                    <section class="daily-question-admin-card">
+                        <p class="daily-question-admin-note">
+                            Günün sorusu yalnızca ana sayfada görünür; üst menüye veya forum kategorilerine eklenmez.
+                            Yeni bir takvim gününde yayımlanan soru önceki günün cevaplarını temizleyerek sıfırdan başlar.
+                            Aynı gün içinde metni tekrar kaydetmen mevcut cevapları korur.
+                        </p>
+                        <form class="section-form daily-question-form">
+                            <div class="form-group">
+                                <label>Bugünün Sorusu</label>
+                                <textarea class="form-textarea" name="question" maxlength="500" placeholder="Örn. Bir masaüstü oyununda seni en çok etkileyen mekanik hangisi?" required>${escapeHTML(activeDailyQuestion()?.question || "")}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Kısa Açıklama (isteğe bağlı)</label>
+                                <textarea class="form-textarea" name="description" maxlength="800" placeholder="Sorunun altına kısa bir açıklama ekleyebilirsin.">${escapeHTML(activeDailyQuestion()?.description || "")}</textarea>
+                            </div>
+                            <div class="owner-actions">
+                                ${cachedDailyQuestion?.question ? `
+                                    <button class="danger-btn" type="button" data-delete-daily-question>
+                                        <i class="fa-solid fa-trash"></i> Soruyu ve Tüm Cevapları Sil
+                                    </button>
+                                ` : ""}
+                                <button class="primary-btn" type="submit">
+                                    <i class="fa-solid fa-circle-question"></i>
+                                    ${activeDailyQuestion() ? "Bugünün Sorusunu Güncelle" : "Bugünün Sorusunu Yayınla"}
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
                     <h2>BKFK Onayları (${pendingBkfkCommunities.length})</h2>
                     ${pendingBkfkCommunities.map(community => `
                         <div class="admin-row">
@@ -9764,6 +10023,54 @@
 
         function renderHomeTopics() {
             homeTopics.innerHTML = topicCardsMarkup(cachedTopics.slice(0, 4));
+        }
+
+
+        function renderHomeDailyQuestion() {
+            if (!homeDailyQuestionShowcase) return;
+
+            const question = activeDailyQuestion();
+            const targetId = dailyQuestionTargetId(question);
+            if (!question || !targetId) {
+                homeDailyQuestionShowcase.hidden = true;
+                homeDailyQuestionShowcase.innerHTML = "";
+                return;
+            }
+
+            const answers = getTargetComments("dailyQuestion", targetId);
+            const latestAnswers = answers.slice(-3).reverse();
+
+            homeDailyQuestionShowcase.hidden = false;
+            homeDailyQuestionShowcase.innerHTML = `
+                <article class="daily-question-home" data-daily-question-open tabindex="0" role="link">
+                    <span class="daily-question-kicker"><i class="fa-solid fa-circle-question"></i> Günün Sorusu</span>
+                    <h2>${escapeHTML(question.question)}</h2>
+                    ${question.description ? `<p>${escapeHTML(question.description)}</p>` : ""}
+                    <div class="daily-question-meta">
+                        <span><i class="fa-regular fa-calendar"></i> ${escapeHTML(formatDailyQuestionDay(question.dateKey))}</span>
+                        <span><i class="fa-regular fa-comments"></i> ${answers.length} cevap</span>
+                    </div>
+
+                    ${latestAnswers.length ? `
+                        <div class="daily-question-preview-title">Son 3 cevap</div>
+                        <div class="daily-question-preview-list">
+                            ${latestAnswers.map(answer => `
+                                <div class="daily-answer-preview user-generated-text">
+                                    <strong>${escapeHTML(resolvedDisplayName(answer.authorId, answer.authorName || "Meeple Oyuncusu"))}</strong>
+                                    <p>${escapeHTML(answer.content || "")}</p>
+                                </div>
+                            `).join("")}
+                        </div>
+                    ` : `
+                        <div class="daily-question-preview-title">Henüz cevap yok</div>
+                        <p class="user-generated-text">İlk cevabı vermek için soruyu aç.</p>
+                    `}
+
+                    <div class="daily-question-home-action">
+                        <span class="primary-btn"><i class="fa-solid fa-arrow-right"></i> Soruyu Aç ve Cevapla</span>
+                    </div>
+                </article>
+            `;
         }
 
 
@@ -12412,7 +12719,34 @@
             homeView.hidden = true;
             routeView.hidden = false;
 
-            if (rawHash === "categories") {
+            if (rawHash === "daily-question") {
+                const question = activeDailyQuestion();
+                const targetId = dailyQuestionTargetId(question);
+
+                if (!question || !targetId) {
+                    setRouteHeader(
+                        "Günün Sorusu",
+                        "Bugünün sorusu henüz yayımlanmadı",
+                        "Admin bugünün sorusunu yayımladığında burada görünecek."
+                    );
+                    routeContent.innerHTML = '<div class="empty-state"><i class="fa-regular fa-circle-question"></i>Bugünün sorusu henüz hazır değil.</div>';
+                } else {
+                    setRouteHeader(
+                        "Günün Sorusu",
+                        question.question,
+                        "Bugünün topluluk sorusuna cevap ver ve diğer oyuncuların cevaplarını gör."
+                    );
+                    routeContent.innerHTML = `
+                        <article class="daily-question-detail">
+                            <span class="daily-question-kicker"><i class="fa-solid fa-circle-question"></i> ${escapeHTML(formatDailyQuestionDay(question.dateKey))}</span>
+                            <h2>${escapeHTML(question.question)}</h2>
+                            ${question.description ? `<p>${escapeHTML(question.description)}</p>` : ""}
+                        </article>
+                        ${engagementMarkup("dailyQuestion", targetId, false)}
+                    `;
+                }
+
+            } else if (rawHash === "categories") {
                 setRouteHeader(
                     "Keşfet",
                     "Forum Kategorileri",
@@ -12983,6 +13317,13 @@
         });
 
         document.addEventListener("click", event => {
+            const dailyQuestionCard = event.target.closest("[data-daily-question-open]");
+            if (dailyQuestionCard) {
+                event.preventDefault();
+                window.location.hash = "daily-question";
+                return;
+            }
+
             const reviewCard = event.target.closest("[data-review-open]");
             if (reviewCard && !routeContent.contains(reviewCard)) {
                 event.preventDefault();
@@ -12999,9 +13340,10 @@
 
         document.addEventListener("keydown", event => {
             if (!["Enter", " "].includes(event.key)) return;
-            const card = event.target.closest('[role="link"][data-topic-open], [role="link"][data-review-open], [role="link"][data-event-open]');
+            const card = event.target.closest('[role="link"][data-topic-open], [role="link"][data-review-open], [role="link"][data-event-open], [role="link"][data-daily-question-open]');
             if (!card || event.target !== card) return;
             event.preventDefault();
+            if (card.dataset.dailyQuestionOpen !== undefined) window.location.hash = "daily-question";
             if (card.dataset.topicOpen) window.location.hash = "topic=" + encodeURIComponent(card.dataset.topicOpen);
             if (card.dataset.reviewOpen) window.location.hash = "review=" + encodeURIComponent(card.dataset.reviewOpen);
             if (card.dataset.eventOpen) window.location.hash = card.dataset.eventOpen || "events";
@@ -13090,9 +13432,18 @@
 
         applySiteAppearance();
         renderWeeklyGame();
+        renderHomeDailyQuestion();
         renderHomeLatestReview();
         renderHomeChallenges();
         renderRoute();
+
+        // İstanbul takvim gününe göre soru gece yarısından sonra otomatik olarak
+        // ana sayfadan kalkar; admin yeni soruyu yayımlayana kadar boş kalır.
+        window.setInterval(() => {
+            renderHomeDailyQuestion();
+            const route = decodeURIComponent(window.location.hash.slice(1));
+            if (route === "daily-question") renderRoute();
+        }, 60000);
 
 
         function getAuthErrorMessage(error) {
@@ -14717,6 +15068,74 @@
 
             routeContent.addEventListener("submit", async event => {
 
+                const dailyQuestionForm = event.target.closest(".daily-question-form");
+                if (dailyQuestionForm) {
+                    event.preventDefault();
+                    const user = auth.currentUser;
+                    if (!user || !isCurrentUserAdmin) {
+                        showToast("Günün sorusunu yalnızca admin yayımlayabilir.", "error");
+                        return;
+                    }
+
+                    const questionText = dailyQuestionForm.elements.question.value.trim();
+                    const description = dailyQuestionForm.elements.description.value.trim();
+                    const button = dailyQuestionForm.querySelector('button[type="submit"]');
+                    if (!questionText) {
+                        showToast("Günün sorusunu yazmalısın.", "error");
+                        return;
+                    }
+
+                    const todayKey = dailyQuestionTodayKey();
+                    const nextTargetId = `daily-question-${todayKey}`;
+                    const oldTargetId = dailyQuestionTargetId(cachedDailyQuestion);
+                    const isNewDay = Boolean(cachedDailyQuestion?.dateKey && cachedDailyQuestion.dateKey !== todayKey);
+
+                    setButtonBusy(
+                        button,
+                        true,
+                        isNewDay ? "Yeni gün hazırlanıyor..." : "Kaydediliyor...",
+                        '<i class="fa-solid fa-circle-question"></i> Bugünün Sorusunu Yayınla'
+                    );
+
+                    try {
+                        if (isNewDay && oldTargetId) {
+                            await deleteDailyQuestionComments(oldTargetId);
+                        }
+
+                        const dailyQuestionData = {
+                            question: questionText.slice(0, 500),
+                            description: description.slice(0, 800),
+                            dateKey: todayKey,
+                            commentTargetId: nextTargetId,
+                            active: true,
+                            publishedAt: serverTimestamp(),
+                            updatedAt: serverTimestamp(),
+                            updatedBy: user.uid
+                        };
+
+                        await withTimeout(
+                            setDoc(doc(db, "siteSettings", "dailyQuestion"), dailyQuestionData),
+                            20000
+                        );
+                        cachedDailyQuestion = { ...dailyQuestionData };
+                        renderHomeDailyQuestion();
+                        showToast(isNewDay
+                            ? "Yeni günün sorusu yayımlandı; önceki cevaplar temizlendi."
+                            : "Bugünün sorusu yayımlandı.");
+                    } catch (error) {
+                        console.error("Günün sorusu kaydedilemedi:", error);
+                        showToast(getDataErrorMessage(error, "Günün sorusu kaydedilemedi."), "error");
+                    } finally {
+                        setButtonBusy(
+                            button,
+                            false,
+                            "",
+                            '<i class="fa-solid fa-circle-question"></i> Bugünün Sorusunu Yayınla'
+                        );
+                    }
+                    return;
+                }
+
                 const siteAppearanceForm = event.target.closest(".site-appearance-form");
                 if (siteAppearanceForm) {
                     event.preventDefault();
@@ -15326,6 +15745,37 @@
                 const editGiveawayQuestionButton = event.target.closest("[data-edit-giveaway-question]");
                 const clearSiteBackgroundButton = event.target.closest("[data-clear-site-background]");
                 const clearHeroBackgroundButton = event.target.closest("[data-clear-hero-background]");
+                const deleteDailyQuestionButton = event.target.closest("[data-delete-daily-question]");
+
+                if (deleteDailyQuestionButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Günün sorusunu yalnızca admin silebilir.", "error");
+                        return;
+                    }
+                    if (!cachedDailyQuestion?.question) return;
+                    if (!window.confirm("Günün sorusu ve bu soruya yazılmış TÜM cevaplar kalıcı olarak silinsin mi?")) return;
+
+                    deleteDailyQuestionButton.disabled = true;
+                    try {
+                        const targetId = dailyQuestionTargetId(cachedDailyQuestion);
+                        await deleteDailyQuestionComments(targetId);
+                        await deleteDoc(doc(db, "siteSettings", "dailyQuestion"));
+                        cachedDailyQuestion = null;
+                        stopDailyQuestionCommentListener();
+                        renderHomeDailyQuestion();
+                        if (decodeURIComponent(window.location.hash.slice(1)) === "daily-question") {
+                            window.location.hash = "home";
+                        } else {
+                            renderRoute();
+                        }
+                        showToast("Günün sorusu ve tüm cevapları silindi.");
+                    } catch (error) {
+                        console.error("Günün sorusu silinemedi:", error);
+                        deleteDailyQuestionButton.disabled = false;
+                        showToast(getDataErrorMessage(error, "Günün sorusu silinemedi."), "error");
+                    }
+                    return;
+                }
 
                 if (clearSiteBackgroundButton || clearHeroBackgroundButton) {
                     if (!isCurrentUserAdmin || !auth.currentUser) {
@@ -16452,6 +16902,20 @@
                     if (["#admin", "#weekly-game"].includes(window.location.hash)) renderRoute();
                 },
                 error => console.error("Haftanın oyunu alınamadı:", error)
+            );
+
+            onSnapshot(
+                doc(db, "siteSettings", "dailyQuestion"),
+                settingsSnapshot => {
+                    cachedDailyQuestion = settingsSnapshot.exists()
+                        ? { id: settingsSnapshot.id, ...settingsSnapshot.data() }
+                        : null;
+                    startDailyQuestionCommentListener();
+                    renderHomeDailyQuestion();
+                    const route = decodeURIComponent(window.location.hash.slice(1));
+                    if (["daily-question", "admin"].includes(route)) renderRoute();
+                },
+                error => console.error("Günün sorusu alınamadı:", error)
             );
 
             onSnapshot(
