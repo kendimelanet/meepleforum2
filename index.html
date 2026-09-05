@@ -2343,17 +2343,59 @@
         .admin-list {
             display: grid;
             gap: 10px;
+            max-height: calc(100vh - 215px);
+            overflow-y: auto;
+            padding: 2px 8px 26px 2px;
+            scrollbar-gutter: stable;
+            overscroll-behavior: contain;
+        }
+
+        .admin-list > h2 {
+            position: sticky;
+            top: 0;
+            z-index: 4;
+            margin: 8px 0 2px;
+            padding: 12px 13px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(23,21,19,.96);
+            box-shadow: 0 8px 22px rgba(0,0,0,.18);
+            backdrop-filter: blur(12px);
+            font-size: 16px;
         }
 
         .admin-row {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
             gap: 14px;
             padding: 14px;
             border: 1px solid var(--border);
             border-radius: 10px;
             background: var(--bg-card);
+        }
+
+        .admin-row > div:first-child {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .admin-row > .owner-actions,
+        .admin-row > button {
+            flex: 0 0 auto;
+        }
+
+        .admin-row .owner-actions {
+            margin-top: 0;
+        }
+
+        .admin-giveaway-entries {
+            max-height: 370px;
+            overflow-y: auto;
+            display: grid;
+            gap: 8px;
+            padding: 2px 5px 2px 0;
+            overscroll-behavior: contain;
         }
 
         .admin-row strong,
@@ -2594,6 +2636,17 @@
             margin-top: 0;
         }
 
+        .giveaway-consent-box ul {
+            display: grid;
+            gap: 6px;
+            margin: 7px 0 13px;
+            padding-left: 20px;
+        }
+
+        .giveaway-consent-box li::marker {
+            color: var(--gold);
+        }
+
         .giveaway-consent-check {
             display: flex;
             align-items: flex-start;
@@ -2753,6 +2806,55 @@
         .venue-photo-credit a {
             color: var(--gold-light);
             text-decoration: none;
+        }
+
+
+        .venue-province-section {
+            margin-bottom: 34px;
+        }
+
+        .venue-province-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            font-family: "Playfair Display", serif;
+            font-size: 24px;
+        }
+
+        .venue-province-title i {
+            color: var(--gold);
+            font-size: 17px;
+        }
+
+        .venue-district-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            align-items: start;
+        }
+
+        .venue-district-column {
+            min-width: 0;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: rgba(255,255,255,.018);
+        }
+
+        .venue-district-column > h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 12px;
+            color: var(--gold-light);
+            font-size: 14px;
+        }
+
+        .venue-district-column > .directory-grid {
+            grid-template-columns: 1fr;
         }
 
         .directory-card-body {
@@ -3020,6 +3122,97 @@
             color: var(--gold-light);
         }
 
+
+        /* =========================================================
+           GÖRSEL KIRPMA + DÜZENLEME MODALLARI
+        ========================================================== */
+
+        .image-crop-modal {
+            width: min(820px, 100%);
+        }
+
+        .image-crop-stage {
+            display: grid;
+            place-items: center;
+            min-height: 280px;
+            margin: 16px 0;
+            padding: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: #0d0c0b;
+        }
+
+        #imageCropCanvas {
+            display: block;
+            max-width: 100%;
+            max-height: min(54vh, 520px);
+            border-radius: 8px;
+            background: #080706;
+            cursor: grab;
+            touch-action: none;
+            box-shadow: 0 12px 35px rgba(0,0,0,.28);
+        }
+
+        #imageCropCanvas.dragging {
+            cursor: grabbing;
+        }
+
+        .image-crop-controls {
+            display: grid;
+            grid-template-columns: minmax(0,1fr) 190px;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .image-crop-zoom-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .image-crop-zoom-row input[type="range"] {
+            width: 100%;
+            accent-color: var(--gold);
+        }
+
+        .image-crop-help {
+            margin-top: 9px;
+            color: var(--text-muted);
+            font-size: 10px;
+            line-height: 1.55;
+        }
+
+        .edit-fields {
+            display: grid;
+            gap: 13px;
+            margin-top: 18px;
+        }
+
+        .edit-modal-actions,
+        .image-crop-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 9px;
+            margin-top: 18px;
+        }
+
+        @media (max-width: 700px) {
+            .image-crop-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .edit-modal-actions,
+            .image-crop-actions {
+                flex-direction: column-reverse;
+            }
+
+            .edit-modal-actions > *,
+            .image-crop-actions > * {
+                width: 100%;
+            }
+        }
 
         /* =========================================================
            16. TOAST / BİLDİRİM
@@ -3521,6 +3714,21 @@
         .home-giveaway-content p { max-width: 680px; color: var(--text-secondary); line-height: 1.7; }
         .home-giveaway-content small { color: var(--text-muted); line-height: 1.5; }
         .home-giveaway-content .primary-btn { margin-top: 20px; }
+
+        .topic-card[data-topic-open],
+        .info-card[data-review-open],
+        .home-giveaway-link[data-review-open],
+        .home-giveaway-link[data-event-open] {
+            cursor: pointer;
+        }
+
+        .topic-card[data-topic-open]:focus-visible,
+        .info-card[data-review-open]:focus-visible,
+        .home-giveaway-link[data-review-open]:focus-visible,
+        .home-giveaway-link[data-event-open]:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 3px;
+        }
 
         @media (max-width: 900px) {
             .game-grid { grid-template-columns: 1fr; }
@@ -4448,6 +4656,13 @@
                 hidden
             ></section>
 
+            <section
+                class="home-showcase"
+                id="homeLatestEventShowcase"
+                aria-label="En yeni etkinlik"
+                hidden
+            ></section>
+
             <section class="home-showcase" aria-labelledby="arcadeChallengeTitle">
                 <div class="showcase-heading">
                     <div><span class="route-eyebrow">Meeple Arcade</span><h2 id="arcadeChallengeTitle">Rekor için masaya otur!</h2><p>Mini oyunlarda topluluğa meydan oku, kendi rekorunu geliştir ve zirveye adını yazdır.</p></div>
@@ -5355,16 +5570,34 @@
                     <h3>Kullanım amacı ve görünürlük</h3>
                     <p>E-posta adresin yalnızca çekilişi yöneten admin tarafından katılımcı doğrulama ve kazananla iletişim amacıyla görülür. Kullanıcı adın ve verdiğin cevap çekilişin yorumlarında herkese açık görünür.</p>
 
+                    <h3>2. Kimler katılabilir</h3>
+                    <ul>
+                        <li>Katılım için siteye üye olmak gerekir.</li>
+                        <li>Çekilişlere <strong>18 yaşını doldurmuş</strong> ve Türkiye'de ikamet eden gerçek kişiler katılabilir.</li>
+                        <li>Ödüller yalnızca <strong>Türkiye içindeki</strong> adreslere gönderilir.</li>
+                        <li>Düzenleyicinin birinci derece yakınları ile çekilişi yürüten ekipte görevli kişiler katılamaz.</li>
+                    </ul>
+
                     <h3>Katılım ve iptal</h3>
                     <p>Katılım isteğe bağlıdır ve her hesap bir kez katılabilir. Katılımını iptal ettiğinde katılım kaydın ve bu katılımla oluşturulan cevap yorumun kaldırılır.</p>
 
+                    <h3>5. Bildirim ve teslimat</h3>
+                    <ul>
+                        <li>Kazandığınızda site içi bildirim ve/veya e-posta ile bilgilendirilirsiniz. Teslimat için ad-soyad, telefon ve adres bilgisi istenir; bu bilgiler yalnızca kargo süreci için kullanılır.</li>
+                        <li>Teslimat bilgilerini bildirimden itibaren <strong>7 iş günü</strong> içinde iletmeyen katılımcının hakkı yedek kazanana geçer.</li>
+                        <li><strong>Kargo ücreti düzenleyene aittir.</strong> Eksik veya yanlış adres nedeniyle teslim edilemeyen ödüllerden düzenleyici sorumlu değildir.</li>
+                        <li>Teslimat için verdiğiniz ad, telefon, adres ve şehir bilgisi, teslimat tamamlandığında silinir.</li>
+                        <li>Ödül <strong>devredilemez ve nakde çevrilemez.</strong> Ödülün tedarik edilememesi hâlinde eş değer bir ürünle değiştirilebilir.</li>
+                        <li>Ödülün teslimi nedeniyle doğabilecek yasal yükümlülükler mevzuata göre yerine getirilir.</li>
+                    </ul>
+
                     <h3>Sürüm</h3>
-                    <p>Çekiliş katılım bilgilendirmesi · 04.09.2026 / v1</p>
+                    <p>Çekiliş katılım bilgilendirmesi · 05.09.2026 / v2</p>
                 </div>
 
                 <label class="giveaway-consent-check">
                     <input type="checkbox" id="giveawayLegalAccept">
-                    <span>Bilgilendirmeyi okudum; e-posta adresimin yalnızca admin tarafından görülmesini, kullanıcı adımın ve cevabımın yorumlarda herkese açık yayımlanmasını kabul ediyorum.</span>
+                    <span>Bilgilendirmeyi okudum; 18 yaşımı doldurduğumu ve Türkiye'de ikamet ettiğimi, e-posta adresimin yalnızca admin tarafından görülmesini, kullanıcı adımın ve cevabımın yorumlarda herkese açık yayımlanmasını kabul ediyorum.</span>
                 </label>
 
                 <button class="modal-submit" type="button" id="giveawayLegalContinue" disabled>
@@ -5409,6 +5642,80 @@
 
     </div>
 
+
+
+    <!-- =========================================================
+         GENEL DÜZENLEME MODALI
+    ========================================================== -->
+
+    <div class="modal-overlay" id="editContentModal" aria-hidden="true">
+        <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="editContentTitle">
+            <button class="modal-close" type="button" data-edit-cancel aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+            <h2 id="editContentTitle">İçeriği Düzenle</h2>
+            <p class="modal-description" id="editContentDescription">Değişikliklerini rahatça yapıp kaydedebilirsin.</p>
+            <form id="editContentForm">
+                <div class="edit-fields" id="editContentFields"></div>
+                <p class="form-message" id="editContentMessage" aria-live="polite"></p>
+                <div class="edit-modal-actions">
+                    <button class="secondary-btn" type="button" data-edit-cancel>İptal</button>
+                    <button class="primary-btn" type="submit" id="editContentSubmit">
+                        <i class="fa-solid fa-floppy-disk"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- =========================================================
+         EVRENSEL GÖRSEL KIRPMA / YAKINLAŞTIRMA MODALI
+    ========================================================== -->
+
+    <div class="modal-overlay" id="imageCropModal" aria-hidden="true">
+        <div class="modal image-crop-modal" role="dialog" aria-modal="true" aria-labelledby="imageCropTitle">
+            <button class="modal-close" type="button" data-image-crop-cancel aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-icon"><i class="fa-solid fa-crop-simple"></i></div>
+            <h2 id="imageCropTitle">Fotoğrafı Düzenle</h2>
+            <p class="modal-description">Fotoğrafı sürükleyerek kadrajı değiştir; kaydırıcıyla yakınlaştırıp uzaklaştır.</p>
+
+            <div class="image-crop-stage">
+                <canvas id="imageCropCanvas" width="720" height="405" aria-label="Fotoğraf kırpma önizlemesi"></canvas>
+            </div>
+
+            <div class="image-crop-controls">
+                <div>
+                    <label for="imageCropZoom" class="form-hint">Yakınlaştır / Uzaklaştır</label>
+                    <div class="image-crop-zoom-row">
+                        <i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i>
+                        <input id="imageCropZoom" type="range" min="1" max="3" step="0.01" value="1">
+                        <i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="form-group" style="margin:0">
+                    <label for="imageCropAspect">Kadraj Oranı</label>
+                    <select class="form-select" id="imageCropAspect">
+                        <option value="original">Orijinal</option>
+                        <option value="1">1:1 Kare</option>
+                        <option value="1.3333333333">4:3</option>
+                        <option value="1.7777777778" selected>16:9</option>
+                    </select>
+                </div>
+            </div>
+            <p class="image-crop-help">Bu düzenleme tüm fotoğraf yükleme alanlarında aynı şekilde çalışır. Mevcut dosya türü ve boyut kuralları değişmez.</p>
+            <p class="form-message" id="imageCropMessage" aria-live="polite"></p>
+            <div class="image-crop-actions">
+                <button class="secondary-btn" type="button" data-image-crop-cancel>İptal</button>
+                <button class="primary-btn" type="button" id="imageCropApply">
+                    <i class="fa-solid fa-check"></i> Kadrajı Kullan
+                </button>
+            </div>
+        </div>
+    </div>
 
 
     <!-- =========================================================
@@ -6067,7 +6374,8 @@
             limit,
             startAfter,
             onSnapshot,
-            serverTimestamp
+            serverTimestamp,
+            arrayUnion
         } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
         import {
@@ -6190,6 +6498,7 @@
         const homeTopics = document.getElementById("homeTopics");
         const homeGiveawayShowcase = document.getElementById("homeGiveawayShowcase");
         const homeLatestReviewShowcase = document.getElementById("homeLatestReviewShowcase");
+        const homeLatestEventShowcase = document.getElementById("homeLatestEventShowcase");
         const homeGamesShowcase = document.getElementById("homeGamesShowcase");
         const homeBkfkRanking = document.getElementById("homeBkfkRanking");
         const homeCommunityRanking = document.getElementById("homeCommunityRanking");
@@ -6237,6 +6546,7 @@
         let cachedGiveaways = [];
         let cachedGiveawayEntries = [];
         let cachedChatMessages = [];
+        let hiddenMainChatMessageIds = new Set();
         let cachedCommunities = [];
         let cachedMemberships = [];
         let cachedDirectConversations = [];
@@ -6919,7 +7229,13 @@
                         const tags = Array.isArray(topic.tags) ? topic.tags : [];
 
                         return `
-                            <article class="topic-card">
+                            <article
+                                class="topic-card"
+                                data-topic-open="${escapeHTML(topic.id)}"
+                                tabindex="0"
+                                role="link"
+                                aria-label="${escapeHTML(topic.title || "Başlıksız konu")} başlığını aç"
+                            >
                                 <div class="topic-avatar">
                                     ${photoURL
                                         ? `<img src="${escapeHTML(photoURL)}" alt="">`
@@ -7764,16 +8080,22 @@
         }
 
 
+        function visibleMainChatMessages() {
+            return cachedChatMessages.filter(message => !hiddenMainChatMessageIds.has(message.id));
+        }
+
+
         function chatMarkup() {
 
             const currentUser = window.meepleForumAuthUser;
+            const visibleMessages = visibleMainChatMessages();
 
             return `
                 <div class="chat-hub">
                 ${directConversationsMarkup()}
                 <section class="chat-shell">
                     <div class="chat-messages" id="chatMessages">
-                        ${cachedChatMessages.length ? cachedChatMessages.map(message => {
+                        ${visibleMessages.length ? visibleMessages.map(message => {
                             const own = currentUser?.uid === message.authorId;
                             const canDelete = Boolean(own || isCurrentUserAdmin);
                             return `
@@ -7932,7 +8254,7 @@
 
 
         function latestGeneralChatTimestamp() {
-            return cachedChatMessages.reduce(
+            return visibleMainChatMessages().reduce(
                 (latest, message) => Math.max(latest, chatTimestamp(message.createdAt)),
                 0
             );
@@ -7967,7 +8289,7 @@
             const seenState = getChatSeenState(user);
             if (!user || !seenState) return { total: 0, general: false, directIds: [], communityIds: [] };
 
-            const latestGeneralFromOthers = cachedChatMessages.reduce((latest, message) =>
+            const latestGeneralFromOthers = visibleMainChatMessages().reduce((latest, message) =>
                 message.authorId !== user.uid
                     ? Math.max(latest, chatTimestamp(message.createdAt))
                     : latest
@@ -8740,10 +9062,100 @@
         }
 
 
-        function venuesMarkup() {
+        function venueRegionParts(venue) {
+            const address = String(venue.address || "").trim();
+            let province = String(
+                venue.province ||
+                venue.state ||
+                venue.administrativeArea ||
+                ""
+            ).trim();
+            let district = String(
+                venue.district ||
+                venue.locality ||
+                venue.subLocality ||
+                ""
+            ).trim();
 
-            const cities = [...new Set(cachedVenues.map(venue => venue.city).filter(Boolean))]
-                .sort((a, b) => a.localeCompare(b, "tr"));
+            // Google Maps Türkiye adreslerinde sık görülen "İlçe/İl" kalıbını yakala.
+            const addressMatch = address.match(/(?:^|,\s*)([^,\/]+?)\s*\/\s*([^,]+?)(?:,\s*(?:Türkiye|Turkey))?$/i);
+            if (addressMatch) {
+                district = district || addressMatch[1].trim();
+                province = province || addressMatch[2].trim();
+            }
+
+            district = district.replace(/^\d{5}\s+/, "").trim();
+            province = province.replace(/^\d{5}\s+/, "").trim();
+
+            const legacyCity = String(venue.city || "").trim();
+            province = province || legacyCity || "Diğer";
+            if (!district || district.toLocaleLowerCase("tr-TR") === province.toLocaleLowerCase("tr-TR")) {
+                district = legacyCity && legacyCity.toLocaleLowerCase("tr-TR") !== province.toLocaleLowerCase("tr-TR")
+                    ? legacyCity
+                    : "Merkez / Diğer";
+            }
+
+            return { province, district };
+        }
+
+
+        function venueCardMarkup(venue) {
+            return `
+                <article class="directory-card">
+                    ${safeImageURL(venue.photoURL) ? `<img class="directory-card-image" src="${escapeHTML(safeImageURL(venue.photoURL))}" alt="${escapeHTML(venue.name || "Mekan")}" loading="lazy">` : '<div class="directory-card-image"></div>'}
+                    ${Number.isFinite(Number(venue.latitude)) && Number.isFinite(Number(venue.longitude)) ? `
+                        <iframe
+                            class="venue-map"
+                            title="${escapeHTML(venue.name || "Mekan")} konumu"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            src="https://www.google.com/maps?q=${encodeURIComponent(`${venue.latitude},${venue.longitude}`)}&z=15&output=embed"
+                        ></iframe>
+                    ` : ""}
+                    <div class="directory-card-body">
+                        <h3>${escapeHTML(venue.name || "Google Maps Mekanı")}</h3>
+                        <p>${escapeHTML(venue.address || "Adres için Google Maps bağlantısını aç.")}</p>
+                        ${Array.isArray(venue.photoAttributions) && venue.photoAttributions.length ? `
+                            <div class="venue-photo-credit">
+                                Fotoğraf: ${venue.photoAttributions.map(item => {
+                                    const attributionURL = safeImageURL(item?.uri || "");
+                                    const attributionName = escapeHTML(item?.displayName || "Google Maps kullanıcısı");
+                                    return attributionURL
+                                        ? `<a href="${escapeHTML(attributionURL)}" target="_blank" rel="noopener">${attributionName}</a>`
+                                        : attributionName;
+                                }).join(", ")}
+                            </div>
+                        ` : ""}
+                        ${Array.isArray(venue.openingHours) && venue.openingHours.length ? `
+                            <div class="venue-hours">
+                                <strong><i class="fa-regular fa-clock"></i> Çalışma Saatleri</strong><br>
+                                ${venue.openingHours.map(item => escapeHTML(item)).join("<br>")}
+                            </div>
+                        ` : ""}
+                        <div class="owner-actions">
+                            ${safeImageURL(venue.mapsUrl) ? `<a class="primary-btn" href="${escapeHTML(safeImageURL(venue.mapsUrl))}" target="_blank" rel="noopener">Google Maps</a>` : ""}
+                            ${isCurrentUserAdmin ? `<button class="vote-btn" type="button" data-refresh-venue="${escapeHTML(venue.id)}"><i class="fa-solid fa-rotate"></i> Yenile</button>` : ""}
+                            ${isCurrentUserAdmin ? `<button class="danger-btn" type="button" data-delete-venue="${escapeHTML(venue.id)}">Sil</button>` : ""}
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+
+        function venuesMarkup() {
+            const groups = new Map();
+
+            cachedVenues.forEach(venue => {
+                const { province, district } = venueRegionParts(venue);
+                if (!groups.has(province)) groups.set(province, new Map());
+                const districts = groups.get(province);
+                if (!districts.has(district)) districts.set(district, []);
+                districts.get(district).push(venue);
+            });
+
+            const sortedProvinces = [...groups.entries()]
+                .sort(([a], [b]) => a.localeCompare(b, "tr"));
 
             const adminForm = isCurrentUserAdmin ? `
                 <form class="venue-form" id="venueForm">
@@ -8767,50 +9179,23 @@
 
             return `
                 ${adminForm}
-                ${cities.length ? cities.map(city => `
-                    <section style="margin-bottom:26px">
-                        <h2 class="comments-title">${escapeHTML(city)}</h2>
-                        <div class="directory-grid">
-                            ${cachedVenues.filter(venue => venue.city === city).map(venue => `
-                                <article class="directory-card">
-                                    ${safeImageURL(venue.photoURL) ? `<img class="directory-card-image" src="${escapeHTML(safeImageURL(venue.photoURL))}" alt="${escapeHTML(venue.name || "Mekan")}" loading="lazy">` : '<div class="directory-card-image"></div>'}
-                                    ${Number.isFinite(Number(venue.latitude)) && Number.isFinite(Number(venue.longitude)) ? `
-                                        <iframe
-                                            class="venue-map"
-                                            title="${escapeHTML(venue.name || "Mekan")} konumu"
-                                            loading="lazy"
-                                            referrerpolicy="no-referrer-when-downgrade"
-                                            src="https://www.google.com/maps?q=${encodeURIComponent(`${venue.latitude},${venue.longitude}`)}&z=15&output=embed"
-                                        ></iframe>
-                                    ` : ""}
-                                    <div class="directory-card-body">
-                                        <h3>${escapeHTML(venue.name || "Google Maps Mekanı")}</h3>
-                                        <p>${escapeHTML(venue.address || "Adres için Google Maps bağlantısını aç.")}</p>
-                                        ${Array.isArray(venue.photoAttributions) && venue.photoAttributions.length ? `
-                                            <div class="venue-photo-credit">
-                                                Fotoğraf: ${venue.photoAttributions.map(item => {
-                                                    const attributionURL = safeImageURL(item?.uri || "");
-                                                    const attributionName = escapeHTML(item?.displayName || "Google Maps kullanıcısı");
-                                                    return attributionURL
-                                                        ? `<a href="${escapeHTML(attributionURL)}" target="_blank" rel="noopener">${attributionName}</a>`
-                                                        : attributionName;
-                                                }).join(", ")}
-                                            </div>
-                                        ` : ""}
-                                        ${Array.isArray(venue.openingHours) && venue.openingHours.length ? `
-                                            <div class="venue-hours">
-                                                <strong><i class="fa-regular fa-clock"></i> Çalışma Saatleri</strong><br>
-                                                ${venue.openingHours.map(item => escapeHTML(item)).join("<br>")}
-                                            </div>
-                                        ` : ""}
-                                        <div class="owner-actions">
-                                            ${safeImageURL(venue.mapsUrl) ? `<a class="primary-btn" href="${escapeHTML(safeImageURL(venue.mapsUrl))}" target="_blank" rel="noopener">Google Maps</a>` : ""}
-                                            ${isCurrentUserAdmin ? `<button class="vote-btn" type="button" data-refresh-venue="${escapeHTML(venue.id)}"><i class="fa-solid fa-rotate"></i> Yenile</button>` : ""}
-                                            ${isCurrentUserAdmin ? `<button class="danger-btn" type="button" data-delete-venue="${escapeHTML(venue.id)}">Sil</button>` : ""}
+                ${sortedProvinces.length ? sortedProvinces.map(([province, districts]) => `
+                    <section class="venue-province-section">
+                        <h2 class="venue-province-title"><i class="fa-solid fa-map-location-dot"></i>${escapeHTML(province)}</h2>
+                        <div class="venue-district-grid">
+                            ${[...districts.entries()]
+                                .sort(([a], [b]) => a.localeCompare(b, "tr"))
+                                .map(([district, venues]) => `
+                                    <section class="venue-district-column">
+                                        <h3><i class="fa-solid fa-location-dot"></i>${escapeHTML(district)}</h3>
+                                        <div class="directory-grid">
+                                            ${venues
+                                                .sort((a, b) => (a.name || "").localeCompare(b.name || "", "tr"))
+                                                .map(venueCardMarkup)
+                                                .join("")}
                                         </div>
-                                    </div>
-                                </article>
-                            `).join("")}
+                                    </section>
+                                `).join("")}
                         </div>
                     </section>
                 `).join("") : '<div class="empty-state"><i class="fa-solid fa-location-dot"></i>Henüz mekan eklenmemiş.</div>'}
@@ -9034,6 +9419,7 @@
                                         <i class="fa-solid fa-file-csv"></i> CSV Dışa Aktar
                                     </button>
                                 </div>
+                                <div class="admin-giveaway-entries">
                                 ${entries.map(entry => `
                                     <div class="admin-row">
                                         <div>
@@ -9060,6 +9446,7 @@
                                         </div>
                                     </div>
                                 `).join("") || '<div class="empty-state">Bu çekilişte henüz katılımcı yok.</div>'}
+                                </div>
                             </section>
                         `;
                     }).join("") || '<div class="empty-state">Katılımcısı görüntülenecek çekiliş yok.</div>'}
@@ -9157,7 +9544,7 @@
 
             homeLatestReviewShowcase.hidden = false;
             homeLatestReviewShowcase.innerHTML = `
-                <article class="home-giveaway-link">
+                <article class="home-giveaway-link" data-review-open="${escapeHTML(reviewId)}" tabindex="0" role="link">
                     <div class="home-giveaway-visual">
                         ${imageURL
                             ? `<img src="${escapeHTML(imageURL)}" alt="${escapeHTML(review.title || "Son inceleme")}" loading="lazy">`
@@ -9170,6 +9557,46 @@
                         <small>${escapeHTML(authorName)} · ${escapeHTML(formatTopicDate(review.createdAt))}</small>
                         <a class="primary-btn" href="#review=${encodeURIComponent(reviewId)}">
                             <i class="fa-solid fa-book-open"></i> İncelemeyi Oku
+                        </a>
+                    </div>
+                </article>
+            `;
+        }
+
+
+        function renderHomeLatestEvent() {
+            if (!homeLatestEventShowcase) return;
+
+            const latestEvent = [...cachedEvents]
+                .sort((first, second) => {
+                    const firstCreated = first.createdAt?.toMillis?.() || 0;
+                    const secondCreated = second.createdAt?.toMillis?.() || 0;
+                    if (secondCreated !== firstCreated) return secondCreated - firstCreated;
+                    return new Date(second.startAt || 0).getTime() - new Date(first.startAt || 0).getTime();
+                })[0];
+
+            if (!latestEvent) {
+                homeLatestEventShowcase.hidden = true;
+                homeLatestEventShowcase.innerHTML = "";
+                return;
+            }
+
+            const imageURL = safeImageURL(latestEvent.imageURL);
+            homeLatestEventShowcase.hidden = false;
+            homeLatestEventShowcase.innerHTML = `
+                <article class="home-giveaway-link" data-event-open="events" tabindex="0" role="link">
+                    <div class="home-giveaway-visual">
+                        ${imageURL
+                            ? `<img src="${escapeHTML(imageURL)}" alt="${escapeHTML(latestEvent.name || "Etkinlik")}" loading="lazy">`
+                            : '<i class="fa-regular fa-calendar-days" aria-hidden="true"></i>'}
+                    </div>
+                    <div class="home-giveaway-content">
+                        <span class="giveaway-label">En Yeni Etkinlik</span>
+                        <h2>${escapeHTML(latestEvent.name || "MeepleForum Etkinliği")}</h2>
+                        <p><strong>${escapeHTML(formatEventDate(latestEvent.startAt))}</strong> · ${escapeHTML(latestEvent.place || "Yer belirtilmedi")}</p>
+                        <p>${escapeHTML(String(latestEvent.purpose || "").slice(0, 240))}${String(latestEvent.purpose || "").length > 240 ? "…" : ""}</p>
+                        <a class="primary-btn" href="#events">
+                            <i class="fa-regular fa-calendar"></i> Etkinlikleri Gör
                         </a>
                     </div>
                 </article>
@@ -11719,7 +12146,7 @@
                 routeContent.innerHTML = `
                     <div class="info-grid">
                         ${publishedReviews.map(([reviewId, review]) => `
-                            <article class="info-card">
+                            <article class="info-card" data-review-open="${escapeHTML(reviewId)}" tabindex="0" role="link">
                                 <i class="fa-solid fa-pen-to-square"></i>
                                 <h3>${escapeHTML(review.title || "Başlıksız inceleme")}</h3>
                                 <p>${escapeHTML(String(review.content || "").slice(0, 170))}${String(review.content || "").length > 170 ? "…" : ""}</p>
@@ -11905,7 +12332,7 @@
                 routeContent.innerHTML = `
                     <div class="info-grid">
                         ${publishedReviews.map(([reviewId, review]) => `
-                            <article class="info-card">
+                            <article class="info-card" data-review-open="${escapeHTML(reviewId)}" tabindex="0" role="link">
                                 <i class="fa-solid fa-chess-rook"></i>
                                 <h3>${escapeHTML(review.title || "Başlıksız inceleme")}</h3>
                                 <p>${escapeHTML(String(review.content || "").slice(0, 170))}${String(review.content || "").length > 170 ? "…" : ""}</p>
@@ -12172,77 +12599,129 @@
 
         routeContent.addEventListener("click", event => {
 
-            const topicButton = event.target.closest("[data-topic-open]");
+            const profileLink = event.target.closest("[data-profile-open]");
+            const tagButton = event.target.closest("[data-tag-route]");
             const categoryLink = event.target.closest("[data-category-route]");
             const reviewCategoryLink = event.target.closest("[data-review-category-route]");
-            const profileLink = event.target.closest("[data-profile-open]");
+            const reviewCard = event.target.closest("[data-review-open]");
+            const topicCard = event.target.closest("[data-topic-open]");
             const giveawayButton = event.target.closest("[data-giveaway-open]");
             const communityButton = event.target.closest("[data-community-open]");
             const directChatButton = event.target.closest("[data-direct-chat-open]");
             const communityChatButton = event.target.closest("[data-community-chat-open]");
-            const tagButton = event.target.closest("[data-tag-route]");
 
-            if (topicButton) {
-                window.location.hash =
-                    "topic=" + encodeURIComponent(topicButton.dataset.topicOpen);
+            // İç kartlardaki özel butonlar kartın genel tıklamasından önce gelir.
+            if (profileLink) {
+                event.preventDefault();
+                window.location.hash = "profile=" + encodeURIComponent(profileLink.dataset.profileOpen);
+                return;
+            }
+
+            if (tagButton) {
+                event.preventDefault();
+                window.location.hash = "tag=" + encodeURIComponent(tagButton.dataset.tagRoute);
+                return;
             }
 
             if (categoryLink) {
                 event.preventDefault();
-                window.location.hash =
-                    "category=" + encodeURIComponent(categoryLink.dataset.categoryRoute);
+                window.location.hash = "category=" + encodeURIComponent(categoryLink.dataset.categoryRoute);
+                return;
             }
 
             if (reviewCategoryLink) {
                 event.preventDefault();
-                window.location.hash =
-                    "review-category=" + encodeURIComponent(reviewCategoryLink.dataset.reviewCategoryRoute);
+                window.location.hash = "review-category=" + encodeURIComponent(reviewCategoryLink.dataset.reviewCategoryRoute);
+                return;
             }
 
-            if (profileLink) {
-                window.location.hash =
-                    "profile=" + encodeURIComponent(profileLink.dataset.profileOpen);
+            if (reviewCard) {
+                event.preventDefault();
+                window.location.hash = "review=" + encodeURIComponent(reviewCard.dataset.reviewOpen);
+                return;
+            }
+
+            if (topicCard) {
+                const nestedAction = event.target.closest("button, a, input, textarea, select, label");
+                if (nestedAction && !nestedAction.matches(".topic-title-link")) return;
+                event.preventDefault();
+                window.location.hash = "topic=" + encodeURIComponent(topicCard.dataset.topicOpen);
+                return;
             }
 
             if (giveawayButton) {
-                window.location.hash =
-                    "giveaway=" + encodeURIComponent(giveawayButton.dataset.giveawayOpen);
+                window.location.hash = "giveaway=" + encodeURIComponent(giveawayButton.dataset.giveawayOpen);
+                return;
             }
 
             if (communityButton) {
-                window.location.hash =
-                    "community=" + encodeURIComponent(communityButton.dataset.communityOpen);
+                window.location.hash = "community=" + encodeURIComponent(communityButton.dataset.communityOpen);
+                return;
             }
 
             if (directChatButton) {
                 event.preventDefault();
                 openDirectConversation(directChatButton.dataset.directChatOpen);
+                return;
             }
 
             if (communityChatButton) {
                 event.preventDefault();
-                window.location.hash =
-                    "community-chat=" + encodeURIComponent(communityChatButton.dataset.communityChatOpen);
+                window.location.hash = "community-chat=" + encodeURIComponent(communityChatButton.dataset.communityChatOpen);
+            }
+        });
+
+
+        homeTopics.addEventListener("click", event => {
+            const profileLink = event.target.closest("[data-profile-open]");
+            const tagButton = event.target.closest("[data-tag-route]");
+            const topicCard = event.target.closest("[data-topic-open]");
+
+            if (profileLink) {
+                event.preventDefault();
+                window.location.hash = "profile=" + encodeURIComponent(profileLink.dataset.profileOpen);
+                return;
             }
 
             if (tagButton) {
-                window.location.hash =
-                    "tag=" + encodeURIComponent(tagButton.dataset.tagRoute);
+                event.preventDefault();
+                window.location.hash = "tag=" + encodeURIComponent(tagButton.dataset.tagRoute);
+                return;
+            }
+
+            if (topicCard) {
+                const nestedAction = event.target.closest("button, a, input, textarea, select, label");
+                if (nestedAction && !nestedAction.matches(".topic-title-link")) return;
+                event.preventDefault();
+                window.location.hash = "topic=" + encodeURIComponent(topicCard.dataset.topicOpen);
             }
         });
 
-        homeTopics.addEventListener("click", event => {
-            const topicButton = event.target.closest("[data-topic-open]");
-            const profileLink = event.target.closest("[data-profile-open]");
-            if (topicButton) {
-                window.location.hash =
-                    "topic=" + encodeURIComponent(topicButton.dataset.topicOpen);
+        document.addEventListener("click", event => {
+            const reviewCard = event.target.closest("[data-review-open]");
+            if (reviewCard && !routeContent.contains(reviewCard)) {
+                event.preventDefault();
+                window.location.hash = "review=" + encodeURIComponent(reviewCard.dataset.reviewOpen);
+                return;
             }
-            if (profileLink) {
-                window.location.hash =
-                    "profile=" + encodeURIComponent(profileLink.dataset.profileOpen);
+
+            const eventCard = event.target.closest("[data-event-open]");
+            if (eventCard) {
+                event.preventDefault();
+                window.location.hash = eventCard.dataset.eventOpen || "events";
             }
         });
+
+        document.addEventListener("keydown", event => {
+            if (!["Enter", " "].includes(event.key)) return;
+            const card = event.target.closest('[role="link"][data-topic-open], [role="link"][data-review-open], [role="link"][data-event-open]');
+            if (!card || event.target !== card) return;
+            event.preventDefault();
+            if (card.dataset.topicOpen) window.location.hash = "topic=" + encodeURIComponent(card.dataset.topicOpen);
+            if (card.dataset.reviewOpen) window.location.hash = "review=" + encodeURIComponent(card.dataset.reviewOpen);
+            if (card.dataset.eventOpen) window.location.hash = card.dataset.eventOpen || "events";
+        });
+
 
         homeGamesShowcase.addEventListener("click", event => {
             const profileLink = event.target.closest("[data-profile-open]");
@@ -12550,6 +13029,337 @@
 
             return canvasToImageFile(canvas, "topic.webp", 0.80);
         }
+
+
+        /* =========================================================
+           GENEL DÜZENLEME MODALI
+        ========================================================== */
+
+        const editContentModal = document.getElementById("editContentModal");
+        const editContentForm = document.getElementById("editContentForm");
+        const editContentTitle = document.getElementById("editContentTitle");
+        const editContentDescription = document.getElementById("editContentDescription");
+        const editContentFields = document.getElementById("editContentFields");
+        const editContentMessage = document.getElementById("editContentMessage");
+        const editContentSubmit = document.getElementById("editContentSubmit");
+        let editDialogResolver = null;
+
+        function finishEditDialog(result = null) {
+            if (!editDialogResolver) {
+                closeModal(editContentModal);
+                return;
+            }
+            const resolve = editDialogResolver;
+            editDialogResolver = null;
+            closeModal(editContentModal);
+            resolve(result);
+        }
+
+        function editFieldMarkup(field) {
+            const name = escapeHTML(field.name || "field");
+            const label = escapeHTML(field.label || "Alan");
+            const value = escapeHTML(field.value ?? "");
+            const maxlength = Number(field.maxlength) > 0 ? `maxlength="${Number(field.maxlength)}"` : "";
+            const placeholder = field.placeholder ? `placeholder="${escapeHTML(field.placeholder)}"` : "";
+            const required = field.required === false ? "" : "required";
+
+            if (field.type === "textarea") {
+                return `
+                    <div class="form-group">
+                        <label for="edit-field-${name}">${label}</label>
+                        <textarea class="form-textarea" id="edit-field-${name}" name="${name}" ${maxlength} ${placeholder} ${required}>${value}</textarea>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="form-group">
+                    <label for="edit-field-${name}">${label}</label>
+                    <input class="form-input" id="edit-field-${name}" name="${name}" type="${field.type === "url" ? "url" : "text"}" value="${value}" ${maxlength} ${placeholder} ${required}>
+                </div>
+            `;
+        }
+
+        function openEditDialog({ title, description = "", submitText = "Kaydet", fields = [] }) {
+            if (editDialogResolver) finishEditDialog(null);
+
+            editContentTitle.textContent = title || "İçeriği Düzenle";
+            editContentDescription.textContent = description || "Değişikliklerini yapıp kaydedebilirsin.";
+            editContentFields.innerHTML = fields.map(editFieldMarkup).join("");
+            editContentMessage.textContent = "";
+            editContentSubmit.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> ${escapeHTML(submitText)}`;
+            openModal("editContentModal");
+
+            const firstControl = editContentFields.querySelector("input, textarea");
+            window.setTimeout(() => firstControl?.focus(), 120);
+
+            return new Promise(resolve => {
+                editDialogResolver = resolve;
+            });
+        }
+
+        editContentForm?.addEventListener("submit", event => {
+            event.preventDefault();
+            if (!editDialogResolver) return;
+            const data = Object.fromEntries(new FormData(editContentForm).entries());
+            finishEditDialog(data);
+        });
+
+        editContentModal?.addEventListener("click", event => {
+            if (event.target.closest("[data-edit-cancel]") || event.target === editContentModal) {
+                finishEditDialog(null);
+            }
+        });
+
+
+        /* =========================================================
+           TÜM FOTOĞRAF YÜKLEMELERİ İÇİN KIRPMA / ZOOM
+        ========================================================== */
+
+        const imageCropModal = document.getElementById("imageCropModal");
+        const imageCropCanvas = document.getElementById("imageCropCanvas");
+        const imageCropContext = imageCropCanvas?.getContext("2d");
+        const imageCropZoom = document.getElementById("imageCropZoom");
+        const imageCropAspect = document.getElementById("imageCropAspect");
+        const imageCropApply = document.getElementById("imageCropApply");
+        const imageCropMessage = document.getElementById("imageCropMessage");
+        const cropBypassInputs = new WeakSet();
+        let cropState = null;
+
+        function cropAspectValue() {
+            if (!cropState) return 16 / 9;
+            if (imageCropAspect?.value === "original") {
+                return cropState.image.width / cropState.image.height;
+            }
+            return Math.max(.25, Number(imageCropAspect?.value) || 16 / 9);
+        }
+
+        function resizeCropPreview() {
+            if (!cropState || !imageCropCanvas) return;
+            const aspect = cropAspectValue();
+            const width = 720;
+            const height = Math.max(260, Math.min(620, Math.round(width / aspect)));
+            imageCropCanvas.width = width;
+            imageCropCanvas.height = height;
+            cropState.offsetX = 0;
+            cropState.offsetY = 0;
+            drawCropPreview();
+        }
+
+        function cropDrawMetrics(canvas = imageCropCanvas) {
+            if (!cropState || !canvas) return null;
+            const image = cropState.image;
+            const baseScale = Math.max(canvas.width / image.width, canvas.height / image.height);
+            const zoom = Math.max(1, Number(imageCropZoom?.value) || 1);
+            const scale = baseScale * zoom;
+            const drawWidth = image.width * scale;
+            const drawHeight = image.height * scale;
+            const maxX = Math.max(0, (drawWidth - canvas.width) / 2);
+            const maxY = Math.max(0, (drawHeight - canvas.height) / 2);
+            cropState.offsetX = Math.max(-maxX, Math.min(maxX, cropState.offsetX || 0));
+            cropState.offsetY = Math.max(-maxY, Math.min(maxY, cropState.offsetY || 0));
+            return {
+                scale,
+                drawWidth,
+                drawHeight,
+                x: (canvas.width - drawWidth) / 2 + cropState.offsetX,
+                y: (canvas.height - drawHeight) / 2 + cropState.offsetY
+            };
+        }
+
+        function drawCropPreview() {
+            if (!cropState || !imageCropContext || !imageCropCanvas) return;
+            const metrics = cropDrawMetrics(imageCropCanvas);
+            imageCropContext.clearRect(0, 0, imageCropCanvas.width, imageCropCanvas.height);
+            imageCropContext.fillStyle = "#090807";
+            imageCropContext.fillRect(0, 0, imageCropCanvas.width, imageCropCanvas.height);
+            imageCropContext.drawImage(
+                cropState.image,
+                metrics.x,
+                metrics.y,
+                metrics.drawWidth,
+                metrics.drawHeight
+            );
+        }
+
+        function cancelImageCrop() {
+            if (cropState?.input) cropState.input.value = "";
+            cropState?.image?.close?.();
+            cropState = null;
+            imageCropMessage.textContent = "";
+            closeModal(imageCropModal);
+        }
+
+        async function openImageCropper(input, file) {
+            const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+            const isProfile = input.id === "profilePhotoInput";
+            const maxOriginalBytes = (isProfile ? 8 : 10) * 1024 * 1024;
+            if (!allowedTypes.includes(file.type)) {
+                input.value = "";
+                showToast("Yalnızca JPG, PNG veya WebP görselleri kullanabilirsin.", "error");
+                return;
+            }
+            if (file.size > maxOriginalBytes) {
+                input.value = "";
+                showToast(`Seçilen fotoğraf en fazla ${isProfile ? 8 : 10} MB olabilir.`, "error");
+                return;
+            }
+
+            try {
+                const image = await decodeImageForCanvas(file);
+                cropState?.image?.close?.();
+                cropState = {
+                    input,
+                    file,
+                    image,
+                    offsetX: 0,
+                    offsetY: 0,
+                    dragStartX: 0,
+                    dragStartY: 0,
+                    startOffsetX: 0,
+                    startOffsetY: 0,
+                    dragging: false
+                };
+                imageCropMessage.textContent = "";
+                imageCropZoom.value = "1";
+
+                imageCropAspect.value = isProfile ? "1" : "1.7777777778";
+                imageCropAspect.disabled = isProfile;
+                document.getElementById("imageCropTitle").textContent = isProfile
+                    ? "Profil Fotoğrafını Düzenle"
+                    : "Fotoğrafı Düzenle";
+                resizeCropPreview();
+                openModal("imageCropModal");
+            } catch (error) {
+                console.error("Görsel düzenleyici açılamadı:", error);
+                input.value = "";
+                showToast("Fotoğraf düzenlenmek için açılamadı.", "error");
+            }
+        }
+
+        document.addEventListener("change", event => {
+            const input = event.target.closest?.('input[type="file"][accept*="image"]');
+            if (!input) return;
+            if (cropBypassInputs.has(input)) {
+                cropBypassInputs.delete(input);
+                return;
+            }
+            const file = input.files?.[0];
+            if (!file) return;
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            openImageCropper(input, file);
+        }, true);
+
+        imageCropZoom?.addEventListener("input", drawCropPreview);
+        imageCropAspect?.addEventListener("change", resizeCropPreview);
+
+        imageCropCanvas?.addEventListener("pointerdown", event => {
+            if (!cropState) return;
+            cropState.dragging = true;
+            cropState.dragStartX = event.clientX;
+            cropState.dragStartY = event.clientY;
+            cropState.startOffsetX = cropState.offsetX || 0;
+            cropState.startOffsetY = cropState.offsetY || 0;
+            imageCropCanvas.classList.add("dragging");
+            imageCropCanvas.setPointerCapture?.(event.pointerId);
+        });
+
+        imageCropCanvas?.addEventListener("pointermove", event => {
+            if (!cropState?.dragging) return;
+            const rect = imageCropCanvas.getBoundingClientRect();
+            const scaleX = imageCropCanvas.width / Math.max(1, rect.width);
+            const scaleY = imageCropCanvas.height / Math.max(1, rect.height);
+            cropState.offsetX = cropState.startOffsetX + (event.clientX - cropState.dragStartX) * scaleX;
+            cropState.offsetY = cropState.startOffsetY + (event.clientY - cropState.dragStartY) * scaleY;
+            drawCropPreview();
+        });
+
+        const finishCropDrag = event => {
+            if (!cropState) return;
+            cropState.dragging = false;
+            imageCropCanvas?.classList.remove("dragging");
+            if (event?.pointerId != null) imageCropCanvas?.releasePointerCapture?.(event.pointerId);
+        };
+        imageCropCanvas?.addEventListener("pointerup", finishCropDrag);
+        imageCropCanvas?.addEventListener("pointercancel", finishCropDrag);
+
+        imageCropModal?.addEventListener("click", event => {
+            if (event.target.closest("[data-image-crop-cancel]") || event.target === imageCropModal) {
+                cancelImageCrop();
+            }
+        });
+
+        imageCropApply?.addEventListener("click", async () => {
+            if (!cropState || !imageCropCanvas) return;
+            imageCropApply.disabled = true;
+            imageCropMessage.textContent = "Fotoğraf hazırlanıyor...";
+
+            try {
+                const previewMetrics = cropDrawMetrics(imageCropCanvas);
+                const aspect = imageCropCanvas.width / imageCropCanvas.height;
+                const maxWidth = cropState.input.id === "profilePhotoInput" ? 768 : 1400;
+                const outputCanvas = document.createElement("canvas");
+                outputCanvas.width = maxWidth;
+                outputCanvas.height = Math.max(1, Math.round(maxWidth / aspect));
+                const outputContext = outputCanvas.getContext("2d");
+                if (!outputContext) throw new Error("Görsel işleme alanı oluşturulamadı.");
+
+                const xScale = outputCanvas.width / imageCropCanvas.width;
+                const yScale = outputCanvas.height / imageCropCanvas.height;
+                outputContext.drawImage(
+                    cropState.image,
+                    previewMetrics.x * xScale,
+                    previewMetrics.y * yScale,
+                    previewMetrics.drawWidth * xScale,
+                    previewMetrics.drawHeight * yScale
+                );
+
+                const originalBase = String(cropState.file.name || "image")
+                    .replace(/\.[^.]+$/, "")
+                    .replace(/[^a-zA-Z0-9_-]+/g, "-")
+                    .slice(0, 60) || "image";
+                const processedFile = await canvasToImageFile(
+                    outputCanvas,
+                    `${originalBase}-cropped.webp`,
+                    cropState.input.id === "profilePhotoInput" ? 0.84 : 0.88
+                );
+
+                const targetInput = cropState.input;
+                const transfer = new DataTransfer();
+                transfer.items.add(processedFile);
+                targetInput.files = transfer.files;
+                cropBypassInputs.add(targetInput);
+
+                cropState.image?.close?.();
+                cropState = null;
+                imageCropMessage.textContent = "";
+                closeModal(imageCropModal);
+                targetInput.dispatchEvent(new Event("change", { bubbles: true }));
+                showToast("Fotoğraf kadrajı hazırlandı.");
+            } catch (error) {
+                console.error("Fotoğraf kırpılamadı:", error);
+                imageCropMessage.textContent = "Fotoğraf düzenlenemedi. Başka bir görsel deneyebilirsin.";
+            } finally {
+                imageCropApply.disabled = false;
+            }
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key !== "Escape") return;
+            if (imageCropModal?.classList.contains("active")) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                cancelImageCrop();
+                return;
+            }
+            if (editContentModal?.classList.contains("active")) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                finishEditDialog(null);
+            }
+        }, true);
 
 
         try {
@@ -13684,6 +14494,8 @@
                             placeId: googleData?.placeId || linkData.placeId,
                             name: googleData?.name || "Google Maps Mekanı",
                             city: googleData?.city || "Diğer Mekanlar",
+                            province: googleData?.province || googleData?.administrativeArea || "",
+                            district: googleData?.district || googleData?.locality || "",
                             address: googleData?.address || "Adres için Google Maps bağlantısını aç.",
                             mapsUrl: googleData?.mapsUrl || linkData.mapsUrl,
                             photoURL: googleData?.photoURL || "",
@@ -14132,19 +14944,24 @@
                     const giveaway = cachedGiveaways.find(item => item.id === giveawayId);
                     if (!giveaway) return;
 
-                    const nextQuestion = window.prompt(
-                        "Çekiliş katılım sorusu",
-                        giveaway.question || ""
-                    );
-                    if (nextQuestion === null) return;
-                    if (!nextQuestion.trim()) {
+                    const editResult = await openEditDialog({
+                        title: "Çekiliş Sorusunu Düzenle",
+                        description: "Katılımcıların bilgilendirme ekranından sonra göreceği soruyu düzenle.",
+                        submitText: "Soruyu Kaydet",
+                        fields: [
+                            { name: "question", label: "Katılım Sorusu", type: "textarea", value: giveaway.question || "", maxlength: 500 }
+                        ]
+                    });
+                    if (!editResult) return;
+                    const nextQuestion = String(editResult.question || "").trim();
+                    if (!nextQuestion) {
                         showToast("Katılım sorusu boş bırakılamaz.", "error");
                         return;
                     }
 
                     try {
                         await setDoc(doc(db, "giveaways", giveawayId), {
-                            question: nextQuestion.trim().slice(0, 500),
+                            question: nextQuestion.slice(0, 500),
                             updatedAt: serverTimestamp(),
                             updatedBy: auth.currentUser.uid
                         }, { merge: true });
@@ -14235,11 +15052,16 @@
                     const giveaway = cachedGiveaways.find(item => item.id === giveawayId);
                     if (!giveaway) return;
 
-                    const rawLinkURL = window.prompt(
-                        "Fotoğrafa bağlanacak HTTPS adresi (kaldırmak için boş bırak)",
-                        giveaway.linkURL || ""
-                    );
-                    if (rawLinkURL === null) return;
+                    const editResult = await openEditDialog({
+                        title: "Çekiliş Görsel Bağlantısını Düzenle",
+                        description: "Fotoğrafa tıklanınca açılacak HTTPS adresini yaz. Bağlantıyı kaldırmak için alanı boş bırak.",
+                        submitText: "Bağlantıyı Kaydet",
+                        fields: [
+                            { name: "linkURL", label: "HTTPS Adresi", type: "url", value: giveaway.linkURL || "", maxlength: 1000, required: false, placeholder: "https://..." }
+                        ]
+                    });
+                    if (!editResult) return;
+                    const rawLinkURL = String(editResult.linkURL || "");
                     const trimmedLinkURL = rawLinkURL.trim();
                     const linkURL = safeExternalURL(trimmedLinkURL);
                     if (trimmedLinkURL && !linkURL) {
@@ -14372,6 +15194,8 @@
                         const googleData = await fetchGooglePlaceFromMapsLink(parseGoogleMapsLink(venue.mapsUrl));
                         await setDoc(doc(db, "venues", venue.id), {
                             placeId: googleData.placeId || venue.placeId || "", name: googleData.name, city: googleData.city,
+                            province: googleData.province || googleData.administrativeArea || venue.province || "",
+                            district: googleData.district || googleData.locality || venue.district || "",
                             address: googleData.address, mapsUrl: googleData.mapsUrl || venue.mapsUrl, photoURL: googleData.photoURL || "",
                             photoResourceName: googleData.photoResourceName || venue.photoResourceName || "",
                             photoAttributions: Array.isArray(googleData.photoAttributions) ? googleData.photoAttributions : [],
@@ -14605,15 +15429,20 @@
                         return;
                     }
 
-                    const nextTitle = window.prompt("Gönderi başlığı", topic.title || "");
-                    if (nextTitle === null) return;
-                    const nextContent = window.prompt("Gönderi içeriği", topic.content || "");
-                    if (nextContent === null) return;
-                    const nextTagsText = window.prompt(
-                        "Etiketler (virgülle ayır, en fazla 5)",
-                        Array.isArray(topic.tags) ? topic.tags.join(", ") : ""
-                    );
-                    if (nextTagsText === null) return;
+                    const editResult = await openEditDialog({
+                        title: "Gönderiyi Düzenle",
+                        description: "Başlık, içerik ve etiketleri tek pencerede düzenleyebilirsin.",
+                        submitText: "Gönderiyi Kaydet",
+                        fields: [
+                            { name: "title", label: "Gönderi Başlığı", type: "text", value: topic.title || "", maxlength: 120 },
+                            { name: "content", label: "Gönderi İçeriği", type: "textarea", value: topic.content || "", maxlength: 5000 },
+                            { name: "tags", label: "Etiketler (virgülle ayır, en fazla 5)", type: "text", value: Array.isArray(topic.tags) ? topic.tags.join(", ") : "", maxlength: 180, required: false }
+                        ]
+                    });
+                    if (!editResult) return;
+                    const nextTitle = String(editResult.title || "");
+                    const nextContent = String(editResult.content || "");
+                    const nextTagsText = String(editResult.tags || "");
 
                     const nextTags = [...new Set(
                         nextTagsText
@@ -14651,10 +15480,18 @@
                         showToast("Yalnızca kendi incelemeni düzenleyebilirsin.", "error");
                         return;
                     }
-                    const nextTitle = window.prompt("İnceleme başlığı", currentReview.title || "");
-                    if (nextTitle === null) return;
-                    const nextContent = window.prompt("İnceleme metni", currentReview.content || "");
-                    if (nextContent === null) return;
+                    const editResult = await openEditDialog({
+                        title: "İncelemeyi Düzenle",
+                        description: "Başlık ve inceleme metnini geniş bir pencerede birlikte düzenleyebilirsin.",
+                        submitText: "İncelemeyi Kaydet",
+                        fields: [
+                            { name: "title", label: "İnceleme Başlığı", type: "text", value: currentReview.title || "", maxlength: 140 },
+                            { name: "content", label: "İnceleme Metni", type: "textarea", value: currentReview.content || "", maxlength: 10000 }
+                        ]
+                    });
+                    if (!editResult) return;
+                    const nextTitle = String(editResult.title || "");
+                    const nextContent = String(editResult.content || "");
 
                     if (!nextTitle.trim() || !nextContent.trim()) {
                         showToast("İnceleme başlığı ve metni boş bırakılamaz.", "error");
@@ -14877,11 +15714,40 @@
                         return;
                     }
 
+                    deleteChatButton.disabled = true;
+
+                    // Admin başka bir kullanıcının mesajını kaldırırken önce Firestore'da
+                    // moderasyon kaydı oluşturulur. Böylece eski RTDB kuralları admin silmeye
+                    // izin vermese bile mesaj tüm güncel istemcilerde anında kaybolur.
+                    if (isCurrentUserAdmin && message?.authorId !== user.uid) {
+                        try {
+                            await setDoc(doc(db, "siteSettings", "chatModeration"), {
+                                hiddenMessageIds: arrayUnion(messageId),
+                                updatedAt: serverTimestamp(),
+                                updatedBy: user.uid
+                            }, { merge: true });
+                            hiddenMainChatMessageIds.add(messageId);
+                            renderRoute();
+                        } catch (error) {
+                            console.error("Admin sohbet moderasyon kaydı yazılamadı:", error);
+                            showToast(getDataErrorMessage(error, "Mesaj admin tarafından kaldırılamadı."), "error");
+                            deleteChatButton.disabled = false;
+                            return;
+                        }
+                    }
+
                     try {
                         await remove(databaseRef(realtimeDb, `chatMessages/${messageId}`));
+                        showToast("Mesaj silindi.");
                     } catch (error) {
-                        console.error("Sohbet mesajı silinemedi:", error);
-                        showToast("Mesaj silinemedi.", "error");
+                        if (isCurrentUserAdmin && hiddenMainChatMessageIds.has(messageId)) {
+                            console.warn("RTDB fiziksel silme engellendi; mesaj moderasyon kaydıyla gizlendi:", error);
+                            showToast("Mesaj admin tarafından sohbetten kaldırıldı.");
+                        } else {
+                            console.error("Sohbet mesajı silinemedi:", error);
+                            showToast("Mesaj silinemedi.", "error");
+                            deleteChatButton.disabled = false;
+                        }
                     }
                     return;
                 }
@@ -14909,6 +15775,21 @@
                 error => {
                     console.error("Güncel kullanıcı adları alınamadı:", error);
                 }
+            );
+
+
+            onSnapshot(
+                doc(db, "siteSettings", "chatModeration"),
+                snapshot => {
+                    const hiddenIds = snapshot.exists() && Array.isArray(snapshot.data().hiddenMessageIds)
+                        ? snapshot.data().hiddenMessageIds
+                        : [];
+                    hiddenMainChatMessageIds = new Set(hiddenIds.map(id => String(id)));
+                    const route = decodeURIComponent(window.location.hash.slice(1));
+                    if (route === "chat") renderRoute();
+                    renderChatQuickMenu();
+                },
+                error => console.warn("Sohbet moderasyon listesi alınamadı:", error)
             );
 
 
@@ -14999,6 +15880,7 @@
                             const bTime = new Date(b.startAt || 0).getTime();
                             return aTime - bTime;
                         });
+                    renderHomeLatestEvent();
                     renderRoute();
                 },
                 error => {
