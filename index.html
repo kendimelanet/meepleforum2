@@ -34,6 +34,22 @@
     <style>
 
         /* =========================================================
+           FILGAIA ARAYÜZ FONTU
+           Font dosyalarını index.html ile aynı klasöre koy:
+           Filgaia.woff ve Filgaia.ttf
+        ========================================================== */
+        @font-face {
+            font-family: "Filgaia";
+            src:
+                url("Filgaia.woff") format("woff"),
+                url("Filgaia.ttf") format("truetype");
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+
+        /* =========================================================
            1. RENKLER VE TASARIM DEĞİŞKENLERİ
         ========================================================== */
 
@@ -71,6 +87,11 @@
             --shadow: 0 15px 45px rgba(0,0,0,0.28);
 
             --container: 1240px;
+
+            --font-ui: "Filgaia", "Inter", sans-serif;
+            --font-user: "Inter", sans-serif;
+            --site-background-image: none;
+            --hero-background-image: none;
         }
 
 
@@ -105,7 +126,7 @@
                 var(--bg-main);
 
             color: var(--text-main);
-            font-family: "Inter", sans-serif;
+            font-family: var(--font-ui);
             line-height: 1.5;
         }
 
@@ -240,7 +261,7 @@
         }
 
         .logo-text {
-            font-family: "Playfair Display", serif;
+            font-family: var(--font-ui);
             font-size: 21px;
             font-weight: 700;
             letter-spacing: -0.5px;
@@ -750,7 +771,7 @@
 
             margin-bottom: 16px;
 
-            font-family: "Playfair Display", serif;
+            font-family: var(--font-ui);
 
             font-size: clamp(32px, 4vw, 48px);
             line-height: 1.1;
@@ -1318,7 +1339,7 @@
         .game-art span {
             color: #eee2cc;
 
-            font-family: "Playfair Display", serif;
+            font-family: var(--font-ui);
 
             font-size: 20px;
             font-weight: 700;
@@ -1711,7 +1732,7 @@
         .modal h2 {
             margin-bottom: 7px;
 
-            font-family: "Playfair Display", serif;
+            font-family: var(--font-ui);
 
             font-size: 25px;
         }
@@ -1836,7 +1857,7 @@
                 );
 
             color: var(--gold-light);
-            font-family: "Playfair Display", serif;
+            font-family: var(--font-ui);
             font-size: 22px;
             font-weight: 700;
 
@@ -2096,7 +2117,7 @@
 
         .route-header h1 {
             margin-bottom: 5px;
-            font-family: "Playfair Display", serif;
+            font-family: var(--font-ui);
             font-size: clamp(28px, 4vw, 42px);
         }
 
@@ -2297,7 +2318,7 @@
 
         .comments-title {
             margin-bottom: 10px;
-            font-family: "Playfair Display", serif;
+            font-family: var(--font-ui);
             font-size: 20px;
         }
 
@@ -2449,7 +2470,7 @@
 
         .profile-page h2 {
             margin-bottom: 7px;
-            font-family: "Playfair Display", serif;
+            font-family: var(--font-ui);
             font-size: 28px;
         }
 
@@ -2820,7 +2841,7 @@
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 1px solid var(--border);
-            font-family: "Playfair Display", serif;
+            font-family: var(--font-ui);
             font-size: 24px;
         }
 
@@ -3644,12 +3665,12 @@
         .score-player .profile-link { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .rpg-launch-card { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 22px; margin-top: 26px; padding: 24px; border: 1px solid rgba(210,167,92,.3); border-radius: var(--radius-lg); background: radial-gradient(circle at 12% 25%,rgba(210,167,92,.16),transparent 24%),linear-gradient(135deg,#171724,#201916); box-shadow: var(--shadow); }
         .rpg-launch-icon { width: 74px; height: 74px; display: grid; place-items: center; border-radius: 20px; background: rgba(210,167,92,.13); color: var(--gold-light); font-size: 32px; }
-        .rpg-launch-card h2 { margin: 5px 0 7px; font-family: "Playfair Display",serif; font-size: 27px; }
+        .rpg-launch-card h2 { margin: 5px 0 7px; font-family: var(--font-ui); font-size: 27px; }
         .rpg-launch-card p { color: var(--text-secondary); line-height: 1.65; }
         .space-rpg-shell { max-width: 980px; margin: 0 auto; }
         .rpg-command-deck { overflow: hidden; border: 1px solid rgba(210,167,92,.28); border-radius: var(--radius-lg); background: radial-gradient(circle at 80% 0,rgba(77,105,173,.2),transparent 32%),linear-gradient(160deg,#111421,#1d1817); box-shadow: var(--shadow); }
         .rpg-command-header { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 22px; border-bottom: 1px solid var(--border); }
-        .rpg-command-header h2 { margin: 5px 0 0; font-family: "Playfair Display",serif; font-size: clamp(24px,4vw,34px); }
+        .rpg-command-header h2 { margin: 5px 0 0; font-family: var(--font-ui); font-size: clamp(24px,4vw,34px); }
         .rpg-status-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; padding: 18px 22px 0; }
         .rpg-stat { padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.035); }
         .rpg-stat span,.rpg-stat strong { display: block; }
@@ -3657,7 +3678,7 @@
         .rpg-stat strong { color: var(--gold-light); font-size: 19px; }
         .rpg-story-panel { padding: 24px 22px; }
         .rpg-turn-label { color: var(--gold); font-size: 11px; font-weight: 850; letter-spacing: .11em; text-transform: uppercase; }
-        .rpg-story-panel h3 { margin: 9px 0 12px; font-family: "Playfair Display",serif; font-size: clamp(24px,4vw,32px); }
+        .rpg-story-panel h3 { margin: 9px 0 12px; font-family: var(--font-ui); font-size: clamp(24px,4vw,32px); }
         .rpg-story-text { min-height: 92px; white-space: pre-wrap; color: var(--text-secondary); font-size: 14px; line-height: 1.85; }
         .rpg-choice-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; margin-top: 20px; }
         .rpg-choice { min-height: 66px; padding: 14px 16px; text-align: left; border: 1px solid var(--border-strong); border-radius: 12px; background: rgba(255,255,255,.035); color: var(--text-primary); font-weight: 700; line-height: 1.45; }
@@ -3683,7 +3704,7 @@
         .rpg-choice small { display: block; margin-top: 5px; color: var(--text-muted); font-weight: 500; }
         .home-showcase { margin: 54px 0 0; padding: 28px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: linear-gradient(135deg,rgba(113,52,56,.14),rgba(62,101,79,.09)),var(--bg-secondary); box-shadow: var(--shadow); }
         .showcase-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 22px; }
-        .showcase-heading h2 { font-family: "Playfair Display",serif; font-size: clamp(25px,3vw,36px); margin: 4px 0 6px; }
+        .showcase-heading h2 { font-family: var(--font-ui); font-size: clamp(25px,3vw,36px); margin: 4px 0 6px; }
         .showcase-heading p { color: var(--text-secondary); max-width: 720px; }
         .home-competition-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
         .challenge-card { padding: 18px; border: 1px solid var(--border); border-radius: 15px; background: rgba(17,16,15,.72); }
@@ -3710,7 +3731,7 @@
         .home-giveaway-image-link:hover img { transform: scale(1.015); filter: brightness(1.08); }
         .home-giveaway-visual > i { color: var(--gold-light); font-size: 64px; }
         .home-giveaway-content { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(24px,4vw,46px); }
-        .home-giveaway-content h2 { margin: 10px 0 10px; font-family: "Playfair Display",serif; font-size: clamp(26px,3vw,40px); }
+        .home-giveaway-content h2 { margin: 10px 0 10px; font-family: var(--font-ui); font-size: clamp(26px,3vw,40px); }
         .home-giveaway-content p { max-width: 680px; color: var(--text-secondary); line-height: 1.7; }
         .home-giveaway-content small { color: var(--text-muted); line-height: 1.5; }
         .home-giveaway-content .primary-btn { margin-top: 20px; }
@@ -3757,6 +3778,200 @@
             .rpg-campaign-strip { grid-template-columns: 1fr; }
             .rpg-progress-wrap { min-width: 0; }
             .rpg-crew-grid { grid-template-columns: 1fr; }
+        }
+
+
+
+        /* =========================================================
+           FILGAIA + KULLANICI İÇERİĞİ FONT AYRIMI
+        ========================================================== */
+
+        body {
+            background-image:
+                radial-gradient(circle at 80% 0%, rgba(113,52,56,0.13), transparent 32%),
+                radial-gradient(circle at 0% 30%, rgba(62,101,79,0.08), transparent 28%),
+                var(--site-background-image);
+            background-color: var(--bg-main);
+            background-size: auto, auto, cover;
+            background-position: 80% 0%, 0% 30%, center center;
+            background-repeat: no-repeat, no-repeat, no-repeat;
+            background-attachment: scroll, scroll, fixed;
+        }
+
+        .hero {
+            background-image:
+                linear-gradient(115deg, rgba(113,52,56,0.54), rgba(34,28,24,0.90) 48%, rgba(62,101,79,0.34)),
+                var(--hero-background-image);
+            background-color: #211d1a;
+            background-size: cover, cover;
+            background-position: center, center;
+            background-repeat: no-repeat, no-repeat;
+        }
+
+        .hero.has-custom-background .hero-content {
+            text-shadow: 0 2px 16px rgba(0,0,0,.42);
+        }
+
+        .hero h1 .hero-main-copy {
+            color: inherit;
+        }
+
+        /* Arayüz metinleri Filgaia olarak kalır. */
+        button,
+        .primary-btn,
+        .secondary-btn,
+        .vote-btn,
+        .danger-btn,
+        .login-btn,
+        .register-btn,
+        .logout-btn,
+        .route-back,
+        .topic-tag,
+        .status-chip,
+        .giveaway-label {
+            font-family: var(--font-ui) !important;
+        }
+
+        /* Kullanıcının yazdığı/veri tabanından gelen metinler eski Inter fontunda kalır. */
+        input,
+        textarea,
+        select,
+        .topic-card,
+        .topic-detail,
+        .comment-card,
+        .chat-message,
+        .profile-page,
+        .directory-card,
+        .info-card[data-review-open],
+        .home-giveaway-link[data-review-open],
+        .home-giveaway-link[data-event-open],
+        .admin-row > div:first-child,
+        .admin-giveaway-group .giveaway-entry-answer,
+        .user-generated-text {
+            font-family: var(--font-user) !important;
+        }
+
+        /* Dinamik kartların içindeki arayüz düğmeleri yine Filgaia kullanır. */
+        .topic-card button,
+        .topic-card .topic-category,
+        .topic-detail button,
+        .topic-detail .topic-category,
+        .comment-card button,
+        .chat-message button,
+        .profile-page button,
+        .profile-page .primary-btn,
+        .profile-page .secondary-btn,
+        .directory-card button,
+        .directory-card .primary-btn,
+        .directory-card .secondary-btn,
+        .info-card[data-review-open] .primary-btn,
+        .home-giveaway-link[data-review-open] .primary-btn,
+        .home-giveaway-link[data-event-open] .primary-btn,
+        .admin-row button {
+            font-family: var(--font-ui) !important;
+        }
+
+        /* =========================================================
+           ADMIN — SİTE GÖRÜNÜMÜ DÜZENLEYİCİSİ
+        ========================================================== */
+
+        .admin-appearance-card {
+            padding: 18px;
+            border: 1px solid rgba(210,167,92,.22);
+            border-radius: 15px;
+            background:
+                linear-gradient(145deg, rgba(210,167,92,.055), rgba(255,255,255,.018)),
+                var(--bg-card);
+        }
+
+        .admin-appearance-intro {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            line-height: 1.65;
+        }
+
+        .admin-appearance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .appearance-upload-card {
+            display: grid;
+            gap: 10px;
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .appearance-upload-card > strong {
+            font-size: 13px;
+        }
+
+        .appearance-preview {
+            min-height: 145px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background:
+                radial-gradient(circle at 25% 20%, rgba(210,167,92,.14), transparent 38%),
+                #151311;
+            color: var(--text-muted);
+            font-size: 30px;
+        }
+
+        .appearance-preview img {
+            width: 100%;
+            height: 145px;
+            display: block;
+            object-fit: cover;
+        }
+
+        .appearance-upload-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .appearance-upload-actions .form-input {
+            flex: 1 1 230px;
+            min-width: 0;
+            height: auto;
+            padding: 9px;
+        }
+
+        .appearance-copy-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 0 14px;
+        }
+
+        .appearance-copy-grid .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .appearance-current-note {
+            color: var(--text-muted);
+            font-family: var(--font-ui);
+            font-size: 9px;
+            line-height: 1.45;
+        }
+
+        @media (max-width: 760px) {
+            .admin-appearance-grid,
+            .appearance-copy-grid {
+                grid-template-columns: 1fr;
+            }
+            .appearance-copy-grid .form-group.full {
+                grid-column: auto;
+            }
         }
 
     </style>
@@ -3968,21 +4183,21 @@
                  HERO
             ====================================================== -->
 
-            <section class="hero">
+            <section class="hero" id="homeHero">
 
                 <div class="hero-content">
 
                     <div class="hero-label">
                         <i class="fa-solid fa-dice-d20"></i>
-                        Masaüstü Oyun Topluluğu
+                        <span id="heroLabelText">Masaüstü Oyun Topluluğu</span>
                     </div>
 
                     <h1>
-                        Masaüstü stratejilerinizi paylaşın,
-                        <span>yeni oyunlar keşfedin.</span>
+                        <span class="hero-main-copy" id="heroTitleText">Masaüstü stratejilerinizi paylaşın,</span>
+                        <span id="heroHighlightText">yeni oyunlar keşfedin.</span>
                     </h1>
 
-                    <p>
+                    <p id="heroDescription">
                         Binlerce oyuncuyla sohbet edin, oyun geceleri
                         organize edin, kuralları tartışın ve bir sonraki
                         favori kutu oyununuzu toplulukla birlikte keşfedin.
@@ -3996,7 +4211,7 @@
                             id="newTopicBtn"
                         >
                             <i class="fa-solid fa-plus"></i>
-                            Yeni Konu Aç
+                            <span id="heroPrimaryText">Yeni Konu Aç</span>
                         </button>
 
                         <a
@@ -4004,7 +4219,7 @@
                             class="secondary-btn"
                         >
                             <i class="fa-solid fa-compass"></i>
-                            Topluluğu Keşfet
+                            <span id="heroSecondaryText">Topluluğu Keşfet</span>
                         </a>
 
                     </div>
@@ -6624,6 +6839,17 @@
             imageURL: "",
             reviewId: "dune-imperium"
         };
+        const DEFAULT_SITE_APPEARANCE = Object.freeze({
+            labelText: "Masaüstü Oyun Topluluğu",
+            titleText: "Masaüstü stratejilerinizi paylaşın,",
+            highlightText: "yeni oyunlar keşfedin.",
+            description: "Binlerce oyuncuyla sohbet edin, oyun geceleri organize edin, kuralları tartışın ve bir sonraki favori kutu oyununuzu toplulukla birlikte keşfedin.",
+            primaryText: "Yeni Konu Aç",
+            secondaryText: "Topluluğu Keşfet",
+            siteBackgroundURL: "",
+            heroBackgroundURL: ""
+        });
+        let cachedSiteAppearance = { ...DEFAULT_SITE_APPEARANCE };
         let cachedReviews = {
             "dune-imperium": {
                 title: "Dune: Imperium",
@@ -9271,6 +9497,136 @@
         }
 
 
+        function applySiteAppearance() {
+            const settings = { ...DEFAULT_SITE_APPEARANCE, ...(cachedSiteAppearance || {}) };
+            const siteBackgroundURL = safeImageURL(settings.siteBackgroundURL);
+            const heroBackgroundURL = safeImageURL(settings.heroBackgroundURL);
+
+            document.documentElement.style.setProperty(
+                "--site-background-image",
+                siteBackgroundURL ? `url(${JSON.stringify(siteBackgroundURL)})` : "none"
+            );
+            document.documentElement.style.setProperty(
+                "--hero-background-image",
+                heroBackgroundURL ? `url(${JSON.stringify(heroBackgroundURL)})` : "none"
+            );
+
+            const hero = document.getElementById("homeHero");
+            hero?.classList.toggle("has-custom-background", Boolean(heroBackgroundURL));
+
+            const setText = (id, value, fallback) => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = String(value || fallback || "").trim();
+            };
+
+            setText("heroLabelText", settings.labelText, DEFAULT_SITE_APPEARANCE.labelText);
+            setText("heroTitleText", settings.titleText, DEFAULT_SITE_APPEARANCE.titleText);
+            setText("heroHighlightText", settings.highlightText, DEFAULT_SITE_APPEARANCE.highlightText);
+            setText("heroDescription", settings.description, DEFAULT_SITE_APPEARANCE.description);
+            setText("heroPrimaryText", settings.primaryText, DEFAULT_SITE_APPEARANCE.primaryText);
+            setText("heroSecondaryText", settings.secondaryText, DEFAULT_SITE_APPEARANCE.secondaryText);
+        }
+
+
+        function adminAppearanceMarkup() {
+            const settings = { ...DEFAULT_SITE_APPEARANCE, ...(cachedSiteAppearance || {}) };
+            const siteBackgroundURL = safeImageURL(settings.siteBackgroundURL);
+            const heroBackgroundURL = safeImageURL(settings.heroBackgroundURL);
+
+            return `
+                <section class="admin-appearance-card">
+                    <p class="admin-appearance-intro">
+                        Sitenin genel arka planını ve ana sayfadaki büyük karşılama alanını buradan düzenleyebilirsin.
+                        Fotoğraf seçtiğinde mevcut kırpma / yakınlaştırma ekranı otomatik açılır.
+                    </p>
+
+                    <form class="section-form site-appearance-form">
+                        <div class="admin-appearance-grid">
+                            <div class="appearance-upload-card">
+                                <strong><i class="fa-regular fa-image"></i> Site Arka Planı</strong>
+                                <div class="appearance-preview">
+                                    ${siteBackgroundURL
+                                        ? `<img src="${escapeHTML(siteBackgroundURL)}" alt="Mevcut site arka planı">`
+                                        : '<i class="fa-solid fa-panorama" aria-hidden="true"></i>'}
+                                </div>
+                                <div class="appearance-upload-actions">
+                                    <input
+                                        class="form-input"
+                                        id="siteBackgroundImage"
+                                        name="siteBackgroundImage"
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp"
+                                    >
+                                    ${siteBackgroundURL ? `
+                                        <button class="danger-btn" type="button" data-clear-site-background>
+                                            <i class="fa-solid fa-trash"></i> Arka Planı Kaldır
+                                        </button>
+                                    ` : ""}
+                                </div>
+                                <small class="appearance-current-note">JPG, PNG veya WebP · en fazla 10 MB · kırpma ve zoom destekli.</small>
+                            </div>
+
+                            <div class="appearance-upload-card">
+                                <strong><i class="fa-regular fa-images"></i> Ana Karşılama Alanı (Hero)</strong>
+                                <div class="appearance-preview">
+                                    ${heroBackgroundURL
+                                        ? `<img src="${escapeHTML(heroBackgroundURL)}" alt="Mevcut hero arka planı">`
+                                        : '<i class="fa-solid fa-chess-pawn" aria-hidden="true"></i>'}
+                                </div>
+                                <div class="appearance-upload-actions">
+                                    <input
+                                        class="form-input"
+                                        id="heroBackgroundImage"
+                                        name="heroBackgroundImage"
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp"
+                                    >
+                                    ${heroBackgroundURL ? `
+                                        <button class="danger-btn" type="button" data-clear-hero-background>
+                                            <i class="fa-solid fa-trash"></i> Hero Görselini Kaldır
+                                        </button>
+                                    ` : ""}
+                                </div>
+                                <small class="appearance-current-note">Görsel, yazıların okunabilir kalması için sitenin mevcut koyu geçişiyle birlikte gösterilir.</small>
+                            </div>
+                        </div>
+
+                        <div class="appearance-copy-grid">
+                            <div class="form-group">
+                                <label for="appearanceLabelText">Üst Etiket</label>
+                                <input class="form-input" id="appearanceLabelText" name="labelText" maxlength="80" value="${escapeHTML(settings.labelText || DEFAULT_SITE_APPEARANCE.labelText)}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="appearancePrimaryText">Ana Buton Yazısı</label>
+                                <input class="form-input" id="appearancePrimaryText" name="primaryText" maxlength="50" value="${escapeHTML(settings.primaryText || DEFAULT_SITE_APPEARANCE.primaryText)}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="appearanceTitleText">Ana Başlık</label>
+                                <input class="form-input" id="appearanceTitleText" name="titleText" maxlength="120" value="${escapeHTML(settings.titleText || DEFAULT_SITE_APPEARANCE.titleText)}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="appearanceHighlightText">Altın Vurgulu Başlık</label>
+                                <input class="form-input" id="appearanceHighlightText" name="highlightText" maxlength="120" value="${escapeHTML(settings.highlightText || DEFAULT_SITE_APPEARANCE.highlightText)}" required>
+                            </div>
+                            <div class="form-group full">
+                                <label for="appearanceDescription">Açıklama</label>
+                                <textarea class="form-textarea" id="appearanceDescription" name="description" maxlength="500" required>${escapeHTML(settings.description || DEFAULT_SITE_APPEARANCE.description)}</textarea>
+                            </div>
+                            <div class="form-group full">
+                                <label for="appearanceSecondaryText">İkinci Buton Yazısı</label>
+                                <input class="form-input" id="appearanceSecondaryText" name="secondaryText" maxlength="50" value="${escapeHTML(settings.secondaryText || DEFAULT_SITE_APPEARANCE.secondaryText)}" required>
+                            </div>
+                        </div>
+
+                        <button class="primary-btn" type="submit">
+                            <i class="fa-solid fa-floppy-disk"></i> Site Görünümünü Kaydet
+                        </button>
+                    </form>
+                </section>
+            `;
+        }
+
+
         function adminPanelMarkup() {
 
             if (!isCurrentUserAdmin) {
@@ -9288,6 +9644,9 @@
 
             return `
                 <div class="admin-list">
+                    <h2>Site Görünümü</h2>
+                    ${adminAppearanceMarkup()}
+
                     <h2>BKFK Onayları (${pendingBkfkCommunities.length})</h2>
                     ${pendingBkfkCommunities.map(community => `
                         <div class="admin-row">
@@ -12593,6 +12952,16 @@
                 return;
             }
 
+            const routeUsesUserGeneratedTitle =
+                rawHash.startsWith("topic=") ||
+                rawHash.startsWith("review=") ||
+                rawHash.startsWith("profile=") ||
+                rawHash.startsWith("dm=") ||
+                rawHash.startsWith("giveaway=") ||
+                rawHash.startsWith("community=") ||
+                rawHash.startsWith("community-chat=");
+            routeTitle.classList.toggle("user-generated-text", routeUsesUserGeneratedTitle);
+
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
@@ -12803,6 +13172,7 @@
             </div>
         `;
 
+        applySiteAppearance();
         renderWeeklyGame();
         renderHomeLatestReview();
         renderHomeChallenges();
@@ -13227,7 +13597,11 @@
                 imageCropAspect.disabled = isProfile;
                 document.getElementById("imageCropTitle").textContent = isProfile
                     ? "Profil Fotoğrafını Düzenle"
-                    : "Fotoğrafı Düzenle";
+                    : input.id === "siteBackgroundImage"
+                        ? "Site Arka Planını Düzenle"
+                        : input.id === "heroBackgroundImage"
+                            ? "Ana Karşılama Görselini Düzenle"
+                            : "Fotoğrafı Düzenle";
                 resizeCropPreview();
                 openModal("imageCropModal");
             } catch (error) {
@@ -13299,7 +13673,11 @@
             try {
                 const previewMetrics = cropDrawMetrics(imageCropCanvas);
                 const aspect = imageCropCanvas.width / imageCropCanvas.height;
-                const maxWidth = cropState.input.id === "profilePhotoInput" ? 768 : 1400;
+                const maxWidth = cropState.input.id === "profilePhotoInput"
+                    ? 768
+                    : ["siteBackgroundImage", "heroBackgroundImage"].includes(cropState.input.id)
+                        ? 1920
+                        : 1400;
                 const outputCanvas = document.createElement("canvas");
                 outputCanvas.width = maxWidth;
                 outputCanvas.height = Math.max(1, Math.round(maxWidth / aspect));
@@ -14355,6 +14733,81 @@
 
             routeContent.addEventListener("submit", async event => {
 
+                const siteAppearanceForm = event.target.closest(".site-appearance-form");
+                if (siteAppearanceForm) {
+                    event.preventDefault();
+                    const user = auth.currentUser;
+                    if (!user || !isCurrentUserAdmin) {
+                        showToast("Site görünümünü yalnızca admin değiştirebilir.", "error");
+                        return;
+                    }
+
+                    const button = siteAppearanceForm.querySelector('button[type="submit"]');
+                    setButtonBusy(button, true, "Kaydediliyor...", '<i class="fa-solid fa-floppy-disk"></i> Site Görünümünü Kaydet');
+
+                    try {
+                        let siteBackgroundURL = safeImageURL(cachedSiteAppearance.siteBackgroundURL);
+                        let heroBackgroundURL = safeImageURL(cachedSiteAppearance.heroBackgroundURL);
+                        const siteBackgroundFile = siteAppearanceForm.elements.siteBackgroundImage?.files?.[0] || null;
+                        const heroBackgroundFile = siteAppearanceForm.elements.heroBackgroundImage?.files?.[0] || null;
+
+                        const uploadAppearanceImage = async (file, suffix) => {
+                            if (!file) return "";
+                            if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 10 * 1024 * 1024) {
+                                throw new Error("Görsel JPG, PNG veya WebP olmalı ve 10 MB'ı geçmemeli.");
+                            }
+                            const optimizedImage = await withTimeout(
+                                optimizeTopicImage(file).catch(() => file),
+                                15000
+                            );
+                            const uploadSnapshot = await uploadImageWithTimeout(
+                                storageRef(storage, `site-appearance-images/${user.uid}/${Date.now()}-${suffix}`),
+                                optimizedImage,
+                                45000
+                            );
+                            return getUploadedImageURL(uploadSnapshot);
+                        };
+
+                        if (siteBackgroundFile) {
+                            siteBackgroundURL = await uploadAppearanceImage(siteBackgroundFile, "background");
+                        }
+                        if (heroBackgroundFile) {
+                            heroBackgroundURL = await uploadAppearanceImage(heroBackgroundFile, "hero");
+                        }
+
+                        const appearanceData = {
+                            labelText: siteAppearanceForm.elements.labelText.value.trim().slice(0, 80) || DEFAULT_SITE_APPEARANCE.labelText,
+                            titleText: siteAppearanceForm.elements.titleText.value.trim().slice(0, 120) || DEFAULT_SITE_APPEARANCE.titleText,
+                            highlightText: siteAppearanceForm.elements.highlightText.value.trim().slice(0, 120) || DEFAULT_SITE_APPEARANCE.highlightText,
+                            description: siteAppearanceForm.elements.description.value.trim().slice(0, 500) || DEFAULT_SITE_APPEARANCE.description,
+                            primaryText: siteAppearanceForm.elements.primaryText.value.trim().slice(0, 50) || DEFAULT_SITE_APPEARANCE.primaryText,
+                            secondaryText: siteAppearanceForm.elements.secondaryText.value.trim().slice(0, 50) || DEFAULT_SITE_APPEARANCE.secondaryText,
+                            siteBackgroundURL,
+                            heroBackgroundURL,
+                            updatedAt: serverTimestamp(),
+                            updatedBy: user.uid
+                        };
+
+                        await withTimeout(
+                            setDoc(doc(db, "siteSettings", "appearance"), appearanceData, { merge: true }),
+                            20000
+                        );
+
+                        cachedSiteAppearance = { ...cachedSiteAppearance, ...appearanceData };
+                        applySiteAppearance();
+                        showToast("Site görünümü güncellendi.");
+                    } catch (error) {
+                        console.error("Site görünümü güncellenemedi:", error);
+                        showToast(
+                            getDataErrorMessage(error, error.message || "Site görünümü güncellenemedi."),
+                            "error"
+                        );
+                    } finally {
+                        setButtonBusy(button, false, "", '<i class="fa-solid fa-floppy-disk"></i> Site Görünümünü Kaydet');
+                    }
+                    return;
+                }
+
                 const weeklyGameForm = event.target.closest(".weekly-game-form");
                 if (weeklyGameForm) {
                     event.preventDefault();
@@ -14886,6 +15339,37 @@
                 const deleteGiveawayEntryButton = event.target.closest("[data-delete-giveaway-entry]");
                 const editGiveawayLinkButton = event.target.closest("[data-edit-giveaway-link]");
                 const editGiveawayQuestionButton = event.target.closest("[data-edit-giveaway-question]");
+                const clearSiteBackgroundButton = event.target.closest("[data-clear-site-background]");
+                const clearHeroBackgroundButton = event.target.closest("[data-clear-hero-background]");
+
+                if (clearSiteBackgroundButton || clearHeroBackgroundButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Site görünümünü yalnızca admin değiştirebilir.", "error");
+                        return;
+                    }
+
+                    const field = clearSiteBackgroundButton ? "siteBackgroundURL" : "heroBackgroundURL";
+                    const label = clearSiteBackgroundButton ? "site arka planı" : "ana karşılama görseli";
+                    const button = clearSiteBackgroundButton || clearHeroBackgroundButton;
+                    button.disabled = true;
+
+                    try {
+                        await setDoc(doc(db, "siteSettings", "appearance"), {
+                            [field]: "",
+                            updatedAt: serverTimestamp(),
+                            updatedBy: auth.currentUser.uid
+                        }, { merge: true });
+                        cachedSiteAppearance = { ...cachedSiteAppearance, [field]: "" };
+                        applySiteAppearance();
+                        renderRoute();
+                        showToast(`${label.charAt(0).toLocaleUpperCase("tr-TR") + label.slice(1)} kaldırıldı.`);
+                    } catch (error) {
+                        console.error("Görsel kaldırılamadı:", error);
+                        button.disabled = false;
+                        showToast(getDataErrorMessage(error, "Görsel kaldırılamadı."), "error");
+                    }
+                    return;
+                }
 
                 if (toggleGiveawayEntryButton) {
                     const user = auth.currentUser;
@@ -15983,6 +16467,18 @@
                     if (["#admin", "#weekly-game"].includes(window.location.hash)) renderRoute();
                 },
                 error => console.error("Haftanın oyunu alınamadı:", error)
+            );
+
+            onSnapshot(
+                doc(db, "siteSettings", "appearance"),
+                settingsSnapshot => {
+                    cachedSiteAppearance = settingsSnapshot.exists()
+                        ? { ...DEFAULT_SITE_APPEARANCE, ...settingsSnapshot.data() }
+                        : { ...DEFAULT_SITE_APPEARANCE };
+                    applySiteAppearance();
+                    if (window.location.hash === "#admin") renderRoute();
+                },
+                error => console.error("Site görünümü alınamadı:", error)
             );
 
             onSnapshot(
