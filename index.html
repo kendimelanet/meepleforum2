@@ -3850,6 +3850,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
             pointer-events: none;
         }
         .daily-question-home.has-image::after,
@@ -3860,8 +3861,8 @@
             z-index: 1;
             pointer-events: none;
             background:
-                linear-gradient(90deg, rgba(10,9,8,.93) 0%, rgba(12,10,9,.78) 48%, rgba(12,10,9,.48) 100%),
-                linear-gradient(0deg, rgba(10,9,8,.78), rgba(10,9,8,.08) 58%);
+                linear-gradient(90deg, rgba(10,9,8,.82) 0%, rgba(12,10,9,.64) 48%, rgba(12,10,9,.30) 100%),
+                linear-gradient(0deg, rgba(10,9,8,.68), rgba(10,9,8,.03) 58%);
         }
         .daily-question-home.has-image > :not(.daily-question-bg),
         .daily-question-detail.has-image > :not(.daily-question-bg) {
@@ -6953,7 +6954,11 @@
         const pendingTopicRequests = new Set();
         const pendingUserTopicRequests = new Set();
         const loadedUserTopicProfiles = new Set();
+        const pendingUserReviewRequests = new Set();
+        const loadedUserReviewProfiles = new Set();
         const pendingProfileRequests = new Set();
+        let profileCommentsUnsubscribe = null;
+        let profileCommentsUserId = "";
         const loadedGiveawayEntryKeys = new Set();
         const pendingGiveawayEntryKeys = new Set();
         const GIVEAWAY_CONSENT_VERSION = "2026-09-04-v1";
@@ -7355,6 +7360,86 @@
                     renderRoute();
                 }
             }
+        }
+
+
+        async function ensureUserReviewsLoaded(userId) {
+            if (!db || !userId || pendingUserReviewRequests.has(userId)) return;
+            if (loadedUserReviewProfiles.has(userId)) return;
+
+            pendingUserReviewRequests.add(userId);
+            try {
+                const reviewsSnapshot = await getDocs(
+                    query(
+                        collection(db, "reviews"),
+                        where("authorId", "==", userId),
+                        limit(60)
+                    )
+                );
+
+                reviewsSnapshot.docs.forEach(reviewDocument => {
+                    cachedReviews[reviewDocument.id] = {
+                        ...(cachedReviews[reviewDocument.id] || {}),
+                        ...reviewDocument.data()
+                    };
+                });
+
+                loadedUserReviewProfiles.add(userId);
+            } catch (error) {
+                console.error("Kullanıcının incelemeleri alınamadı:", error);
+            } finally {
+                pendingUserReviewRequests.delete(userId);
+                if (decodeURIComponent(window.location.hash.slice(1)) === `profile=${userId}`) {
+                    renderRoute();
+                }
+            }
+        }
+
+
+        function stopProfileCommentsListener() {
+            profileCommentsUnsubscribe?.();
+            profileCommentsUnsubscribe = null;
+            profileCommentsUserId = "";
+        }
+
+
+        function startProfileCommentsListener(userId) {
+            if (!db || !userId) return;
+            if (profileCommentsUnsubscribe && profileCommentsUserId === userId) return;
+
+            stopProfileCommentsListener();
+            profileCommentsUserId = userId;
+
+            profileCommentsUnsubscribe = onSnapshot(
+                query(
+                    collection(db, "comments"),
+                    where("targetId", "==", userId),
+                    limit(COLLECTION_LIMITS.comments)
+                ),
+                snapshot => {
+                    const otherComments = cachedComments.filter(comment => !(
+                        comment.targetType === "profile" &&
+                        comment.targetId === userId
+                    ));
+
+                    const profileComments = snapshot.docs
+                        .map(commentDocument => ({
+                            id: commentDocument.id,
+                            ...commentDocument.data()
+                        }))
+                        .filter(comment =>
+                            comment.targetType === "profile" &&
+                            comment.targetId === userId
+                        );
+
+                    cachedComments = mergeRowsById(otherComments, profileComments);
+
+                    if (decodeURIComponent(window.location.hash.slice(1)) === `profile=${userId}`) {
+                        renderRoute();
+                    }
+                },
+                error => console.error("Profil yorumları alınamadı:", error)
+            );
         }
 
 
@@ -7929,7 +8014,7 @@
         }
 
 
-        function engagementMarkup(targetType, targetId, showVote = true) {
+        function engagementMarkup(targetType, targetId, showVote = true, commentsTitle = "Yorumlar") {
 
             const currentUser = window.meepleForumAuthUser;
             const votes = getTargetVotes(targetType, targetId);
@@ -7953,7 +8038,7 @@
                         </button>
                     </div>` : ""}
 
-                    <h2 class="comments-title">Yorumlar (${comments.length})</h2>
+                    <h2 class="comments-title">${escapeHTML(commentsTitle)} (${comments.length})</h2>
 
                     <div class="comment-list">
                         ${comments.length ? comments.map(comment => {
@@ -8037,6 +8122,12 @@
 
             const profile = cachedPublicProfiles.find(item => (item.uid || item.id) === userId);
             const userTopics = cachedTopics.filter(topic => topic.authorId === userId);
+            const userReviews = getPublishedReviews()
+                .filter(([, review]) => review.authorId === userId)
+                .sort(([, first], [, second]) =>
+                    (second.createdAt?.toMillis?.() || 0) -
+                    (first.createdAt?.toMillis?.() || 0)
+                );
             const fallbackTopic = userTopics[0];
             const displayName =
                 profile?.displayName || fallbackTopic?.authorName || "Meeple Oyuncusu";
@@ -8092,6 +8183,10 @@
                                 <span>Toplam upvote</span>
                             </div>
                             <div class="profile-stat">
+                                <strong>${userReviews.length}</strong>
+                                <span>İnceleme</span>
+                            </div>
+                            <div class="profile-stat">
                                 <strong>${cachedComments.filter(comment => comment.authorId === userId).length}</strong>
                                 <span>Yorum</span>
                             </div>
@@ -8113,6 +8208,63 @@
                 <div style="margin-top:22px">
                     <h2 class="comments-title">Açtığı Başlıklar</h2>
                     ${topicCardsMarkup(userTopics)}
+                </div>
+
+                <div style="margin-top:28px">
+                    <h2 class="comments-title">Yaptığı İncelemeler (${userReviews.length})</h2>
+                    ${userReviews.length ? `
+                        <div class="info-grid">
+                            ${userReviews.map(([reviewId, review]) => {
+                                const imageURL = safeImageURL(review.imageURL);
+                                const tags = Array.isArray(review.tags) ? review.tags : [];
+                                return `
+                                    <article
+                                        class="info-card"
+                                        data-review-open="${escapeHTML(reviewId)}"
+                                        tabindex="0"
+                                        role="link"
+                                        aria-label="${escapeHTML(review.title || "Başlıksız inceleme")} incelemesini aç"
+                                    >
+                                        ${imageURL ? `
+                                            <img
+                                                src="${escapeHTML(imageURL)}"
+                                                alt="${escapeHTML(review.title || "İnceleme")} görseli"
+                                                loading="lazy"
+                                                style="width:100%;height:160px;object-fit:cover;border-radius:10px;margin-bottom:12px;"
+                                            >
+                                        ` : '<i class="fa-solid fa-pen-to-square"></i>'}
+                                        <h3>${escapeHTML(review.title || "Başlıksız inceleme")}</h3>
+                                        <p>
+                                            ${escapeHTML(String(review.content || "").slice(0, 180))}
+                                            ${String(review.content || "").length > 180 ? "…" : ""}
+                                        </p>
+                                        <div class="topic-meta">
+                                            <span>${escapeHTML(formatTopicDate(review.createdAt))}</span>
+                                        </div>
+                                        ${tags.length ? `
+                                            <div class="topic-tags">
+                                                ${tags.slice(0, 5).map(tag => `
+                                                    <span class="topic-tag">#${escapeHTML(tag)}</span>
+                                                `).join("")}
+                                            </div>
+                                        ` : ""}
+                                        <a class="primary-btn" href="#review=${encodeURIComponent(reviewId)}">
+                                            İncelemeyi Aç
+                                        </a>
+                                    </article>
+                                `;
+                            }).join("")}
+                        </div>
+                    ` : `
+                        <div class="empty-state">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                            Bu kullanıcı henüz bir inceleme yayımlamamış.
+                        </div>
+                    `}
+                </div>
+
+                <div style="margin-top:28px">
+                    ${engagementMarkup("profile", userId, false, "Profil Yorumları")}
                 </div>
             `;
         }
@@ -9968,6 +10120,11 @@
                                     accept="image/jpeg,image/png,image/webp"
                                 >
                                 <small class="form-hint">Hero gibi kadrajlayabilir, yakınlaştırıp uzaklaştırabilirsin. Bu görsel yüksek kaliteyle saklanır.</small>
+                                <small class="form-hint" id="dailyQuestionImageStatus">
+                                    ${safeImageURL(activeDailyQuestion()?.imageURL)
+                                        ? "Mevcut görsel Firebase Storage'dan yükleniyor ve ana sayfada gösteriliyor."
+                                        : "Henüz bu soruya bağlı bir görsel yok."}
+                                </small>
                             </div>
                             <div class="owner-actions">
                                 <button class="secondary-btn" type="button" data-save-daily-question-image>
@@ -10254,7 +10411,7 @@
             homeDailyQuestionShowcase.hidden = false;
             homeDailyQuestionShowcase.innerHTML = `
                 <article class="daily-question-home ${questionImageURL ? "has-image" : ""}" data-daily-question-open tabindex="0" role="link">
-                    ${questionImageURL ? `<img class="daily-question-bg" src="${escapeHTML(questionImageURL)}" alt="" aria-hidden="true">` : ""}
+                    ${questionImageURL ? `<img class="daily-question-bg" src="${escapeHTML(questionImageURL)}" alt="" aria-hidden="true" loading="eager" decoding="async">` : ""}
                     <span class="daily-question-kicker"><i class="fa-solid fa-circle-question"></i> Günün Sorusu</span>
                     <h2>${escapeHTML(question.question)}</h2>
                     ${question.description ? `<p>${escapeHTML(question.description)}</p>` : ""}
@@ -12856,6 +13013,10 @@
             const rawHash = decodeURIComponent(window.location.hash.slice(1));
             syncEngagementListeners(rawHash);
 
+            if (!rawHash.startsWith("profile=")) {
+                stopProfileCommentsListener();
+            }
+
             if (auth?.currentUser) {
                 startRealtimeChatListener();
             } else {
@@ -12951,7 +13112,7 @@
                     const questionImageURL = safeImageURL(question.imageURL);
                     routeContent.innerHTML = `
                         <article class="daily-question-detail ${questionImageURL ? "has-image" : ""}">
-                            ${questionImageURL ? `<img class="daily-question-bg" src="${escapeHTML(questionImageURL)}" alt="" aria-hidden="true">` : ""}
+                            ${questionImageURL ? `<img class="daily-question-bg" src="${escapeHTML(questionImageURL)}" alt="" aria-hidden="true" loading="eager" decoding="async">` : ""}
                             <span class="daily-question-kicker"><i class="fa-solid fa-circle-question"></i> ${escapeHTML(formatDailyQuestionDay(question.dateKey))}</span>
                             <h2>${escapeHTML(question.question)}</h2>
                             ${question.description ? `<p>${escapeHTML(question.description)}</p>` : ""}
@@ -13136,6 +13297,8 @@
                 const userId = rawHash.slice("profile=".length);
                 ensurePublicProfileLoaded(userId);
                 ensureUserTopicsLoaded(userId);
+                ensureUserReviewsLoaded(userId);
+                startProfileCommentsListener(userId);
                 const profile = cachedPublicProfiles.find(item => (item.uid || item.id) === userId);
                 const fallbackTopic = cachedTopics.find(topic => topic.authorId === userId);
                 const displayName =
@@ -16274,17 +16437,24 @@
                             45000
                         );
                         const imageURL = await getUploadedImageURL(uploadSnapshot);
+                        const verifiedImageURL = safeImageURL(imageURL);
+                        if (!verifiedImageURL) {
+                            throw new Error("Storage görsel bağlantısı oluşturulamadı.");
+                        }
 
-                        await setDoc(doc(db, "siteSettings", "dailyQuestion"), {
-                            imageURL,
-                            imagePath,
-                            updatedAt: serverTimestamp(),
-                            updatedBy: auth.currentUser.uid
-                        }, { merge: true });
+                        await withTimeout(
+                            setDoc(doc(db, "siteSettings", "dailyQuestion"), {
+                                imageURL: verifiedImageURL,
+                                imagePath,
+                                updatedAt: serverTimestamp(),
+                                updatedBy: auth.currentUser.uid
+                            }, { merge: true }),
+                            20000
+                        );
 
                         cachedDailyQuestion = {
                             ...(cachedDailyQuestion || {}),
-                            imageURL,
+                            imageURL: verifiedImageURL,
                             imagePath
                         };
 
