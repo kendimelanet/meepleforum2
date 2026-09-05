@@ -3842,7 +3842,40 @@
             line-height: 1.55;
         }
         .daily-question-home-action { margin-top: 18px; }
+
+        .daily-question-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+        .daily-question-home.has-image::after,
+        .daily-question-detail.has-image::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background:
+                linear-gradient(90deg, rgba(10,9,8,.93) 0%, rgba(12,10,9,.78) 48%, rgba(12,10,9,.48) 100%),
+                linear-gradient(0deg, rgba(10,9,8,.78), rgba(10,9,8,.08) 58%);
+        }
+        .daily-question-home.has-image > :not(.daily-question-bg),
+        .daily-question-detail.has-image > :not(.daily-question-bg) {
+            position: relative;
+            z-index: 2;
+        }
+        .daily-question-home.has-image .daily-answer-preview {
+            background: rgba(18,16,14,.76);
+            backdrop-filter: blur(7px);
+        }
+
         .daily-question-detail {
+            position: relative;
+            overflow: hidden;
             padding: clamp(22px,4vw,36px);
             border: 1px solid rgba(210,167,92,.28);
             border-radius: var(--radius-lg);
@@ -6716,7 +6749,8 @@
             getStorage,
             ref as storageRef,
             uploadBytesResumable,
-            getDownloadURL
+            getDownloadURL,
+            deleteObject
         } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js";
 
         import {
@@ -9919,7 +9953,28 @@
                                 <label>Kısa Açıklama (isteğe bağlı)</label>
                                 <textarea class="form-textarea" name="description" maxlength="800" placeholder="Sorunun altına kısa bir açıklama ekleyebilirsin.">${escapeHTML(activeDailyQuestion()?.description || "")}</textarea>
                             </div>
+                            <div class="form-group">
+                                <label for="dailyQuestionImage">Günün Sorusu Görseli (isteğe bağlı)</label>
+                                ${safeImageURL(activeDailyQuestion()?.imageURL) ? `
+                                    <div class="appearance-preview" style="margin-bottom:10px">
+                                        <img src="${escapeHTML(safeImageURL(activeDailyQuestion()?.imageURL))}" alt="Mevcut Günün Sorusu görseli">
+                                    </div>
+                                ` : ""}
+                                <input
+                                    class="form-input"
+                                    id="dailyQuestionImage"
+                                    name="image"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                >
+                                <small class="form-hint">Hero gibi kadrajlayabilir, yakınlaştırıp uzaklaştırabilirsin. Bu görsel yüksek kaliteyle saklanır.</small>
+                            </div>
                             <div class="owner-actions">
+                                ${safeImageURL(activeDailyQuestion()?.imageURL) ? `
+                                    <button class="secondary-btn" type="button" data-clear-daily-question-image>
+                                        <i class="fa-regular fa-image"></i> Soru Görselini Kaldır
+                                    </button>
+                                ` : ""}
                                 ${cachedDailyQuestion?.question ? `
                                     <button class="danger-btn" type="button" data-delete-daily-question>
                                         <i class="fa-solid fa-trash"></i> Soruyu ve Tüm Cevapları Sil
@@ -10191,9 +10246,12 @@
             const answers = getTargetComments("dailyQuestion", targetId);
             const latestAnswers = answers.slice(-3).reverse();
 
+            const questionImageURL = safeImageURL(question.imageURL);
+
             homeDailyQuestionShowcase.hidden = false;
             homeDailyQuestionShowcase.innerHTML = `
-                <article class="daily-question-home" data-daily-question-open tabindex="0" role="link">
+                <article class="daily-question-home ${questionImageURL ? "has-image" : ""}" data-daily-question-open tabindex="0" role="link">
+                    ${questionImageURL ? `<img class="daily-question-bg" src="${escapeHTML(questionImageURL)}" alt="" aria-hidden="true">` : ""}
                     <span class="daily-question-kicker"><i class="fa-solid fa-circle-question"></i> Günün Sorusu</span>
                     <h2>${escapeHTML(question.question)}</h2>
                     ${question.description ? `<p>${escapeHTML(question.description)}</p>` : ""}
@@ -12887,8 +12945,10 @@
                         question.question,
                         "Bugünün topluluk sorusuna cevap ver ve diğer oyuncuların cevaplarını gör."
                     );
+                    const questionImageURL = safeImageURL(question.imageURL);
                     routeContent.innerHTML = `
-                        <article class="daily-question-detail">
+                        <article class="daily-question-detail ${questionImageURL ? "has-image" : ""}">
+                            ${questionImageURL ? `<img class="daily-question-bg" src="${escapeHTML(questionImageURL)}" alt="" aria-hidden="true">` : ""}
                             <span class="daily-question-kicker"><i class="fa-solid fa-circle-question"></i> ${escapeHTML(formatDailyQuestionDay(question.dateKey))}</span>
                             <h2>${escapeHTML(question.question)}</h2>
                             ${question.description ? `<p>${escapeHTML(question.description)}</p>` : ""}
@@ -13853,6 +13913,19 @@
         }
 
 
+        async function deleteStoredImageQuietly(path) {
+            const normalizedPath = String(path || "").trim();
+            if (!normalizedPath) return;
+            try {
+                await deleteObject(storageRef(storage, normalizedPath));
+            } catch (error) {
+                if (String(error?.code || "") !== "storage/object-not-found") {
+                    console.warn("Eski görsel Storage'dan silinemedi:", error);
+                }
+            }
+        }
+
+
         async function decodeImageForCanvas(file) {
 
             if ("createImageBitmap" in window) {
@@ -14182,7 +14255,9 @@
                         ? "Site Arka Planını Düzenle"
                         : input.id === "heroBackgroundImage"
                             ? "Ana Karşılama Görselini Düzenle"
-                            : "Fotoğrafı Düzenle";
+                            : input.id === "dailyQuestionImage"
+                                ? "Günün Sorusu Görselini Düzenle"
+                                : "Fotoğrafı Düzenle";
                 resizeCropPreview();
                 openModal("imageCropModal");
             } catch (error) {
@@ -14254,7 +14329,7 @@
             try {
                 const previewMetrics = cropDrawMetrics(imageCropCanvas);
                 const aspect = imageCropCanvas.width / imageCropCanvas.height;
-                const isAppearanceImage = ["siteBackgroundImage", "heroBackgroundImage"].includes(cropState.input.id);
+                const isAppearanceImage = ["siteBackgroundImage", "heroBackgroundImage", "dailyQuestionImage"].includes(cropState.input.id);
 
                 /*
                  * Site arka planı ve hero görselinde çözünürlüğü düşürme.
@@ -15371,6 +15446,7 @@
 
                     const questionText = dailyQuestionForm.elements.question.value.trim();
                     const description = dailyQuestionForm.elements.description.value.trim();
+                    const imageFile = dailyQuestionForm.elements.image?.files?.[0] || null;
                     const button = dailyQuestionForm.querySelector('button[type="submit"]');
                     if (!questionText) {
                         showToast("Günün sorusunu yazmalısın.", "error");
@@ -15381,6 +15457,14 @@
                     const nextTargetId = `daily-question-${todayKey}`;
                     const oldTargetId = dailyQuestionTargetId(cachedDailyQuestion);
                     const isNewDay = Boolean(cachedDailyQuestion?.dateKey && cachedDailyQuestion.dateKey !== todayKey);
+
+                    if (imageFile && (
+                        !/^image\/(jpeg|png|webp)$/.test(imageFile.type) ||
+                        imageFile.size > 10 * 1024 * 1024
+                    )) {
+                        showToast("Günün Sorusu görseli JPG, PNG veya WebP olmalı ve 10 MB'ı geçmemeli.", "error");
+                        return;
+                    }
 
                     setButtonBusy(
                         button,
@@ -15394,9 +15478,24 @@
                             await deleteDailyQuestionComments(oldTargetId);
                         }
 
+                        const previousImagePath = String(cachedDailyQuestion?.imagePath || "");
+                        let imageURL = isNewDay ? "" : safeImageURL(cachedDailyQuestion?.imageURL);
+                        let imagePath = isNewDay ? "" : previousImagePath;
+                        if (imageFile) {
+                            imagePath = `daily-question-images/${user.uid}/${Date.now()}-daily-question`;
+                            const uploadSnapshot = await uploadImageWithTimeout(
+                                storageRef(storage, imagePath),
+                                imageFile,
+                                45000
+                            );
+                            imageURL = await getUploadedImageURL(uploadSnapshot);
+                        }
+
                         const dailyQuestionData = {
                             question: questionText.slice(0, 500),
                             description: description.slice(0, 800),
+                            imageURL,
+                            imagePath,
                             dateKey: todayKey,
                             commentTargetId: nextTargetId,
                             active: true,
@@ -15410,6 +15509,9 @@
                             20000
                         );
                         cachedDailyQuestion = { ...dailyQuestionData };
+                        if (previousImagePath && previousImagePath !== imagePath) {
+                            await deleteStoredImageQuietly(previousImagePath);
+                        }
                         renderHomeDailyQuestion();
                         showToast(isNewDay
                             ? "Yeni günün sorusu yayımlandı; önceki cevaplar temizlendi."
@@ -16121,7 +16223,35 @@
                 const editGiveawayQuestionButton = event.target.closest("[data-edit-giveaway-question]");
                 const clearSiteBackgroundButton = event.target.closest("[data-clear-site-background]");
                 const clearHeroBackgroundButton = event.target.closest("[data-clear-hero-background]");
+                const clearDailyQuestionImageButton = event.target.closest("[data-clear-daily-question-image]");
                 const deleteDailyQuestionButton = event.target.closest("[data-delete-daily-question]");
+
+                if (clearDailyQuestionImageButton) {
+                    if (!isCurrentUserAdmin || !auth.currentUser) {
+                        showToast("Günün Sorusu görselini yalnızca admin değiştirebilir.", "error");
+                        return;
+                    }
+                    clearDailyQuestionImageButton.disabled = true;
+                    try {
+                        const previousImagePath = String(cachedDailyQuestion?.imagePath || "");
+                        await setDoc(doc(db, "siteSettings", "dailyQuestion"), {
+                            imageURL: "",
+                            imagePath: "",
+                            updatedAt: serverTimestamp(),
+                            updatedBy: auth.currentUser.uid
+                        }, { merge: true });
+                        cachedDailyQuestion = { ...(cachedDailyQuestion || {}), imageURL: "", imagePath: "" };
+                        await deleteStoredImageQuietly(previousImagePath);
+                        renderHomeDailyQuestion();
+                        renderRoute();
+                        showToast("Günün Sorusu görseli kaldırıldı.");
+                    } catch (error) {
+                        console.error("Günün Sorusu görseli kaldırılamadı:", error);
+                        clearDailyQuestionImageButton.disabled = false;
+                        showToast(getDataErrorMessage(error, "Günün Sorusu görseli kaldırılamadı."), "error");
+                    }
+                    return;
+                }
 
                 if (deleteDailyQuestionButton) {
                     if (!isCurrentUserAdmin || !auth.currentUser) {
@@ -16134,8 +16264,10 @@
                     deleteDailyQuestionButton.disabled = true;
                     try {
                         const targetId = dailyQuestionTargetId(cachedDailyQuestion);
+                        const previousImagePath = String(cachedDailyQuestion?.imagePath || "");
                         await deleteDailyQuestionComments(targetId);
                         await deleteDoc(doc(db, "siteSettings", "dailyQuestion"));
+                        await deleteStoredImageQuietly(previousImagePath);
                         cachedDailyQuestion = null;
                         stopDailyQuestionCommentListener();
                         renderHomeDailyQuestion();
