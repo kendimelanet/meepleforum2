@@ -4120,7 +4120,664 @@
             }
         }
 
-    </style>
+    
+/* =========================================================
+   YENİ İŞLEVLER — ESKİ TASARIMLA UYUMLU EK STİLLER
+   (Mevcut tema/renk sistemi değiştirilmez.)
+========================================================== */
+
+/* Header: yalnızca sığdırma. Görsel kimlik aynı kalır. */
+@media (min-width: 1181px) {
+    .header-inner {
+        gap: 8px;
+    }
+
+    nav a {
+        padding-left: 6px;
+        padding-right: 6px;
+        font-size: 10px;
+    }
+
+    .header-search {
+        width: 140px;
+        flex-basis: 140px;
+    }
+
+    .user-chip {
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 1320px) and (min-width: 1181px) {
+    .logo-text {
+        font-size: 19px;
+    }
+
+    nav a {
+        padding-left: 5px;
+        padding-right: 5px;
+        font-size: 9px;
+    }
+
+    .header-search {
+        width: 125px;
+        flex-basis: 125px;
+    }
+
+    .login-btn,
+    .register-btn {
+        padding-left: 9px;
+        padding-right: 9px;
+        font-size: 10px;
+    }
+}
+
+/* Canlı arama önerileri */
+.header-search {
+    z-index: 130;
+}
+
+.search-suggestions {
+    width: min(420px, calc(100vw - 24px));
+    max-height: min(64vh, 520px);
+    position: absolute;
+    top: calc(100% + 9px);
+    right: 0;
+    z-index: 1500;
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    background: rgba(24,21,19,.99);
+    box-shadow: var(--shadow);
+}
+
+.search-suggestions[hidden] {
+    display: none !important;
+}
+
+.search-suggestion-section + .search-suggestion-section {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+.search-suggestion-heading {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 7px;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.search-suggestion-item {
+    width: 100%;
+    min-height: 52px;
+    display: grid;
+    grid-template-columns: 34px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 9px;
+    padding: 7px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+}
+
+.search-suggestion-item:hover,
+.search-suggestion-item.is-active {
+    border-color: rgba(210,167,92,.22);
+    background: rgba(210,167,92,.07);
+}
+
+.search-suggestion-avatar,
+.search-suggestion-icon {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: rgba(255,255,255,.04);
+    color: var(--gold);
+}
+
+.search-suggestion-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.search-suggestion-copy {
+    min-width: 0;
+}
+
+.search-suggestion-copy strong,
+.search-suggestion-copy small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-suggestion-copy strong {
+    color: var(--text-main);
+    font-size: 11px;
+}
+
+.search-suggestion-copy small {
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 9px;
+}
+
+.search-suggestion-kind {
+    color: var(--gold);
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.search-suggestion-empty,
+.search-suggestion-footer {
+    padding: 10px;
+    color: var(--text-muted);
+    font-size: 9px;
+}
+
+.search-suggestion-footer {
+    border-top: 1px solid var(--border);
+}
+
+/* Bildirim paneli */
+.notification-quick-menu {
+    width: min(410px, calc(100vw - 22px));
+}
+
+.notification-list {
+    display: grid;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.notification-row {
+    min-height: 58px;
+    display: grid;
+    grid-template-columns: 30px minmax(0,1fr);
+    gap: 9px;
+    align-items: start;
+    padding: 9px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    color: inherit;
+}
+
+.notification-row:hover,
+.notification-row.is-unread {
+    border-color: rgba(210,167,92,.25);
+    background: rgba(210,167,92,.06);
+}
+
+.notification-mark {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(210,167,92,.09);
+    color: var(--gold);
+}
+
+.notification-copy strong,
+.notification-copy small,
+.notification-copy time {
+    display: block;
+}
+
+.notification-copy strong {
+    color: var(--text-main);
+    font-size: 10px;
+}
+
+.notification-copy small,
+.notification-copy time {
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 8px;
+}
+
+/* Ana sayfa son yorumlar */
+.latest-comments-title {
+    margin-top: 30px;
+}
+
+.home-comments-list {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 34px;
+}
+
+.home-comment-row {
+    min-height: 68px;
+    display: grid;
+    grid-template-columns: 38px minmax(0,1fr) minmax(120px,180px);
+    align-items: center;
+    gap: 12px;
+    padding: 11px 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+}
+
+.home-comment-row:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-strong);
+}
+
+.home-comment-avatar {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: rgba(210,167,92,.08);
+    color: var(--gold);
+}
+
+.home-comment-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.home-comment-copy {
+    min-width: 0;
+}
+
+.home-comment-meta {
+    display: flex;
+    gap: 5px;
+    color: var(--text-muted);
+    font-size: 9px;
+}
+
+.home-comment-meta strong {
+    color: var(--gold-light);
+}
+
+.home-comment-copy p {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-top: 3px;
+    color: var(--text-secondary);
+    font-size: 10px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.home-comment-context {
+    min-width: 0;
+    padding-left: 12px;
+    border-left: 1px solid var(--border);
+    text-align: right;
+}
+
+.home-comment-context small,
+.home-comment-context strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.home-comment-context small {
+    color: var(--gold);
+    font-size: 8px;
+}
+
+.home-comment-context strong {
+    margin-top: 2px;
+    color: var(--text-secondary);
+    font-size: 9px;
+}
+
+/* Etkinlik arşivi + detay */
+.event-section + .event-section {
+    margin-top: 32px;
+}
+
+.event-section-heading {
+    margin-bottom: 14px;
+}
+
+.event-section-heading h2 {
+    margin-top: 4px;
+    font-family: "Playfair Display", serif;
+    font-size: 24px;
+}
+
+.event-section-heading p {
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.directory-card[data-event-open] {
+    cursor: pointer;
+}
+
+.directory-card[data-event-open]:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+}
+
+.event-card.is-archived {
+    opacity: .78;
+}
+
+.event-card-attendance {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 9px 0;
+    color: var(--green-light);
+    font-size: 9px;
+}
+
+.event-detail-image {
+    width: 100%;
+    max-height: 520px;
+    margin-top: 16px;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+}
+
+/* Katılım sistemi */
+.event-attendance {
+    margin-top: 22px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+}
+
+.event-attendance-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.event-attendance-head h2 {
+    margin-top: 3px;
+    font-family: "Playfair Display", serif;
+    font-size: 24px;
+}
+
+.event-attendance-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 9px;
+}
+
+.event-attendance-counts strong {
+    color: var(--gold-light);
+    font-size: 15px;
+}
+
+.event-rsvp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.active-choice {
+    border-color: rgba(210,167,92,.55) !important;
+    background: rgba(210,167,92,.12) !important;
+    color: var(--gold-light) !important;
+}
+
+.event-attendance-columns {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.event-attendance-columns h3 {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+.event-attendee-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.event-attendee {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 7px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    font-size: 9px;
+}
+
+.event-attendee-avatar {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+}
+
+.event-attendee-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.event-attendee-empty,
+.event-archive-note {
+    color: var(--text-muted);
+    font-size: 9px;
+}
+
+.event-archive-note {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    background: rgba(113,52,56,.10);
+}
+
+/* Ana sayfa: yaklaşan etkinlik yok */
+.home-event-empty {
+    min-height: 180px;
+    display: grid;
+    grid-template-columns: 110px minmax(0,1fr);
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+}
+
+.home-event-empty-mark {
+    min-height: 110px;
+    display: grid;
+    place-items: center;
+    border-right: 1px solid var(--border);
+    color: var(--gold);
+    font-size: 30px;
+}
+
+.home-event-empty-copy h2 {
+    margin: 5px 0 7px;
+    font-family: "Playfair Display", serif;
+    font-size: 26px;
+}
+
+.home-event-empty-copy p {
+    max-width: 620px;
+    margin-bottom: 14px;
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+/* Kaydettiklerim */
+.saved-items-list {
+    display: grid;
+    gap: 9px;
+}
+
+.saved-item {
+    display: grid;
+    grid-template-columns: 90px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 13px;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+}
+
+.saved-item-index {
+    color: var(--gold);
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.saved-item-copy h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 17px;
+}
+
+.saved-item-copy small {
+    color: var(--text-muted);
+    font-size: 8px;
+}
+
+.saved-item-actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* Spoiler */
+.editor-tools,
+.comment-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 7px;
+}
+
+.editor-tools small {
+    color: var(--text-muted);
+    font-size: 8px;
+}
+
+.editor-tool {
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 9px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: rgba(255,255,255,.035);
+    color: var(--text-secondary);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.editor-tool:hover {
+    color: var(--gold-light);
+    border-color: rgba(210,167,92,.3);
+}
+
+.spoiler-block {
+    margin: 12px 0;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: rgba(0,0,0,.12);
+}
+
+.spoiler-block summary {
+    padding: 9px 11px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 9px;
+}
+
+.spoiler-block > div {
+    padding: 12px;
+    border-top: 1px solid var(--border);
+    color: var(--text-main);
+}
+
+/* Son Yorumlar -> doğrudan yorum hedefi */
+.comment-card {
+    scroll-margin-top: 96px;
+}
+
+.comment-card.comment-target {
+    border-color: rgba(210,167,92,.55);
+    box-shadow: 0 0 0 3px rgba(210,167,92,.08);
+}
+
+/* Mobil */
+@media (max-width: 760px) {
+    .home-comment-row {
+        grid-template-columns: 36px minmax(0,1fr);
+    }
+
+    .home-comment-context {
+        grid-column: 2;
+        padding-left: 0;
+        border-left: 0;
+        text-align: left;
+    }
+
+    .event-attendance-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .event-attendance-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .home-event-empty {
+        grid-template-columns: 1fr;
+    }
+
+    .home-event-empty-mark {
+        min-height: 60px;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .saved-item {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
 </head>
 
 
@@ -4196,7 +4853,7 @@
 
 
             <!-- ARAMA -->
-            <div class="header-search">
+            <div class="header-search" id="headerSearch">
 
                 <i class="fa-solid fa-magnifying-glass"></i>
 
@@ -4205,7 +4862,20 @@
                     id="searchInput"
                     placeholder="Konu veya kullanıcı ara..."
                     aria-label="Konu veya kullanıcı ara"
+                    aria-autocomplete="list"
+                    aria-controls="searchSuggestions"
+                    aria-expanded="false"
+                    autocomplete="off"
+                    spellcheck="false"
                 >
+
+                <div
+                    class="search-suggestions"
+                    id="searchSuggestions"
+                    role="listbox"
+                    aria-label="Arama önerileri"
+                    hidden
+                ></div>
 
             </div>
 
@@ -4273,6 +4943,26 @@
                             <span class="chat-quick-badge" id="chatQuickBadge" aria-hidden="true">0</span>
                         </button>
                         <div class="chat-quick-menu" id="chatQuickMenu" aria-label="Sohbet kısayolları"></div>
+                    </div>
+
+                    <div class="chat-quick-wrap" id="notificationQuickWrap">
+                        <button
+                            class="chat-quick-button"
+                            type="button"
+                            id="notificationQuickButton"
+                            aria-label="Bildirimleri aç"
+                            aria-expanded="false"
+                            aria-controls="notificationQuickMenu"
+                            title="Bildirimler"
+                        >
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="chat-quick-badge" id="notificationQuickBadge" aria-hidden="true">0</span>
+                        </button>
+                        <div
+                            class="chat-quick-menu notification-quick-menu"
+                            id="notificationQuickMenu"
+                            aria-label="Bildirimler"
+                        ></div>
                     </div>
 
                     <button
@@ -4633,6 +5323,23 @@
                             </div>
                         </a>
 
+                        <a
+                            href="#"
+                            class="category-card"
+                            data-category="Konu Dışı"
+                        >
+                            <div class="category-icon">
+                                <i class="fa-solid fa-mug-hot"></i>
+                            </div>
+                            <div class="category-info">
+                                <h3>Konu Dışı</h3>
+                                <p>Gündelik sohbet, kültür, muhabbet ve masa dışındaki her şey</p>
+                            </div>
+                            <div class="category-arrow">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                        </a>
+
                     </div>
 
 
@@ -4799,6 +5506,26 @@
 
                         </article>
 
+                    </div>
+
+                    <div class="section-title latest-comments-title">
+                        <h2>Son Yorumlar</h2>
+                        <a href="#" data-action="all-topics">
+                            Konulara Git
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="home-comments-list" id="homeComments">
+                        <div class="home-comment-row is-loading" aria-hidden="true">
+                            <div class="home-comment-avatar">
+                                <i class="fa-regular fa-comment"></i>
+                            </div>
+                            <div class="home-comment-copy">
+                                <div class="placeholder-line title"></div>
+                                <div class="placeholder-line short"></div>
+                            </div>
+                        </div>
                     </div>
 
                 </section>
@@ -5783,6 +6510,7 @@
                         <option value="Miniatür & Boyama">Miniatür & Boyama</option>
                         <option value="İkinci El / Takas">İkinci El / Takas</option>
                         <option value="FRP / Rol Yapma Oyunları">FRP / Rol Yapma Oyunları</option>
+                        <option value="Konu Dışı">Konu Dışı</option>
                         <option value="İncelemeler">İnceleme</option>
                         <option value="Haftanın Oyunu" id="weeklyGameReviewCategory" hidden disabled>
                             Haftanın Oyunu (sadece admin)
@@ -5799,6 +6527,18 @@
                         maxlength="5000"
                         required
                     ></textarea>
+                    <div class="editor-tools">
+                        <button
+                            class="editor-tool"
+                            type="button"
+                            data-insert-spoiler
+                            data-textarea-id="topicContent"
+                        >
+                            <i class="fa-solid fa-eye-slash"></i>
+                            Spoiler
+                        </button>
+                        <small>[spoiler]gizli metin[/spoiler]</small>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -6530,34 +7270,349 @@
            ARAMA
         ========================================================== */
 
-        const searchInput =
-            document.getElementById(
-                "searchInput"
-            );
+        const headerSearch = document.getElementById("headerSearch");
+        const searchInput = document.getElementById("searchInput");
+        const searchSuggestions = document.getElementById("searchSuggestions");
 
-        searchInput.addEventListener(
-            "keydown",
-            event => {
+        let searchSuggestionItems = [];
+        let activeSearchSuggestionIndex = -1;
+        let searchSuggestionTimer = null;
 
-                if (event.key !== "Enter") return;
+        function closeSearchSuggestions() {
+            if (!searchSuggestions) return;
+            searchSuggestions.hidden = true;
+            searchInput.setAttribute("aria-expanded", "false");
+            activeSearchSuggestionIndex = -1;
+            searchSuggestionItems = [];
+        }
 
-                const query =
-                    searchInput.value.trim();
 
-                if (!query) {
-
-                    showToast(
-                        "Aramak için bir kelime yazın."
-                    );
-
-                    return;
-                }
-
-                window.location.hash =
-                    "search=" + encodeURIComponent(query);
-
+        function searchSuggestionMatches(queryText) {
+            const normalized = normalizedSearchText(queryText);
+            if (normalized.length < 2) {
+                return { profiles: [], topics: [] };
             }
-        );
+
+            const profiles = getSearchableProfiles()
+                .map(profile => {
+                    const name = normalizedSearchText(profile.displayName);
+                    const starts = name.startsWith(normalized);
+                    const includes = name.includes(normalized);
+
+                    return {
+                        ...profile,
+                        _score: starts ? 0 : includes ? 1 : 99
+                    };
+                })
+                .filter(profile => profile._score < 99)
+                .sort((a, b) =>
+                    a._score - b._score ||
+                    a.displayName.localeCompare(b.displayName, "tr-TR")
+                )
+                .slice(0, 5);
+
+            const topics = cachedTopics
+                .map(topic => {
+                    const title = normalizedSearchText(topic.title);
+                    const category = normalizedSearchText(topic.category);
+                    const content = normalizedSearchText(topic.content);
+
+                    let score = 99;
+                    if (title.startsWith(normalized)) score = 0;
+                    else if (title.includes(normalized)) score = 1;
+                    else if (category.includes(normalized)) score = 2;
+                    else if (content.includes(normalized)) score = 3;
+
+                    return { ...topic, _score: score };
+                })
+                .filter(topic => topic._score < 99)
+                .sort((a, b) =>
+                    a._score - b._score ||
+                    (b.createdAt?.toMillis?.() || 0) -
+                    (a.createdAt?.toMillis?.() || 0)
+                )
+                .slice(0, 5);
+
+            return { profiles, topics };
+        }
+
+
+        function renderSearchSuggestions() {
+            if (!searchSuggestions || document.activeElement !== searchInput) return;
+
+            const queryText = searchInput.value.trim();
+            const normalized = normalizedSearchText(queryText);
+
+            if (normalized.length < 2) {
+                closeSearchSuggestions();
+                return;
+            }
+
+            const { profiles, topics } = searchSuggestionMatches(queryText);
+            const items = [];
+
+            profiles.forEach(profile => {
+                items.push({
+                    href: `#profile=${encodeURIComponent(profile.userId)}`,
+                    type: "Kullanıcı",
+                    label: profile.displayName
+                });
+            });
+
+            topics.forEach(topic => {
+                items.push({
+                    href: `#topic=${encodeURIComponent(topic.id)}`,
+                    type: "Konu",
+                    label: topic.title || "Forum başlığı"
+                });
+            });
+
+            searchSuggestionItems = items;
+            activeSearchSuggestionIndex = -1;
+
+            const profileMarkup = profiles.length ? `
+                <section class="search-suggestion-section">
+                    <div class="search-suggestion-heading">
+                        <span>Kullanıcılar</span>
+                        <span>${profiles.length}</span>
+                    </div>
+                    ${profiles.map(profile => {
+                        const photoURL = safeImageURL(profile.photoURL);
+                        const initial = String(profile.displayName || "M")
+                            .charAt(0)
+                            .toLocaleUpperCase("tr-TR");
+                        const itemIndex = items.findIndex(item =>
+                            item.type === "Kullanıcı" &&
+                            item.href === `#profile=${encodeURIComponent(profile.userId)}`
+                        );
+
+                        return `
+                            <button
+                                class="search-suggestion-item"
+                                type="button"
+                                role="option"
+                                aria-selected="false"
+                                data-search-suggestion-index="${itemIndex}"
+                                data-search-suggestion-href="#profile=${escapeHTML(encodeURIComponent(profile.userId))}"
+                            >
+                                <span class="search-suggestion-avatar">
+                                    ${photoURL
+                                        ? `<img src="${escapeHTML(photoURL)}" alt="">`
+                                        : escapeHTML(initial)}
+                                </span>
+                                <span class="search-suggestion-copy">
+                                    <strong>${escapeHTML(profile.displayName)}</strong>
+                                    <small>
+                                        ${getUserUpvoteCount(profile.userId)} upvote ·
+                                        ${cachedTopics.filter(topic => topic.authorId === profile.userId).length} başlık
+                                    </small>
+                                </span>
+                                <span class="search-suggestion-kind">Kullanıcı</span>
+                            </button>
+                        `;
+                    }).join("")}
+                </section>
+            ` : "";
+
+            const topicMarkup = topics.length ? `
+                <section class="search-suggestion-section">
+                    <div class="search-suggestion-heading">
+                        <span>Konular</span>
+                        <span>${topics.length}</span>
+                    </div>
+                    ${topics.map(topic => {
+                        const itemIndex = items.findIndex(item =>
+                            item.type === "Konu" &&
+                            item.href === `#topic=${encodeURIComponent(topic.id)}`
+                        );
+
+                        return `
+                            <button
+                                class="search-suggestion-item"
+                                type="button"
+                                role="option"
+                                aria-selected="false"
+                                data-search-suggestion-index="${itemIndex}"
+                                data-search-suggestion-href="#topic=${escapeHTML(encodeURIComponent(topic.id))}"
+                            >
+                                <span class="search-suggestion-icon">
+                                    <i class="fa-regular fa-message"></i>
+                                </span>
+                                <span class="search-suggestion-copy">
+                                    <strong>${escapeHTML(topic.title || "Forum başlığı")}</strong>
+                                    <small>
+                                        ${escapeHTML(topic.category || "Genel")} ·
+                                        ${escapeHTML(resolvedDisplayName(topic.authorId, topic.authorName || "Meeple Oyuncusu"))}
+                                    </small>
+                                </span>
+                                <span class="search-suggestion-kind">Konu</span>
+                            </button>
+                        `;
+                    }).join("")}
+                </section>
+            ` : "";
+
+            const emptyMarkup = !profiles.length && !topics.length ? `
+                <div class="search-suggestion-empty">
+                    <strong>Henüz doğrudan eşleşme yok.</strong>
+                    Enter'a basarak “${escapeHTML(queryText)}” için tam arama yapabilirsin.
+                </div>
+            ` : "";
+
+            searchSuggestions.innerHTML = `
+                ${profileMarkup}
+                ${topicMarkup}
+                ${emptyMarkup}
+                <div class="search-suggestion-footer">
+                    <kbd>↑↓</kbd> seç
+                    <kbd>Enter</kbd> aç / ara
+                    <kbd>Esc</kbd> kapat
+                </div>
+            `;
+
+            searchSuggestions.hidden = false;
+            searchInput.setAttribute("aria-expanded", "true");
+        }
+
+
+        function setActiveSearchSuggestion(index) {
+            if (!searchSuggestionItems.length) return;
+
+            const nextIndex =
+                (index + searchSuggestionItems.length) %
+                searchSuggestionItems.length;
+
+            activeSearchSuggestionIndex = nextIndex;
+
+            searchSuggestions
+                .querySelectorAll("[data-search-suggestion-index]")
+                .forEach(button => {
+                    const active =
+                        Number(button.dataset.searchSuggestionIndex) === nextIndex;
+                    button.classList.toggle("is-active", active);
+                    button.setAttribute("aria-selected", String(active));
+
+                    if (active) {
+                        button.scrollIntoView({
+                            block: "nearest"
+                        });
+                    }
+                });
+        }
+
+
+        function openSearchSuggestionByIndex(index) {
+            const item = searchSuggestionItems[index];
+            if (!item) return false;
+
+            closeSearchSuggestions();
+            searchInput.blur();
+            window.location.hash = item.href.slice(1);
+            return true;
+        }
+
+
+        searchInput.addEventListener("input", () => {
+            clearTimeout(searchSuggestionTimer);
+
+            const queryText = searchInput.value.trim();
+
+            if (normalizedSearchText(queryText).length < 2) {
+                closeSearchSuggestions();
+                return;
+            }
+
+            // Yerel önbellekteki eşleşmeleri gecikmesiz göster.
+            renderSearchSuggestions();
+
+            // PublicProfiles araması, eski/henüz cache'e girmemiş profilleri de
+            // kısa bir debounce ile tamamlar.
+            searchSuggestionTimer = setTimeout(async () => {
+                await ensureProfilesForSearch(queryText);
+                if (document.activeElement === searchInput) {
+                    renderSearchSuggestions();
+                }
+            }, 180);
+        });
+
+
+        searchInput.addEventListener("focus", () => {
+            if (normalizedSearchText(searchInput.value).length >= 2) {
+                renderSearchSuggestions();
+            }
+        });
+
+
+        searchInput.addEventListener("keydown", event => {
+            const queryText = searchInput.value.trim();
+
+            if (event.key === "ArrowDown" && !searchSuggestions.hidden) {
+                event.preventDefault();
+                setActiveSearchSuggestion(activeSearchSuggestionIndex + 1);
+                return;
+            }
+
+            if (event.key === "ArrowUp" && !searchSuggestions.hidden) {
+                event.preventDefault();
+                setActiveSearchSuggestion(
+                    activeSearchSuggestionIndex < 0
+                        ? searchSuggestionItems.length - 1
+                        : activeSearchSuggestionIndex - 1
+                );
+                return;
+            }
+
+            if (event.key === "Escape") {
+                closeSearchSuggestions();
+                return;
+            }
+
+            if (event.key !== "Enter") return;
+
+            event.preventDefault();
+
+            if (
+                activeSearchSuggestionIndex >= 0 &&
+                openSearchSuggestionByIndex(activeSearchSuggestionIndex)
+            ) {
+                return;
+            }
+
+            if (!queryText) {
+                showToast("Aramak için bir kelime yazın.");
+                return;
+            }
+
+            closeSearchSuggestions();
+            searchInput.blur();
+            window.location.hash = "search=" + encodeURIComponent(queryText);
+        });
+
+
+        searchSuggestions.addEventListener("mousedown", event => {
+            // Input'un click gerçekleşmeden blur olup paneli kapatmasını engeller.
+            event.preventDefault();
+        });
+
+
+        searchSuggestions.addEventListener("click", event => {
+            const button = event.target.closest("[data-search-suggestion-href]");
+            if (!button) return;
+
+            const href = button.dataset.searchSuggestionHref;
+            if (!href) return;
+
+            closeSearchSuggestions();
+            searchInput.blur();
+            window.location.hash = href.slice(1);
+        });
+
+
+        document.addEventListener("click", event => {
+            if (!headerSearch.contains(event.target)) {
+                closeSearchSuggestions();
+            }
+        });
 
 
         /* =========================================================
@@ -6821,6 +7876,10 @@
         const chatQuickButton = document.getElementById("chatQuickButton");
         const chatQuickBadge = document.getElementById("chatQuickBadge");
         const chatQuickMenu = document.getElementById("chatQuickMenu");
+        const notificationQuickWrap = document.getElementById("notificationQuickWrap");
+        const notificationQuickButton = document.getElementById("notificationQuickButton");
+        const notificationQuickBadge = document.getElementById("notificationQuickBadge");
+        const notificationQuickMenu = document.getElementById("notificationQuickMenu");
         const adminBtn = document.getElementById("adminBtn");
         const logoutBtn = document.getElementById("logoutBtn");
 
@@ -6870,6 +7929,7 @@
         const routeContent = document.getElementById("routeContent");
         const routeBackBtn = document.getElementById("routeBackBtn");
         const homeTopics = document.getElementById("homeTopics");
+        const homeComments = document.getElementById("homeComments");
         const homeDailyQuestionShowcase = document.getElementById("homeDailyQuestionShowcase");
         const homeGiveawayShowcase = document.getElementById("homeGiveawayShowcase");
         const homeLatestReviewShowcase = document.getElementById("homeLatestReviewShowcase");
@@ -6911,11 +7971,13 @@
             { name: "Miniatür & Boyama", icon: "fa-paintbrush" },
             { name: "İkinci El / Takas", icon: "fa-arrow-right-arrow-left" },
             { name: "FRP / Rol Yapma Oyunları", icon: "fa-dice-d20" },
-            { name: "İncelemeler", icon: "fa-pen-to-square", contentType: "review" }
+            { name: "İncelemeler", icon: "fa-pen-to-square", contentType: "review" },
+            { name: "Konu Dışı", icon: "fa-mug-hot" }
         ];
 
         let cachedTopics = [];
         let cachedComments = [];
+        let cachedLatestComments = [];
         let cachedVotes = [];
         let cachedPublicProfiles = [];
         let cachedBannedUsers = [];
@@ -6933,6 +7995,11 @@
         let cachedActiveChatMessages = [];
         let cachedVenues = [];
         let cachedEvents = [];
+        let cachedEventResponses = [];
+        let cachedBookmarks = [];
+        let cachedNotifications = [];
+        let bookmarkListenerUnsubscribe = null;
+        let notificationListenerUnsubscribe = null;
         let cachedGameScores = [];
         const TOPICS_PAGE_SIZE = 30;
         const COLLECTION_LIMITS = Object.freeze({
@@ -7488,6 +8555,13 @@
                 profileSearchLoading = false;
                 const route = decodeURIComponent(window.location.hash.slice(1));
                 if (route === `search=${searchText}`) renderRoute();
+
+                if (
+                    document.activeElement === searchInput &&
+                    normalizedSearchText(searchInput.value) === normalized
+                ) {
+                    renderSearchSuggestions();
+                }
             }
         }
 
@@ -7501,6 +8575,9 @@
             }
             if (rawHash.startsWith("giveaway=")) {
                 return { type: "giveaway", id: rawHash.slice("giveaway=".length) };
+            }
+            if (rawHash.startsWith("event=")) {
+                return { type: "event", id: rawHash.slice("event=".length) };
             }
             if (rawHash === "daily-question") {
                 const question = activeDailyQuestion();
@@ -8001,6 +9078,374 @@
         }
 
 
+        function formatUserTextWithSpoilers(value) {
+            let safe = escapeHTML(String(value || ""));
+
+            safe = safe.replace(
+                /\[spoiler\]([\s\S]*?)\[\/spoiler\]/gi,
+                (_, content) =>
+                    `<details class="spoiler-block"><summary><i class="fa-solid fa-eye-slash"></i>Spoiler — göstermek için tıkla</summary><div>${content.replace(/\n/g, "<br>")}</div></details>`
+            );
+
+            return safe.replace(/\n/g, "<br>");
+        }
+
+
+        function eventIsPast(eventItem) {
+            const eventTime = new Date(eventItem?.startAt || 0).getTime();
+            return Number.isFinite(eventTime) && eventTime < Date.now();
+        }
+
+
+        function eventResponseDocumentId(eventId, userId) {
+            return `${eventId}_${userId}`;
+        }
+
+
+        function eventResponsesFor(eventId) {
+            return cachedEventResponses
+                .filter(response => response.eventId === eventId)
+                .sort((a, b) =>
+                    (b.updatedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0) -
+                    (a.updatedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0)
+                );
+        }
+
+
+        function currentEventResponse(eventId) {
+            const userId = window.meepleForumAuthUser?.uid;
+            if (!userId) return null;
+            return cachedEventResponses.find(response =>
+                response.eventId === eventId && response.userId === userId
+            ) || null;
+        }
+
+
+        function eventAttendanceMarkup(eventItem) {
+            const currentUser = window.meepleForumAuthUser;
+            const responses = eventResponsesFor(eventItem.id);
+            const going = responses.filter(item => item.status === "going");
+            const maybe = responses.filter(item => item.status === "maybe");
+            const declined = responses.filter(item => item.status === "declined");
+            const mine = currentEventResponse(eventItem.id);
+            const past = eventIsPast(eventItem);
+
+            const memberList = (rows, emptyText) => rows.length ? `
+                <div class="event-attendee-list">
+                    ${rows.map(response => {
+                        const name = resolvedDisplayName(
+                            response.userId,
+                            response.displayName || "Meeple Oyuncusu"
+                        );
+                        const photoURL = safeImageURL(
+                            resolvedProfilePhoto(response.userId, response.photoURL)
+                        );
+                        const initial = name.charAt(0).toLocaleUpperCase("tr-TR") || "M";
+                        return `
+                            <a class="event-attendee" href="#profile=${encodeURIComponent(response.userId)}">
+                                <span class="event-attendee-avatar">
+                                    ${photoURL ? `<img src="${escapeHTML(photoURL)}" alt="">` : escapeHTML(initial)}
+                                </span>
+                                <span>${escapeHTML(name)}</span>
+                            </a>
+                        `;
+                    }).join("")}
+                </div>
+            ` : `<p class="event-attendee-empty">${escapeHTML(emptyText)}</p>`;
+
+            return `
+                <section class="event-attendance">
+                    <div class="event-attendance-head">
+                        <div>
+                            <span class="route-eyebrow">Katılım Durumu</span>
+                            <h2>Masada kimler var?</h2>
+                        </div>
+                        <div class="event-attendance-counts">
+                            <span><strong>${going.length}</strong> Katılıyor</span>
+                            <span><strong>${maybe.length}</strong> Belki</span>
+                            <span><strong>${declined.length}</strong> Katılamıyor</span>
+                        </div>
+                    </div>
+
+                    ${past ? `
+                        <div class="event-archive-note">
+                            <i class="fa-solid fa-box-archive"></i>
+                            Bu etkinlik arşivde. Katılım durumu artık değiştirilemez.
+                        </div>
+                    ` : currentUser ? `
+                        <div class="event-rsvp-actions">
+                            <button class="secondary-btn ${mine?.status === "going" ? "active-choice" : ""}" type="button" data-event-rsvp="going" data-event-id="${escapeHTML(eventItem.id)}">
+                                <i class="fa-solid fa-check"></i> Katılıyorum
+                            </button>
+                            <button class="secondary-btn ${mine?.status === "maybe" ? "active-choice" : ""}" type="button" data-event-rsvp="maybe" data-event-id="${escapeHTML(eventItem.id)}">
+                                <i class="fa-solid fa-question"></i> Belki
+                            </button>
+                            <button class="secondary-btn ${mine?.status === "declined" ? "active-choice" : ""}" type="button" data-event-rsvp="declined" data-event-id="${escapeHTML(eventItem.id)}">
+                                <i class="fa-solid fa-xmark"></i> Katılamıyorum
+                            </button>
+                        </div>
+                    ` : `
+                        <button class="primary-btn" type="button" data-login-for-event-rsvp>
+                            Katılım durumunu belirtmek için giriş yap
+                        </button>
+                    `}
+
+                    <div class="event-attendance-columns">
+                        <div>
+                            <h3>Katılıyor (${going.length})</h3>
+                            ${memberList(going, "Henüz katılıyorum diyen olmadı.")}
+                        </div>
+                        <div>
+                            <h3>Belki (${maybe.length})</h3>
+                            ${memberList(maybe, "Henüz belki diyen olmadı.")}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+
+        function bookmarkDocumentId(userId, targetType, targetId) {
+            return `${userId}_${targetType}_${targetId}`;
+        }
+
+
+        function isBookmarked(targetType, targetId) {
+            const userId = window.meepleForumAuthUser?.uid;
+            if (!userId) return false;
+            return cachedBookmarks.some(bookmark =>
+                bookmark.userId === userId &&
+                bookmark.targetType === targetType &&
+                bookmark.targetId === targetId
+            );
+        }
+
+
+        function bookmarkButtonMarkup(targetType, targetId, title) {
+            const saved = isBookmarked(targetType, targetId);
+            return `
+                <button
+                    class="secondary-btn ${saved ? "active-choice" : ""}"
+                    type="button"
+                    data-bookmark-toggle
+                    data-bookmark-type="${escapeHTML(targetType)}"
+                    data-bookmark-id="${escapeHTML(targetId)}"
+                    data-bookmark-title="${escapeHTML(title || "")}"
+                >
+                    <i class="${saved ? "fa-solid" : "fa-regular"} fa-bookmark"></i>
+                    ${saved ? "Kaydedildi" : "Kaydet"}
+                </button>
+            `;
+        }
+
+
+        function bookmarkHref(bookmark) {
+            if (bookmark.targetType === "topic") return `#topic=${encodeURIComponent(bookmark.targetId)}`;
+            if (bookmark.targetType === "review") return `#review=${encodeURIComponent(bookmark.targetId)}`;
+            if (bookmark.targetType === "event") return `#event=${encodeURIComponent(bookmark.targetId)}`;
+            return "#";
+        }
+
+
+        function bookmarkTypeLabel(type) {
+            if (type === "topic") return "Başlık";
+            if (type === "review") return "İnceleme";
+            if (type === "event") return "Etkinlik";
+            return "Kayıt";
+        }
+
+
+        function bookmarksMarkup() {
+            if (!window.meepleForumAuthUser) {
+                return '<div class="empty-state"><i class="fa-regular fa-bookmark"></i>Kaydettiklerini görmek için giriş yapmalısın.</div>';
+            }
+
+            const rows = [...cachedBookmarks].sort((a, b) =>
+                (b.createdAt?.toMillis?.() || 0) -
+                (a.createdAt?.toMillis?.() || 0)
+            );
+
+            if (!rows.length) {
+                return '<div class="empty-state"><i class="fa-regular fa-bookmark"></i>Henüz kaydettiğin bir başlık, inceleme veya etkinlik yok.</div>';
+            }
+
+            return `
+                <div class="saved-items-list">
+                    ${rows.map(bookmark => `
+                        <article class="saved-item">
+                            <div class="saved-item-index">${escapeHTML(bookmarkTypeLabel(bookmark.targetType))}</div>
+                            <div class="saved-item-copy">
+                                <h3>${escapeHTML(bookmark.title || "Kaydedilen içerik")}</h3>
+                                <small>${escapeHTML(formatTopicDate(bookmark.createdAt))}</small>
+                            </div>
+                            <div class="saved-item-actions">
+                                <a class="secondary-btn" href="${escapeHTML(bookmarkHref(bookmark))}">Aç</a>
+                                <button class="danger-btn" type="button" data-bookmark-remove="${escapeHTML(bookmark.id)}">Kaldır</button>
+                            </div>
+                        </article>
+                    `).join("")}
+                </div>
+            `;
+        }
+
+
+        function notificationHref(notification) {
+            const type = String(notification.targetType || "");
+            const id = String(notification.targetId || "");
+            if (type === "topic") return `#topic=${encodeURIComponent(id)}`;
+            if (type === "review") return `#review=${encodeURIComponent(id)}`;
+            if (type === "event") return `#event=${encodeURIComponent(id)}`;
+            if (type === "profile") return `#profile=${encodeURIComponent(id)}`;
+            return "#";
+        }
+
+
+        function closeNotificationQuickMenu() {
+            notificationQuickMenu?.classList.remove("open");
+            notificationQuickButton?.setAttribute("aria-expanded", "false");
+        }
+
+
+        function renderNotificationQuickMenu() {
+            if (!notificationQuickButton || !notificationQuickBadge || !notificationQuickMenu) return;
+
+            const notifications = [...cachedNotifications].sort((a, b) =>
+                (b.createdAt?.toMillis?.() || 0) -
+                (a.createdAt?.toMillis?.() || 0)
+            );
+            const unread = notifications.filter(item => item.read !== true);
+
+            notificationQuickButton.classList.toggle("has-unread", unread.length > 0);
+            notificationQuickBadge.textContent = String(Math.min(unread.length, 99));
+            notificationQuickBadge.setAttribute("aria-hidden", unread.length ? "false" : "true");
+
+            notificationQuickMenu.innerHTML = `
+                <div class="chat-quick-menu-head">
+                    <div>
+                        <strong>Bildirimler</strong>
+                        <small>${unread.length ? `${unread.length} okunmamış` : "Yeni bildirim yok"}</small>
+                    </div>
+                    ${unread.length ? `
+                        <button class="chat-quick-action notification-read-all" type="button" data-notification-read-all>
+                            Tümünü okundu yap
+                        </button>
+                    ` : ""}
+                </div>
+                <div class="notification-list">
+                    ${notifications.length ? notifications.slice(0, 20).map(notification => `
+                        <a class="notification-row ${notification.read === true ? "" : "is-unread"}"
+                           href="${escapeHTML(notificationHref(notification))}"
+                           data-notification-id="${escapeHTML(notification.id)}">
+                            <span class="notification-mark">
+                                <i class="${notification.type === "event_rsvp" ? "fa-solid fa-calendar-check" : "fa-regular fa-comment"}"></i>
+                            </span>
+                            <span class="notification-copy">
+                                <strong>${escapeHTML(notification.title || "Yeni bildirim")}</strong>
+                                <small>${escapeHTML(notification.message || "")}</small>
+                                <time>${escapeHTML(formatTopicDate(notification.createdAt))}</time>
+                            </span>
+                        </a>
+                    `).join("") : `
+                        <div class="chat-quick-empty"><i class="fa-regular fa-bell"></i> Henüz bildirimin yok.</div>
+                    `}
+                </div>
+            `;
+        }
+
+
+        function notificationTargetOwner(targetType, targetId) {
+            if (targetType === "topic") return cachedTopics.find(item => item.id === targetId)?.authorId || "";
+            if (targetType === "review") return cachedReviews[targetId]?.authorId || "";
+            if (targetType === "event") return cachedEvents.find(item => item.id === targetId)?.organizerId || "";
+            if (targetType === "profile") return targetId;
+            return "";
+        }
+
+
+        async function createNotification({
+            recipientId, actorId, actorName, type, targetType, targetId,
+            title, message, notificationId
+        }) {
+            if (!db || !recipientId || !actorId || recipientId === actorId) return;
+
+            const targetRef = notificationId
+                ? doc(db, "notifications", notificationId)
+                : doc(collection(db, "notifications"));
+
+            try {
+                await setDoc(targetRef, {
+                    recipientId,
+                    actorId,
+                    actorName: actorName || "Meeple Oyuncusu",
+                    type,
+                    targetType,
+                    targetId,
+                    title,
+                    message,
+                    read: false,
+                    createdAt: serverTimestamp()
+                });
+            } catch (error) {
+                console.warn("Bildirim oluşturulamadı:", error);
+            }
+        }
+
+
+        async function notifyTargetOwnerForComment(commentId, commentData) {
+            const recipientId = notificationTargetOwner(commentData.targetType, commentData.targetId);
+            if (!recipientId || recipientId === commentData.authorId) return;
+
+            const context = latestCommentContext(commentData);
+
+            await createNotification({
+                recipientId,
+                actorId: commentData.authorId,
+                actorName: commentData.authorName,
+                type: "comment",
+                targetType: commentData.targetType,
+                targetId: commentData.targetId,
+                title: `${commentData.authorName || "Bir kullanıcı"} yorum bıraktı`,
+                message: context.title || "İçeriğine yeni bir yorum geldi.",
+                notificationId: `comment_${commentId}_${recipientId}`
+            });
+        }
+
+
+        function stopPersonalFeatureListeners() {
+            bookmarkListenerUnsubscribe?.();
+            bookmarkListenerUnsubscribe = null;
+            notificationListenerUnsubscribe?.();
+            notificationListenerUnsubscribe = null;
+            cachedBookmarks = [];
+            cachedNotifications = [];
+            renderNotificationQuickMenu();
+        }
+
+
+        function startPersonalFeatureListeners(user) {
+            stopPersonalFeatureListeners();
+            if (!db || !user) return;
+
+            bookmarkListenerUnsubscribe = onSnapshot(
+                query(collection(db, "bookmarks"), where("userId", "==", user.uid), limit(200)),
+                snapshot => {
+                    cachedBookmarks = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+                    renderRoute();
+                },
+                error => console.error("Kaydedilenler alınamadı:", error)
+            );
+
+            notificationListenerUnsubscribe = onSnapshot(
+                query(collection(db, "notifications"), where("recipientId", "==", user.uid), limit(60)),
+                snapshot => {
+                    cachedNotifications = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+                    renderNotificationQuickMenu();
+                },
+                error => console.error("Bildirimler alınamadı:", error)
+            );
+        }
+
+
         function getTargetComments(targetType, targetId) {
             return cachedComments
                 .filter(comment =>
@@ -8048,7 +9493,11 @@
                             );
 
                             return `
-                                <article class="comment-card">
+                                <article
+                                    class="comment-card"
+                                    id="comment-${escapeHTML(comment.id)}"
+                                    data-comment-id="${escapeHTML(comment.id)}"
+                                >
                                     <div class="comment-head">
                                         <span>
                                             ${profileLinkMarkup(
@@ -8079,7 +9528,7 @@
                                             </div>
                                         ` : ""}
                                     ` : ""}
-                                    <p>${escapeHTML(comment.content || "")}</p>
+                                    <div class="comment-content user-generated-text">${formatUserTextWithSpoilers(comment.content || "")}</div>
                                 </article>
                             `;
                         }).join("") : `
@@ -8103,6 +9552,11 @@
                                 placeholder="Yorumunu yaz..."
                                 required
                             ></textarea>
+                            <div class="comment-form-actions">
+                                <button class="editor-tool" type="button" data-insert-spoiler data-comment-spoiler>
+                                    <i class="fa-solid fa-eye-slash"></i> Spoiler
+                                </button>
+                            </div>
                             <button class="primary-btn" type="submit">
                                 <i class="fa-solid fa-paper-plane"></i>
                                 Yorumu Gönder
@@ -8161,6 +9615,10 @@
                                     <i class="fa-solid fa-user-pen"></i>
                                     Profili Düzenle
                                 </button>
+                                <a class="secondary-btn" href="#bookmarks">
+                                    <i class="fa-regular fa-bookmark"></i>
+                                    Kaydettiklerim (${cachedBookmarks.length})
+                                </a>
                             ` : window.meepleForumAuthUser ? `
                                 <button class="primary-btn" type="button" data-direct-chat-open="${escapeHTML(userId)}">
                                     <i class="fa-solid fa-lock"></i>
@@ -9682,50 +11140,137 @@
         }
 
 
-        function eventsMarkup() {
-
+        function eventCardMarkup(eventItem, archived = false) {
             const currentUser = window.meepleForumAuthUser;
-
-            if (!cachedEvents.length) {
-                return `
-                    <div class="empty-state">
-                        <i class="fa-regular fa-calendar"></i>
-                        Henüz yayınlanmış bir etkinlik yok.
-                    </div>
-                `;
-            }
+            const responses = eventResponsesFor(eventItem.id);
+            const goingCount = responses.filter(item => item.status === "going").length;
+            const maybeCount = responses.filter(item => item.status === "maybe").length;
 
             return `
-                <div class="directory-grid">
-                    ${cachedEvents.map(eventItem => `
-                        <article class="directory-card">
-                            ${safeImageURL(eventItem.imageURL) ? `
-                                <img
-                                    class="directory-card-image"
-                                    src="${escapeHTML(safeImageURL(eventItem.imageURL))}"
-                                    alt="${escapeHTML(eventItem.name || "Etkinlik")}" loading="lazy"
-                                >
-                            ` : '<div class="directory-card-image"></div>'}
-                            <div class="directory-card-body">
-                                <span class="status-chip"><i class="fa-regular fa-calendar"></i> ${escapeHTML(formatEventDate(eventItem.startAt))}</span>
-                                <h3>${escapeHTML(eventItem.name || "Adsız etkinlik")}</h3>
-                                <p><i class="fa-solid fa-location-dot"></i> ${escapeHTML(eventItem.place || "Yer belirtilmedi")}</p>
-                                <p>${escapeHTML(eventItem.purpose || "")}</p>
-                                <p class="profile-clubs">
-                                    <strong>Oluşturan:</strong>
-                                    ${profileLinkMarkup(eventItem.organizerId, eventItem.organizerName || "Meeple Oyuncusu")}
-                                </p>
-                                ${currentUser && (isCurrentUserAdmin || eventItem.organizerId === currentUser.uid) ? `
-                                    <div class="owner-actions">
-                                        <button class="danger-btn" type="button" data-delete-event="${escapeHTML(eventItem.id)}">
-                                            <i class="fa-solid fa-trash"></i> Etkinliği Sil
-                                        </button>
-                                    </div>
-                                ` : ""}
+                <article class="directory-card event-card ${archived ? "is-archived" : ""}"
+                         data-event-open="event=${escapeHTML(eventItem.id)}"
+                         tabindex="0"
+                         role="link"
+                         aria-label="${escapeHTML(eventItem.name || "Etkinlik")} etkinliğini aç">
+                    ${safeImageURL(eventItem.imageURL) ? `
+                        <img class="directory-card-image"
+                             src="${escapeHTML(safeImageURL(eventItem.imageURL))}"
+                             alt="${escapeHTML(eventItem.name || "Etkinlik")}"
+                             loading="lazy">
+                    ` : '<div class="directory-card-image"></div>'}
+                    <div class="directory-card-body">
+                        <span class="status-chip">
+                            <i class="${archived ? "fa-solid fa-box-archive" : "fa-regular fa-calendar"}"></i>
+                            ${archived ? "Geçmiş Etkinlik" : escapeHTML(formatEventDate(eventItem.startAt))}
+                        </span>
+                        <h3>${escapeHTML(eventItem.name || "Adsız etkinlik")}</h3>
+                        <p><i class="fa-solid fa-location-dot"></i> ${escapeHTML(eventItem.place || "Yer belirtilmedi")}</p>
+                        <p>${escapeHTML(eventItem.purpose || "")}</p>
+                        <div class="event-card-attendance">
+                            <span><i class="fa-solid fa-check"></i> ${goingCount} katılıyor</span>
+                            <span><i class="fa-solid fa-question"></i> ${maybeCount} belki</span>
+                        </div>
+                        <p class="profile-clubs">
+                            <strong>Oluşturan:</strong>
+                            ${profileLinkMarkup(eventItem.organizerId, eventItem.organizerName || "Meeple Oyuncusu")}
+                        </p>
+                        ${currentUser && (isCurrentUserAdmin || eventItem.organizerId === currentUser.uid) ? `
+                            <div class="owner-actions">
+                                <button class="danger-btn" type="button" data-delete-event="${escapeHTML(eventItem.id)}">
+                                    <i class="fa-solid fa-trash"></i> Etkinliği Sil
+                                </button>
                             </div>
-                        </article>
-                    `).join("")}
-                </div>
+                        ` : ""}
+                    </div>
+                </article>
+            `;
+        }
+
+
+        function eventsMarkup() {
+            if (!cachedEvents.length) {
+                return '<div class="empty-state"><i class="fa-regular fa-calendar"></i>Henüz yayınlanmış bir etkinlik yok.</div>';
+            }
+
+            const upcomingEvents = cachedEvents
+                .filter(eventItem => !eventIsPast(eventItem))
+                .sort((a, b) => new Date(a.startAt || 0).getTime() - new Date(b.startAt || 0).getTime());
+
+            const pastEvents = cachedEvents
+                .filter(eventIsPast)
+                .sort((a, b) => new Date(b.startAt || 0).getTime() - new Date(a.startAt || 0).getTime());
+
+            return `
+                <section class="event-section">
+                    <div class="event-section-heading">
+                        <span class="route-eyebrow">Takvim</span>
+                        <h2>Yaklaşan Etkinlikler (${upcomingEvents.length})</h2>
+                    </div>
+                    ${upcomingEvents.length ? `
+                        <div class="directory-grid">${upcomingEvents.map(item => eventCardMarkup(item)).join("")}</div>
+                    ` : '<div class="empty-state"><i class="fa-regular fa-calendar"></i>Şu anda yaklaşan bir etkinlik yok.</div>'}
+                </section>
+
+                <section class="event-section event-archive-section">
+                    <div class="event-section-heading">
+                        <span class="route-eyebrow">Arşiv</span>
+                        <h2>Geçmiş Etkinlikler (${pastEvents.length})</h2>
+                        <p>Geçmiş buluşmalar silinmez; topluluğun etkinlik geçmişi burada kalır.</p>
+                    </div>
+                    ${pastEvents.length ? `
+                        <div class="directory-grid">${pastEvents.map(item => eventCardMarkup(item, true)).join("")}</div>
+                    ` : '<div class="empty-state"><i class="fa-solid fa-box-archive"></i>Arşivde henüz etkinlik yok.</div>'}
+                </section>
+            `;
+        }
+
+
+        function eventDetailMarkup(eventItem) {
+            const currentUser = window.meepleForumAuthUser;
+            const canManage = Boolean(
+                currentUser &&
+                (isCurrentUserAdmin || eventItem.organizerId === currentUser.uid)
+            );
+            const imageURL = safeImageURL(eventItem.imageURL);
+
+            return `
+                <article class="topic-detail event-detail">
+                    <div class="topic-detail-meta">
+                        <span><i class="fa-regular fa-calendar"></i> ${escapeHTML(formatEventDate(eventItem.startAt))}</span>
+                        <span><i class="fa-solid fa-location-dot"></i> ${escapeHTML(eventItem.place || "Yer belirtilmedi")}</span>
+                        <span>
+                            Oluşturan:
+                            ${profileLinkMarkup(
+                                eventItem.organizerId,
+                                eventItem.organizerName || "Meeple Oyuncusu"
+                            )}
+                        </span>
+                    </div>
+
+                    <div class="topic-detail-body">
+                        ${escapeHTML(eventItem.purpose || "Etkinlik açıklaması bulunmuyor.")}
+                    </div>
+
+                    ${imageURL ? `
+                        <img
+                            class="topic-detail-image event-detail-image"
+                            src="${escapeHTML(imageURL)}"
+                            alt="${escapeHTML(eventItem.name || "Etkinlik")} görseli"
+                        >
+                    ` : ""}
+
+                    <div class="owner-actions">
+                        ${bookmarkButtonMarkup("event", eventItem.id, eventItem.name || "Etkinlik")}
+                        ${canManage ? `
+                            <button class="danger-btn" type="button" data-delete-event="${escapeHTML(eventItem.id)}">
+                                <i class="fa-solid fa-trash"></i> Etkinliği Sil
+                            </button>
+                        ` : ""}
+                    </div>
+                </article>
+
+                ${eventAttendanceMarkup(eventItem)}
+                ${engagementMarkup("event", eventItem.id, false, "Etkinlik Yorumları")}
             `;
         }
 
@@ -10387,6 +11932,124 @@
         }
 
 
+        function latestCommentContext(comment) {
+            const type = String(comment?.targetType || "");
+            const targetId = String(comment?.targetId || "");
+
+            if (type === "topic") {
+                const topic = cachedTopics.find(item => item.id === targetId);
+                return {
+                    label: "Başlık",
+                    title: topic?.title || "Forum başlığı",
+                    href: `#topic=${encodeURIComponent(targetId)}`
+                };
+            }
+
+            if (type === "review") {
+                const review = cachedReviews[targetId];
+                return {
+                    label: "İnceleme",
+                    title: review?.title || "Oyun incelemesi",
+                    href: `#review=${encodeURIComponent(targetId)}`
+                };
+            }
+
+            if (type === "giveaway") {
+                const giveaway = cachedGiveaways.find(item => item.id === targetId);
+                return {
+                    label: "Çekiliş",
+                    title: giveaway?.title || "MeepleForum çekilişi",
+                    href: `#giveaway=${encodeURIComponent(targetId)}`
+                };
+            }
+
+            if (type === "event") {
+                const eventItem = cachedEvents.find(item => item.id === targetId);
+                return {
+                    label: "Etkinlik",
+                    title: eventItem?.name || "Forum etkinliği",
+                    href: `#event=${encodeURIComponent(targetId)}`
+                };
+            }
+
+            if (type === "dailyQuestion") {
+                return {
+                    label: "Günün Sorusu",
+                    title: activeDailyQuestion()?.question || "Günün Sorusu",
+                    href: "#daily-question"
+                };
+            }
+
+            if (type === "profile") {
+                return {
+                    label: "Profil",
+                    title: resolvedDisplayName(targetId, "Kullanıcı profili"),
+                    href: `#profile=${encodeURIComponent(targetId)}`
+                };
+            }
+
+            return { label: "Forum", title: "MeepleForum", href: "#" };
+        }
+
+
+        function renderHomeComments() {
+            if (!homeComments) return;
+
+            const comments = [...cachedLatestComments]
+                .filter(comment => String(comment.content || "").trim())
+                .sort((a, b) =>
+                    (b.createdAt?.toMillis?.() || 0) -
+                    (a.createdAt?.toMillis?.() || 0)
+                )
+                .slice(0, 6);
+
+            if (!comments.length) {
+                homeComments.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-regular fa-comment-dots"></i>
+                        Henüz gösterilecek bir yorum yok.
+                    </div>
+                `;
+                return;
+            }
+
+            homeComments.innerHTML = comments.map(comment => {
+                const authorName = resolvedDisplayName(
+                    comment.authorId,
+                    comment.authorName || "Meeple Oyuncusu"
+                );
+                const photoURL = safeImageURL(
+                    resolvedProfilePhoto(comment.authorId, comment.authorPhotoURL)
+                );
+                const initial = authorName.charAt(0).toLocaleUpperCase("tr-TR") || "M";
+                const context = latestCommentContext(comment);
+                const content = String(comment.content || "").trim();
+
+                return `
+                    <a class="home-comment-row" href="#comment=${escapeHTML(encodeURIComponent(comment.id))}">
+                        <div class="home-comment-avatar">
+                            ${photoURL
+                                ? `<img src="${escapeHTML(photoURL)}" alt="">`
+                                : escapeHTML(initial)}
+                        </div>
+                        <div class="home-comment-copy">
+                            <div class="home-comment-meta">
+                                <strong>${escapeHTML(authorName)}</strong>
+                                <span>·</span>
+                                <span>${escapeHTML(formatTopicDate(comment.createdAt))}</span>
+                            </div>
+                            <p>${escapeHTML(content)}</p>
+                        </div>
+                        <div class="home-comment-context">
+                            <small>${escapeHTML(context.label)}</small>
+                            <strong>${escapeHTML(context.title)}</strong>
+                        </div>
+                    </a>
+                `;
+            }).join("");
+        }
+
+
         function renderHomeTopics() {
             homeTopics.innerHTML = topicCardsMarkup(cachedTopics.slice(0, 4));
         }
@@ -10528,36 +12191,57 @@
         function renderHomeLatestEvent() {
             if (!homeLatestEventShowcase) return;
 
-            const latestEvent = [...cachedEvents]
-                .sort((first, second) => {
-                    const firstCreated = first.createdAt?.toMillis?.() || 0;
-                    const secondCreated = second.createdAt?.toMillis?.() || 0;
-                    if (secondCreated !== firstCreated) return secondCreated - firstCreated;
-                    return new Date(second.startAt || 0).getTime() - new Date(first.startAt || 0).getTime();
-                })[0];
+            const upcomingEvents = cachedEvents
+                .filter(eventItem => !eventIsPast(eventItem))
+                .sort((first, second) =>
+                    new Date(first.startAt || 0).getTime() -
+                    new Date(second.startAt || 0).getTime()
+                );
+
+            const latestEvent = upcomingEvents[0];
+
+            homeLatestEventShowcase.hidden = false;
 
             if (!latestEvent) {
-                homeLatestEventShowcase.hidden = true;
-                homeLatestEventShowcase.innerHTML = "";
+                homeLatestEventShowcase.innerHTML = `
+                    <div class="home-event-empty">
+                        <div class="home-event-empty-mark" aria-hidden="true">
+                            <span>—</span>
+                            <i class="fa-regular fa-calendar"></i>
+                        </div>
+                        <div class="home-event-empty-copy">
+                            <span class="giveaway-label">Yaklaşan Etkinlik</span>
+                            <h2>Şu an bir etkinlik yok :(</h2>
+                            <p>
+                                Yeni bir oyun gecesi veya topluluk buluşması oluşturulduğunda
+                                burada görünecek. Geçmiş etkinliklere arşivden ulaşabilirsin.
+                            </p>
+                            <a class="secondary-btn" href="#events">
+                                <i class="fa-solid fa-box-archive"></i>
+                                Etkinlikler ve Arşiv
+                            </a>
+                        </div>
+                    </div>
+                `;
                 return;
             }
 
             const imageURL = safeImageURL(latestEvent.imageURL);
-            homeLatestEventShowcase.hidden = false;
+
             homeLatestEventShowcase.innerHTML = `
-                <article class="home-giveaway-link" data-event-open="events" tabindex="0" role="link">
+                <article class="home-giveaway-link" data-event-open="event=${escapeHTML(latestEvent.id)}" tabindex="0" role="link">
                     <div class="home-giveaway-visual">
                         ${imageURL
                             ? `<img src="${escapeHTML(imageURL)}" alt="${escapeHTML(latestEvent.name || "Etkinlik")}" loading="lazy">`
                             : '<i class="fa-regular fa-calendar-days" aria-hidden="true"></i>'}
                     </div>
                     <div class="home-giveaway-content">
-                        <span class="giveaway-label">En Yeni Etkinlik</span>
+                        <span class="giveaway-label">Yaklaşan Etkinlik</span>
                         <h2>${escapeHTML(latestEvent.name || "MeepleForum Etkinliği")}</h2>
                         <p><strong>${escapeHTML(formatEventDate(latestEvent.startAt))}</strong> · ${escapeHTML(latestEvent.place || "Yer belirtilmedi")}</p>
                         <p>${escapeHTML(String(latestEvent.purpose || "").slice(0, 240))}${String(latestEvent.purpose || "").length > 240 ? "…" : ""}</p>
-                        <a class="primary-btn" href="#events">
-                            <i class="fa-regular fa-calendar"></i> Etkinlikleri Gör
+                        <a class="primary-btn" href="#event=${encodeURIComponent(latestEvent.id)}">
+                            <i class="fa-regular fa-calendar"></i> Etkinliği Aç
                         </a>
                     </div>
                 </article>
@@ -13010,7 +14694,36 @@
 
         function renderRoute() {
 
-            const rawHash = decodeURIComponent(window.location.hash.slice(1));
+            const requestedRawHash = decodeURIComponent(window.location.hash.slice(1));
+            const directCommentId = requestedRawHash.startsWith("comment=")
+                ? requestedRawHash.slice("comment=".length)
+                : "";
+
+            const directComment = directCommentId
+                ? (
+                    cachedLatestComments.find(comment => comment.id === directCommentId)
+                    || cachedComments.find(comment => comment.id === directCommentId)
+                )
+                : null;
+
+            let rawHash = requestedRawHash;
+
+            if (directComment) {
+                if (directComment.targetType === "topic") {
+                    rawHash = `topic=${directComment.targetId}`;
+                } else if (directComment.targetType === "review") {
+                    rawHash = `review=${directComment.targetId}`;
+                } else if (directComment.targetType === "event") {
+                    rawHash = `event=${directComment.targetId}`;
+                } else if (directComment.targetType === "giveaway") {
+                    rawHash = `giveaway=${directComment.targetId}`;
+                } else if (directComment.targetType === "profile") {
+                    rawHash = `profile=${directComment.targetId}`;
+                } else if (directComment.targetType === "dailyQuestion") {
+                    rawHash = "daily-question";
+                }
+            }
+
             syncEngagementListeners(rawHash);
 
             if (!rawHash.startsWith("profile=")) {
@@ -13270,7 +14983,7 @@
                                 <span>${escapeHTML(formatTopicDate(topic.createdAt))}</span>
                                 <span class="topic-category">${escapeHTML(topic.category || "Genel")}</span>
                             </div>
-                            <div class="topic-detail-body">${escapeHTML(topic.content || "")}</div>
+                            <div class="topic-detail-body user-generated-text">${formatUserTextWithSpoilers(topic.content || "")}</div>
                             ${Array.isArray(topic.tags) && topic.tags.length ? `
                                 <div class="topic-tags">
                                     ${topic.tags.map(tag => `
@@ -13279,15 +14992,15 @@
                                 </div>
                             ` : ""}
                             ${safeImageURL(topic.imageURL) ? `<img class="topic-detail-image" src="${escapeHTML(safeImageURL(topic.imageURL))}" alt="${escapeHTML(topic.title || "Gönderi görseli")}">` : ""}
-                            ${canDeleteTopic ? `
-                                <div class="owner-actions">
+                            <div class="owner-actions">
+                                ${bookmarkButtonMarkup("topic", topic.id, topic.title || "Forum başlığı")}
+                                ${canDeleteTopic ? `
                                     <button class="vote-btn" type="button" data-edit-topic="${escapeHTML(topic.id)}"><i class="fa-solid fa-pen"></i> Gönderiyi Düzenle</button>
                                     <button class="danger-btn" type="button" data-delete-topic="${escapeHTML(topic.id)}">
-                                        <i class="fa-solid fa-trash"></i>
-                                        Gönderiyi Sil
+                                        <i class="fa-solid fa-trash"></i> Gönderiyi Sil
                                     </button>
-                                </div>
-                            ` : ""}
+                                ` : ""}
+                            </div>
                         </article>
                         ${engagementMarkup("topic", topic.id)}
                     `;
@@ -13309,6 +15022,14 @@
                     "Kullanıcının herkese açık profili ve topluluk katkıları."
                 );
                 routeContent.innerHTML = publicProfileMarkup(userId);
+
+            } else if (rawHash === "bookmarks") {
+                setRouteHeader(
+                    "Kişisel Alan",
+                    "Kaydettiklerim",
+                    "Daha sonra dönmek istediğin başlıklar, incelemeler ve etkinlikler."
+                );
+                routeContent.innerHTML = bookmarksMarkup();
 
             } else if (rawHash === "weekly-game") {
                 setRouteHeader(
@@ -13374,19 +15095,20 @@
                             <span>•</span>
                             <span>${escapeHTML(formatTopicDate(review.createdAt))}</span>
                         </div>
-                        <div class="topic-detail-body">${escapeHTML(review.content)}</div>
+                        <div class="topic-detail-body user-generated-text">${formatUserTextWithSpoilers(review.content)}</div>
                         ${Array.isArray(review.tags) && review.tags.length ? `
                             <div class="topic-tags">
                                 ${review.tags.map(tag => `<span class="topic-tag">#${escapeHTML(tag)}</span>`).join("")}
                             </div>
                         ` : ""}
                         ${safeImageURL(review.imageURL) ? `<img class="topic-detail-image" src="${escapeHTML(safeImageURL(review.imageURL))}" alt="${escapeHTML(review.title || "İnceleme görseli")}">` : ""}
-                        ${canManageReview ? `
-                            <div class="owner-actions">
+                        <div class="owner-actions">
+                            ${bookmarkButtonMarkup("review", reviewId, review.title || "Oyun incelemesi")}
+                            ${canManageReview ? `
                                 <button class="vote-btn" type="button" data-edit-review="${escapeHTML(reviewId)}"><i class="fa-solid fa-pen"></i> İncelemeyi Düzenle</button>
                                 ${isCurrentUserAdmin ? `<button class="danger-btn" type="button" data-delete-review="${escapeHTML(reviewId)}"><i class="fa-solid fa-trash"></i> İncelemeyi Sil</button>` : ""}
-                            </div>
-                        ` : ""}
+                            ` : ""}
+                        </div>
                     </article>
                     ${engagementMarkup("review", reviewId)}
                 `;
@@ -13399,6 +15121,33 @@
                     "Oyun geceleri, turnuvalar ve topluluk buluşmaları."
                 );
                 routeContent.innerHTML = eventsMarkup();
+                document.querySelector('nav a[data-action="events"]')?.classList.add("active");
+
+            } else if (rawHash.startsWith("event=")) {
+                const eventId = rawHash.slice("event=".length);
+                const eventItem = cachedEvents.find(item => item.id === eventId);
+
+                if (!eventItem) {
+                    setRouteHeader(
+                        "Takvim",
+                        "Etkinlik bulunamadı",
+                        "Bu etkinlik kaldırılmış veya artık yayında olmayabilir."
+                    );
+                    routeContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-regular fa-calendar-xmark"></i>
+                            Etkinlik bulunamadı.
+                        </div>
+                    `;
+                } else {
+                    setRouteHeader(
+                        "Etkinlik",
+                        eventItem.name || "Adsız etkinlik",
+                        `${formatEventDate(eventItem.startAt)} · ${eventItem.place || "Yer belirtilmedi"}`
+                    );
+                    routeContent.innerHTML = eventDetailMarkup(eventItem);
+                }
+
                 document.querySelector('nav a[data-action="events"]')?.classList.add("active");
 
             } else if (rawHash === "chat") {
@@ -13589,7 +15338,26 @@
                 return;
             }
 
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            if (directCommentId && directComment) {
+                requestAnimationFrame(() => {
+                    const targetComment = document.getElementById(`comment-${directCommentId}`);
+
+                    if (targetComment) {
+                        targetComment.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        });
+
+                        targetComment.classList.add("comment-target");
+
+                        window.setTimeout(() => {
+                            targetComment.classList.remove("comment-target");
+                        }, 2400);
+                    }
+                });
+            } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
         }
 
 
@@ -13710,6 +15478,8 @@
 
             const eventCard = event.target.closest("[data-event-open]");
             if (eventCard) {
+                const nestedAction = event.target.closest("button, a, input, textarea, select, label");
+                if (nestedAction && nestedAction !== eventCard) return;
                 event.preventDefault();
                 window.location.hash = eventCard.dataset.eventOpen || "events";
             }
@@ -13724,6 +15494,22 @@
             if (card.dataset.topicOpen) window.location.hash = "topic=" + encodeURIComponent(card.dataset.topicOpen);
             if (card.dataset.reviewOpen) window.location.hash = "review=" + encodeURIComponent(card.dataset.reviewOpen);
             if (card.dataset.eventOpen) window.location.hash = card.dataset.eventOpen || "events";
+        });
+
+
+        document.addEventListener("click", event => {
+            const spoilerButton = event.target.closest("[data-insert-spoiler]");
+            if (!spoilerButton || routeContent.contains(spoilerButton)) return;
+
+            const textarea = document.getElementById(spoilerButton.dataset.textareaId);
+            if (!textarea) return;
+
+            const start = textarea.selectionStart ?? textarea.value.length;
+            const end = textarea.selectionEnd ?? start;
+            const selected = textarea.value.slice(start, end) || "spoiler metni";
+
+            textarea.setRangeText(`[spoiler]${selected}[/spoiler]`, start, end, "select");
+            textarea.focus();
         });
 
 
@@ -13762,6 +15548,65 @@
             chatQuickButton.setAttribute("aria-expanded", String(willOpen));
         });
 
+        notificationQuickButton.addEventListener("click", event => {
+            event.stopPropagation();
+            const willOpen = !notificationQuickMenu.classList.contains("open");
+            closeChatQuickMenu();
+
+            if (willOpen) {
+                renderNotificationQuickMenu();
+                notificationQuickMenu.classList.add("open");
+            } else {
+                notificationQuickMenu.classList.remove("open");
+            }
+
+            notificationQuickButton.setAttribute("aria-expanded", String(willOpen));
+        });
+
+        notificationQuickMenu.addEventListener("click", async event => {
+            const readAllButton = event.target.closest("[data-notification-read-all]");
+
+            if (readAllButton) {
+                event.preventDefault();
+                const unread = cachedNotifications.filter(item => item.read !== true);
+                if (!unread.length) return;
+
+                readAllButton.disabled = true;
+
+                try {
+                    const batch = writeBatch(db);
+                    unread.forEach(item => {
+                        batch.update(doc(db, "notifications", item.id), {
+                            read: true,
+                            readAt: serverTimestamp()
+                        });
+                    });
+                    await batch.commit();
+                } catch (error) {
+                    console.error("Bildirimler okundu yapılamadı:", error);
+                    readAllButton.disabled = false;
+                }
+                return;
+            }
+
+            const row = event.target.closest("[data-notification-id]");
+            if (!row) return;
+
+            const notificationId = row.dataset.notificationId;
+            const notification = cachedNotifications.find(item => item.id === notificationId);
+            closeNotificationQuickMenu();
+
+            if (notification && notification.read !== true) {
+                setDoc(doc(db, "notifications", notificationId), {
+                    read: true,
+                    readAt: serverTimestamp()
+                }, { merge: true }).catch(error =>
+                    console.warn("Bildirim okundu işaretlenemedi:", error)
+                );
+            }
+        });
+
+
         chatQuickMenu.addEventListener("click", event => {
             const routeButton = event.target.closest("[data-chat-quick-route]");
             const directButton = event.target.closest("[data-chat-quick-dm]");
@@ -13784,10 +15629,14 @@
 
         document.addEventListener("click", event => {
             if (!chatQuickWrap.contains(event.target)) closeChatQuickMenu();
+            if (!notificationQuickWrap.contains(event.target)) closeNotificationQuickMenu();
         });
 
         document.addEventListener("keydown", event => {
-            if (event.key === "Escape") closeChatQuickMenu();
+            if (event.key === "Escape") {
+                closeChatQuickMenu();
+                closeNotificationQuickMenu();
+            }
         });
 
         window.addEventListener("hashchange", renderRoute);
@@ -13812,6 +15661,7 @@
         renderHomeDailyQuestion();
         renderHomeLatestReview();
         renderHomeChallenges();
+        renderNotificationQuickMenu();
         renderRoute();
 
         // İstanbul takvim gününe göre soru gece yarısından sonra otomatik olarak
@@ -16250,6 +18100,8 @@
                         transaction.set(commentRef, commentData);
                     });
 
+                    await notifyTargetOwnerForComment(commentRef.id, commentData);
+
                     textarea.value = "";
                     showToast("Yorumun yayınlandı.");
                 } catch (error) {
@@ -16392,6 +18244,143 @@
                 const saveDailyQuestionImageButton = event.target.closest("[data-save-daily-question-image]");
                 const clearDailyQuestionImageButton = event.target.closest("[data-clear-daily-question-image]");
                 const deleteDailyQuestionButton = event.target.closest("[data-delete-daily-question]");
+                const eventRsvpButton = event.target.closest("[data-event-rsvp]");
+                const bookmarkToggleButton = event.target.closest("[data-bookmark-toggle]");
+                const bookmarkRemoveButton = event.target.closest("[data-bookmark-remove]");
+                const spoilerButton = event.target.closest("[data-insert-spoiler]");
+                const loginForEventRsvpButton = event.target.closest("[data-login-for-event-rsvp]");
+
+                if (spoilerButton) {
+                    const textarea = spoilerButton.dataset.commentSpoiler !== undefined
+                        ? spoilerButton.closest(".comment-form")?.elements?.comment
+                        : document.getElementById(spoilerButton.dataset.textareaId);
+
+                    if (!textarea) return;
+
+                    const start = textarea.selectionStart ?? textarea.value.length;
+                    const end = textarea.selectionEnd ?? start;
+                    const selected = textarea.value.slice(start, end) || "spoiler metni";
+                    textarea.setRangeText(`[spoiler]${selected}[/spoiler]`, start, end, "select");
+                    textarea.focus();
+                    return;
+                }
+
+                if (loginForEventRsvpButton) {
+                    openModal("loginModal");
+                    return;
+                }
+
+                if (eventRsvpButton) {
+                    const user = auth.currentUser;
+                    if (!user) return openModal("loginModal");
+
+                    const eventId = eventRsvpButton.dataset.eventId;
+                    const status = eventRsvpButton.dataset.eventRsvp;
+                    const eventItem = cachedEvents.find(item => item.id === eventId);
+
+                    if (!eventItem || eventIsPast(eventItem)) {
+                        showToast("Geçmiş etkinliklerin katılım durumu değiştirilemez.", "error");
+                        return;
+                    }
+
+                    const responseId = eventResponseDocumentId(eventId, user.uid);
+                    const existing = currentEventResponse(eventId);
+                    eventRsvpButton.disabled = true;
+
+                    try {
+                        if (existing?.status === status) {
+                            await deleteDoc(doc(db, "eventResponses", responseId));
+                            showToast("Katılım durumun kaldırıldı.");
+                        } else {
+                            const displayName = cachedProfile?.displayName || getDefaultDisplayName(user);
+
+                            await setDoc(doc(db, "eventResponses", responseId), {
+                                eventId,
+                                userId: user.uid,
+                                organizerId: eventItem.organizerId,
+                                status,
+                                displayName,
+                                photoURL: cachedProfile?.photoURL || user.photoURL || "",
+                                createdAt: existing?.createdAt || serverTimestamp(),
+                                updatedAt: serverTimestamp()
+                            }, { merge: true });
+
+                            const statusText =
+                                status === "going" ? "katılacağını" :
+                                status === "maybe" ? "belki katılacağını" :
+                                "katılamayacağını";
+
+                            await createNotification({
+                                recipientId: eventItem.organizerId,
+                                actorId: user.uid,
+                                actorName: displayName,
+                                type: "event_rsvp",
+                                targetType: "event",
+                                targetId: eventId,
+                                title: `${displayName} etkinlik durumunu güncelledi`,
+                                message: `“${eventItem.name || "Etkinlik"}” için ${statusText} belirtti.`,
+                                notificationId: `rsvp_${eventId}_${user.uid}`
+                            });
+
+                            showToast("Katılım durumun kaydedildi.");
+                        }
+                    } catch (error) {
+                        console.error("Katılım durumu kaydedilemedi:", error);
+                        showToast(getDataErrorMessage(error, "Katılım durumu kaydedilemedi."), "error");
+                        eventRsvpButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (bookmarkToggleButton) {
+                    const user = auth.currentUser;
+                    if (!user) {
+                        showToast("İçerik kaydetmek için giriş yapmalısın.", "error");
+                        openModal("loginModal");
+                        return;
+                    }
+
+                    const targetType = bookmarkToggleButton.dataset.bookmarkType;
+                    const targetId = bookmarkToggleButton.dataset.bookmarkId;
+                    const title = bookmarkToggleButton.dataset.bookmarkTitle || "Kaydedilen içerik";
+                    const bookmarkId = bookmarkDocumentId(user.uid, targetType, targetId);
+
+                    bookmarkToggleButton.disabled = true;
+
+                    try {
+                        if (isBookmarked(targetType, targetId)) {
+                            await deleteDoc(doc(db, "bookmarks", bookmarkId));
+                            showToast("Kaydedilenlerden kaldırıldı.");
+                        } else {
+                            await setDoc(doc(db, "bookmarks", bookmarkId), {
+                                userId: user.uid,
+                                targetType,
+                                targetId,
+                                title,
+                                createdAt: serverTimestamp()
+                            });
+                            showToast("Kaydedildi.");
+                        }
+                    } catch (error) {
+                        console.error("Kaydetme işlemi başarısız:", error);
+                        showToast(getDataErrorMessage(error, "Kaydetme işlemi başarısız."), "error");
+                        bookmarkToggleButton.disabled = false;
+                    }
+                    return;
+                }
+
+                if (bookmarkRemoveButton) {
+                    bookmarkRemoveButton.disabled = true;
+                    try {
+                        await deleteDoc(doc(db, "bookmarks", bookmarkRemoveButton.dataset.bookmarkRemove));
+                        showToast("Kaydedilenlerden kaldırıldı.");
+                    } catch (error) {
+                        console.error("Kayıt kaldırılamadı:", error);
+                        showToast(getDataErrorMessage(error, "Kayıt kaldırılamadı."), "error");
+                        bookmarkRemoveButton.disabled = false;
+                    }
+                    return;
+                }
 
                 if (saveDailyQuestionImageButton) {
                     if (!isCurrentUserAdmin || !auth.currentUser) {
@@ -16782,8 +18771,18 @@
 
                     deleteEventButton.disabled = true;
                     try {
+                        const relatedResponses = cachedEventResponses.filter(response => response.eventId === eventId);
+                        const relatedComments = cachedComments.filter(comment =>
+                            comment.targetType === "event" && comment.targetId === eventId
+                        );
+
+                        await Promise.all([
+                            ...relatedResponses.map(response => deleteDoc(doc(db, "eventResponses", response.id))),
+                            ...relatedComments.map(comment => deleteDoc(doc(db, "comments", comment.id)))
+                        ]);
                         await deleteDoc(doc(db, "events", eventId));
-                        showToast("Etkinlik silindi.");
+
+                        showToast("Etkinlik ve bağlı katılım/yorum kayıtları silindi.");
                     } catch (error) {
                         console.error("Etkinlik silinemedi:", error);
                         showToast(getDataErrorMessage(error, "Etkinlik silinemedi."), "error");
@@ -17165,7 +19164,7 @@
                     }
                     const editResult = await openEditDialog({
                         title: "İncelemeyi Düzenle",
-                        description: "Başlık ve inceleme metnini geniş bir pencerede birlikte düzenleyebilirsin.",
+                        description: "Başlık ve inceleme metnini düzenleyebilirsin. Spoiler için [spoiler]metin[/spoiler] kullanabilirsin.",
                         submitText: "İncelemeyi Kaydet",
                         fields: [
                             { name: "title", label: "İnceleme Başlığı", type: "text", value: currentReview.title || "", maxlength: 140 },
@@ -17450,10 +19449,15 @@
 
                     renderCurrentUserUpvotes();
                     renderHomeTopics();
+                    renderHomeComments();
                     renderHomeLatestReview();
                     renderHomeChallenges();
                     renderChatQuickMenu();
                     renderRoute();
+
+                    if (document.activeElement === searchInput) {
+                        renderSearchSuggestions();
+                    }
                 },
                 error => {
                     console.error("Güncel kullanıcı adları alınamadı:", error);
@@ -17473,6 +19477,33 @@
                     renderChatQuickMenu();
                 },
                 error => console.warn("Sohbet moderasyon listesi alınamadı:", error)
+            );
+
+
+            onSnapshot(
+                query(
+                    collection(db, "comments"),
+                    orderBy("createdAt", "desc"),
+                    limit(8)
+                ),
+                snapshot => {
+                    cachedLatestComments = snapshot.docs.map(commentDocument => ({
+                        id: commentDocument.id,
+                        ...commentDocument.data()
+                    }));
+                    renderHomeComments();
+                },
+                error => {
+                    console.error("Son yorumlar alınamadı:", error);
+                    if (homeComments) {
+                        homeComments.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                Son yorumlar yüklenemedi.
+                            </div>
+                        `;
+                    }
+                }
             );
 
 
@@ -17506,6 +19537,7 @@
 
                     renderCurrentUserUpvotes();
                     renderHomeTopics();
+                    renderHomeComments();
                     renderRoute();
                 },
                 error => {
@@ -17538,11 +19570,23 @@
                             return bTime - aTime;
                         });
                     renderHomeGiveaway();
+                    renderHomeComments();
                     renderRoute();
                 },
                 error => {
                     console.error("Çekilişler alınamadı:", error);
                 }
+            );
+
+
+            onSnapshot(
+                query(collection(db, "eventResponses"), limit(1000)),
+                snapshot => {
+                    cachedEventResponses = snapshot.docs.map(item => ({ id: item.id, ...item.data() }));
+                    renderHomeLatestEvent();
+                    renderRoute();
+                },
+                error => console.error("Etkinlik katılım durumları alınamadı:", error)
             );
 
 
@@ -17564,6 +19608,7 @@
                             return aTime - bTime;
                         });
                     renderHomeLatestEvent();
+                    renderHomeComments();
                     renderRoute();
                 },
                 error => {
@@ -17650,6 +19695,7 @@
                         };
                     });
                     renderHomeLatestReview();
+                    renderHomeComments();
                     renderRoute();
                 },
                 error => {
@@ -17676,6 +19722,7 @@
                         : null;
                     startDailyQuestionCommentListener();
                     renderHomeDailyQuestion();
+                    renderHomeComments();
                     const route = decodeURIComponent(window.location.hash.slice(1));
                     if (["daily-question", "admin"].includes(route)) renderRoute();
                 },
@@ -17962,6 +20009,7 @@
                     getChatSeenState(user);
                     startRealtimeChatListener();
                     startDirectConversationsListener(user);
+                    startPersonalFeatureListeners(user);
                     refreshCommunityActivityListeners();
                     renderCurrentUserUpvotes();
                     renderChatQuickMenu();
@@ -17994,6 +20042,7 @@
                     cachedProfileUid = null;
                     isCurrentUserAdmin = false;
                     stopDirectConversationsListener();
+                    stopPersonalFeatureListeners();
                     stopCommunityActivityListeners();
                     stopActiveFirestoreChat();
                     stopRealtimeChatListener();
